@@ -1,0 +1,143 @@
+/* --- 1. Importar la fuente --- */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+/* --- 2. Variables Globales (Tema) --- */
+:root {
+  /* Colores */
+  --color-fondo: #0a0f0a;
+  --color-fondo-tarjeta: #121c12;
+  --color-texto-principal: #ffffff;
+  --color-texto-secundario: #bbbbbb;
+  --color-primario: #1b4d1b; /* Verde oscuro (botones) */
+  --color-primario-hover: #2a6a2a;
+  --color-acento-verde: #39ff14; /* Verde neón (logo, borde) */
+  --color-acento-azul: #4caeff;
+  --color-acento-naranja: #ff9800;
+  --color-borde: #3a3a3a;
+
+  /* Tipografía */
+  --font-principal: "Poppins", sans-serif;
+
+  /* Otros */
+  --radio-borde-grande: 16px;
+  --radio-borde-pequeno: 10px;
+  --sombra-tarjeta: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 3. Reset Básico y Estilos Base --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- 4. Estilos de la Página --- */
+.pedidos-page {
+  background-color: var(--color-fondo);
+  color: var(--color-texto-principal);
+  min-height: 100vh;
+  padding: 40px;
+  font-family: var(--font-principal);
+}
+
+.pedidos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-acento-verde);
+}
+
+/* --- 5. Estilos de Botones (Clase Base) --- */
+.btn {
+  background-color: var(--color-primario);
+  color: var(--color-texto-principal);
+  border: none;
+  border-radius: var(--radio-borde-pequeno);
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-principal);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  background-color: var(--color-primario-hover);
+  transform: scale(1.03); /* Efecto "pop" */
+}
+
+.btn:active {
+  transform: scale(0.98); /* Efecto al presionar */
+}
+
+/* Modificadores de botones específicos */
+.btn-volver {
+  padding: 10px 18px;
+}
+
+.btn-detalle {
+  padding: 8px 14px;
+  border-radius: 8px; /* Radio más pequeño para este botón */
+  margin-top: 12px;
+}
+
+/* --- 6. Grid de Pedidos --- */
+.pedidos-container {
+  display: flex;
+  justify-content: center;
+}
+
+.pedidos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.pedido-card {
+  background-color: var(--color-fondo-tarjeta);
+  border-radius: var(--radio-borde-grande);
+  padding: 20px;
+  border: 1px solid var(--color-borde);
+  box-shadow: var(--sombra-tarjeta);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.pedido-card:hover {
+  transform: translateY(-5px); /* Elevar la tarjeta */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+
+.pedido-card h2 {
+  margin-bottom: 10px;
+  color: var(--color-texto-principal);
+}
+
+.pedido-card p {
+  margin: 4px 0;
+  color: var(--color-texto-secundario); /* Color de texto más suave */
+}
+
+/* Modificadores de color de borde */
+.pedido-card.verde {
+  border-color: var(--color-acento-verde);
+}
+.pedido-card.azul {
+  border-color: var(--color-acento-azul);
+}
+.pedido-card.naranja {
+  border-color: var(--color-acento-naranja);
+}
+
+/* --- 7. Mensaje de "Sin Pedidos" --- */
+.sin-pedidos {
+  color: var(--color-texto-secundario);
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2rem;
+}
