@@ -1,133 +1,195 @@
-const express = require('express');
-const mysql = require('mysql2');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import supabase from './config/dataBase.js';
 
 const app = express();
-const puerto = 3001;
+const puerto = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
 
-// conexion a la base de datos
-const db = mysql.createPool({
-    host: process.env.MYSQLHOST, 
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT 
-}).promise();
+//-----------------------------------
+//-------- Platillos APIs
+//-----------------------------------
 
 // obtener todos los platillos
 app.get('/api/platillos', async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM platillos");
-        res.json(rows);
+        const { data, error } = await supabase.from('items_menu').select('*');
+        if (error) throw error;
+        res.status(200).json(data);
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al obtener platillos" });
+        res.status(500).json({ mensaje: error.message });
     }
 });
 
 // crear platillo
-app.post('/api/platillos', async (req, res) => {
-    const { nombre, descripcion, precio } = req.body;
-
+app.post('/api/platillos', async (req, res) => { 
+    const { nombre, descripcion, precio, categoria_id } = req.body;
     if (!nombre || !precio) {
-        return res.status(400).json({ mensaje: "Faltan datos" });
+        return res.status(400).json({ mensaje: "Nombre y precio son obligatorios" });
     }
-    
     try {
-        const query = "INSERT INTO platillos (nombre, descripcion, precio) VALUES (?, ?, ?)";
-        const [result] = await db.query(query, [nombre, descripcion, precio]);
-        
-        res.status(201).json({ 
-            id: result.insertId, 
-            mensaje: "Platillo creado" 
-        });
+        const { data, error } = await supabase
+            .from('items_menu').insert([{ nombre, descripcion, precio, categoria_id }]).select();
+
+        if (error) throw error;
+        res.status(201).json({ mensaje: "Platillo creado", platillo: data[0] });
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al crear el platillo" });
+        res.status(500).json({ mensaje: error.message });
     }
 });
 
 // actualizar platillo
 app.put('/api/platillos/:id', async (req, res) => {
-    const id = req.params.id;
-    const { nombre, descripcion, precio } = req.body;
+    const idPlatillo = req.params.id;
+    const { nombre, descripcion, precio, categoria_id } = req.body;
 
     if (!nombre || !precio) {
         return res.status(400).json({ mensaje: "Faltan datos" });
     }
-    
     try {
-        const [result] = await db.query(
-            "UPDATE platillos SET nombre = ?, descripcion = ?, precio = ? WHERE id = ?",
-            [nombre, descripcion, precio, id]
-        );
-        
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ mensaje: "No se encontro el platillo" });
-        }
-        
-        res.json({ mensaje: "Platillo actualizado" });
+        const { data, error } = await supabase.from('items_menu').update({ nombre, descripcion, precio, categoria_id }).eq('id', idPlatillo); 
+
+        if (error) throw error;
+        res.status(200).json({ mensaje: "Platillo actualizado" });
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al actualizar" });
+        res.status(500).json({ mensaje: error.message });
     }
 });
 
 // eliminar platillo
 app.delete('/api/platillos/:id', async (req, res) => {
-    const id = req.params.id;
-    
+    const idPlatillo = req.params.id;
     try {
-        const [result] = await db.query("DELETE FROM platillos WHERE id = ?", [id]);
-        
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ mensaje: "Platillo no encontrado" });
-        }
-        
-        res.json({ mensaje: "Platillo eliminado" });
+        const { data, error } = await supabase.from('items_menu').delete().eq('id', idPlatillo);
+
+        if (error) throw error;
+        res.status(200).json({ mensaje: "Platillo eliminado" });
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al eliminar" });
+        res.status(500).json({ mensaje: error.message });
+    }
+});
+
+//-----------------------------------
+//-------- Categorías APIs
+//-----------------------------------
+
+// obtener categorias
+app.get('/api/categorias', async (req, res) => {
+    try {
+        const { data, error } = await supabase.from('categorias_menu').select('*'); 
+
+        if (error) throw error;
+        res.status(200).json(data);
+    } catch (error) {
+        console.error("Error al consultar categorías:", error.message);
+        res.status(500).json({ mensaje: error.message });
+    }
+});
+
+// crear categoria
+app.post('/api/categorias', async (req, res) => {
+    const { nombre, descripcion } = req.body; 
+
+    if (!nombre) {
+        return res.status(400).json({ mensaje: "El nombre es obligatorio" });
+    }
+    try {
+        const { data, error } = await supabase
+            .from('categorias_menu').insert([ { nombre, descripcion } ]).select().single();
+
+        if (error) throw error;
+        res.status(201).json({ mensaje: "Categoría creada", categoria: data });
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
     }
 });
 
 
+//-----------------------------------
+//-------- Pedidos APIs
+//-----------------------------------
 
 // obtener pedidos
 app.get('/api/pedidos', async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM pedidos ORDER BY fecha_creacion ASC");
-        res.json(rows);
+        const { data, error } = await supabase.from('pedidos') .select('*').order('fecha_pedido', { ascending: true });
+
+        if (error) throw error;
+        res.status(200).json(data);
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al obtener pedidos" });
+        res.status(500).json({ mensaje: error.message });
     }
 });
 
 // crear pedido
 app.post('/api/pedidos', async (req, res) => {
-    const { id_mesa, total } = req.body;
-
-    if (!id_mesa || !total) {
-        return res.status(400).json({ mensaje: "Faltan datos del pedido" });
-    }
+    const { mesa_id, mesero_id, platillos } = req.body;
     
+    if (!mesa_id || !platillos || platillos.length === 0) {
+        return res.status(400).json({ mensaje: "Faltan mesa_id o platillos" });
+    }
+
     try {
-        const query = "INSERT INTO pedidos (id_mesa, total, estado) VALUES (?, ?, ?)";
-        const [result] = await db.query(query, [id_mesa, total, 'pendiente']);
+        const { data: pedidoData, error: pedidoError } = await supabase.from('pedidos').insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: 'pendiente' }])
+        .select().single();
+
+        if (pedidoError) throw pedidoError;
+        const nuevoPedidoId = pedidoData.id;
+
+        const itemsParaInsertar = platillos.map(item => ({
+            pedido_id: nuevoPedidoId,
+            item_menu_id: item.item_menu_id,
+            cantidad: item.cantidad,
+            precio_unitario: item.precio_unitario,
+            subtotal: item.cantidad * item.precio_unitario
+        }));
+
+        const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
+
+        if (detalleError) throw detalleError;
         
-        res.status(201).json({ 
-            id: result.insertId, 
-            mensaje: "Pedido creado" 
-        });
+        
+
+        res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
     } catch (error) {
-        console.log("Error:", error);
-        res.status(500).json({ mensaje: "Error al crear pedido" });
+        res.status(500).json({ mensaje: error.message });
     }
 });
+
+//-----------------------------------
+//-------- Mesas APIs
+//-----------------------------------
+
+app.get('/api/mesas', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('mesas').select('*').eq('activa', true);
+
+        if (error) throw error;
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
+    }
+});
+
+//-----------------------------------
+//-------- Meseros APIs
+//-----------------------------------
+
+app.get('/api/usuarios/meseros', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('usuarios').select('id, nombre').eq('rol', 'mesero');
+
+        if (error) throw error;
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
+    }
+});
+
 
 
 app.listen(puerto, () => {
