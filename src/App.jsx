@@ -1,12 +1,7 @@
-import './App.css'
+import PantallaCocina from "./components/pantallaCocina";
 
 function App() {
-
-  return (
-    <>
-      
-    </>
-  )
+  return <PantallaCocina />;
 }
 
-export default App
+export default App;
