@@ -6,13 +6,11 @@ const PedidosActivos = () => {
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
 
-  // Cargar pedidos simulados o de localStorage
   useEffect(() => {
     const guardados = localStorage.getItem("pedidos");
     if (guardados) {
       setPedidos(JSON.parse(guardados));
     } else {
-      // Datos simulados de prueba
       const pedidosEjemplo = [
         {
           id: 1,
@@ -53,7 +51,6 @@ const PedidosActivos = () => {
       <header className="pedidos-header">
         <h1 className="logo">🍽️ Pedidos Activos</h1>
         <button
-          // --- 👇 CAMBIO AQUÍ ---
           className="btn btn-volver" 
           onClick={() => navigate("/")}
         >
@@ -86,7 +83,6 @@ const PedidosActivos = () => {
                 <p>Total: ${p.total.toFixed(2)}</p>
 
                 <button
-                  // --- 👇 CAMBIO AQUÍ ---
                   className="btn btn-detalle"
                   onClick={() => irADetalle(p.id)}
                 >

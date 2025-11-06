@@ -1,37 +1,33 @@
-/* --- 1. Importar la fuente --- */
+
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
-/* --- 2. Variables Globales (Tema) --- */
 :root {
-  /* Colores */
   --color-fondo: #0a0f0a;
   --color-fondo-tarjeta: #121c12;
   --color-texto-principal: #ffffff;
   --color-texto-secundario: #bbbbbb;
-  --color-primario: #1b4d1b; /* Verde oscuro (botones) */
+  --color-primario: #1b4d1b; 
   --color-primario-hover: #2a6a2a;
-  --color-acento-verde: #39ff14; /* Verde neón (logo, borde) */
+  --color-acento-verde: #39ff14; 
   --color-acento-azul: #4caeff;
   --color-acento-naranja: #ff9800;
   --color-borde: #3a3a3a;
 
-  /* Tipografía */
   --font-principal: "Poppins", sans-serif;
 
-  /* Otros */
   --radio-borde-grande: 16px;
   --radio-borde-pequeno: 10px;
   --sombra-tarjeta: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* --- 3. Reset Básico y Estilos Base --- */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* --- 4. Estilos de la Página --- */
+
 .pedidos-page {
   background-color: var(--color-fondo);
   color: var(--color-texto-principal);
@@ -53,7 +49,6 @@
   color: var(--color-acento-verde);
 }
 
-/* --- 5. Estilos de Botones (Clase Base) --- */
 .btn {
   background-color: var(--color-primario);
   color: var(--color-texto-principal);
@@ -67,25 +62,24 @@
 
 .btn:hover {
   background-color: var(--color-primario-hover);
-  transform: scale(1.03); /* Efecto "pop" */
+  transform: scale(1.03); 
 }
 
 .btn:active {
-  transform: scale(0.98); /* Efecto al presionar */
+  transform: scale(0.98); 
 }
 
-/* Modificadores de botones específicos */
+
 .btn-volver {
   padding: 10px 18px;
 }
 
 .btn-detalle {
   padding: 8px 14px;
-  border-radius: 8px; /* Radio más pequeño para este botón */
+  border-radius: 8px; 
   margin-top: 12px;
 }
 
-/* --- 6. Grid de Pedidos --- */
 .pedidos-container {
   display: flex;
   justify-content: center;
@@ -109,8 +103,8 @@
 }
 
 .pedido-card:hover {
-  transform: translateY(-5px); /* Elevar la tarjeta */
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  transform: translateY(-5px); 
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); 
 }
 
 .pedido-card h2 {
@@ -120,10 +114,10 @@
 
 .pedido-card p {
   margin: 4px 0;
-  color: var(--color-texto-secundario); /* Color de texto más suave */
+  color: var(--color-texto-secundario);
 }
 
-/* Modificadores de color de borde */
+
 .pedido-card.verde {
   border-color: var(--color-acento-verde);
 }
@@ -134,7 +128,7 @@
   border-color: var(--color-acento-naranja);
 }
 
-/* --- 7. Mensaje de "Sin Pedidos" --- */
+
 .sin-pedidos {
   color: var(--color-texto-secundario);
   text-align: center;

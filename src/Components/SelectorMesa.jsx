@@ -14,7 +14,6 @@ const SelectorMesa = () => {
     return nuevoUsuario;
   });
 
-  // Estado de mesas
   const [mesas, setMesas] = useState(() => {
     const guardadas = localStorage.getItem("mesas");
     return guardadas
@@ -30,7 +29,6 @@ const SelectorMesa = () => {
     localStorage.setItem("mesas", JSON.stringify(mesas));
   }, [mesas]);
 
-  // Funciones (sin cambios)
   const tomarMesa = (id) => {
     setMesas((prev) =>
       prev.map((m) =>
@@ -52,18 +50,20 @@ const SelectorMesa = () => {
     navigate(`/alimentos/${id}`);
   };
 
-  // Renderizado
   return (
     <div className="selector-page">
-      {/* Barra superior (sin cambios) */}
       <header className="selector-header">
         <h1 className="logo">🍴 Restaurante</h1>
+        <div className="Navbar">
+          <span className="NavMenu" onClick={() => navigate("/pantallaCocina")} style={{ cursor: "pointer" }}>
+            Cocina
+          </span>
+          <span className="NavMenu" onClick={() => navigate("/CRUDPlatillos")} style={{ cursor: "pointer" }}>
+            CRUD menu
+          </span>
+        </div>
         <div className="header-right">
-          <span
-            className="pedidos"
-            onClick={() => navigate("/pedidos")}
-            style={{ cursor: "pointer" }}
-          >
+          <span className="pedidos" onClick={() => navigate("/pedidos")} style={{ cursor: "pointer" }}>
             Pedidos Activos
           </span>
           <div className="usuario">
@@ -73,7 +73,6 @@ const SelectorMesa = () => {
         </div>
       </header>
 
-      {/* Contenedor de mesas */}
       <div className="selector-mesa-container">
         <h2 className="selector-titulo">Selección de Mesa</h2>
         <div className="mesas-grid">
@@ -88,16 +87,13 @@ const SelectorMesa = () => {
             return (
               <div key={mesa.id} className="mesa-card">
                 
-                {/* --- NUEVO: Contenedor con imagen .webp --- */}
                 <div className="mesa-imagen-container">
                   <img
-                    // Esta ruta apunta a 'public/images/mesa-icon.webp'
                     src="./public/images/mesa-icon.webp"
                     alt="Icono de mesa"
                     className="mesa-imagen"
                   />
                 </div>
-                {/* --- FIN DEL CONTENEDOR DE IMAGEN --- */}
 
                 <div className="mesa-info">
                   <p className="mesa-nombre">Mesa {mesa.id}</p>
@@ -113,7 +109,6 @@ const SelectorMesa = () => {
                 </div>
 
                 <div className="mesa-botones">
-                  {/* Botones (sin cambios) */}
                   {mesa.estado === "disponible" && (
                     <button
                       className="btn verde"

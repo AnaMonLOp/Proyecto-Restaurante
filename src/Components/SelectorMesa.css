@@ -33,7 +33,6 @@
   font-family: "Inter", sans-serif;
 }
 
-/* --- 3. Barra Superior --- */
 .selector-header {
   display: flex;
   justify-content: space-between;
@@ -59,6 +58,16 @@
   font-size: 1rem;
   color: var(--color-texto);
   cursor: pointer;
+}
+
+.Navbar{
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.NavMenu{
+  color: #ffffff;
 }
 
 .usuario {

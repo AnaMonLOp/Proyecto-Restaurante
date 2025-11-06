@@ -1,17 +1,16 @@
-/* --- Estilos Globales --- */
 :root {
   --color-fondo: #0a0f0a;
   --color-fondo-secundario: #1a1f1a;
   --color-fondo-terciario: #2a2f2a;
   --color-texto: #ffffff;
-  --color-texto-secundario: #d1d5db; /* gray-300 */
-  --color-texto-terciario: #9ca3af; /* gray-400 */
-  --color-primario: #16a34a; /* green-600 */
-  --color-primario-hover: #15803d; /* green-700 */
-  --color-destaque: #4ade80; /* green-400 */
-  --color-gris: #374151; /* gray-700 */
-  --color-gris-hover: #4b5563; /* gray-600 */
-  --color-rojo: #f87171; /* red-400 */
+  --color-texto-secundario: #d1d5db; 
+  --color-texto-terciario: #9ca3af; 
+  --color-primario: #16a34a; 
+  --color-primario-hover: #15803d; 
+  --color-destaque: #4ade80;
+  --color-gris: #374151; 
+  --color-gris-hover: #4b5563; 
+  --color-rojo: #f87171; 
   --color-borde: #4b5563;
 }
 
@@ -30,7 +29,6 @@ body {
   box-sizing: border-box;
 }
 
-/* --- Modal de Confirmación --- */
 .confirmacion-modal {
   position: fixed;
   top: 50%;
@@ -44,13 +42,12 @@ body {
 }
 
 .confirmacion-modal h2 {
-  font-size: 1.875rem; /* 30px */
+  font-size: 1.875rem; 
   font-weight: 700;
   text-align: center;
   margin: 0;
 }
 
-/* --- Cabecera --- */
 .alimentos-header {
   display: flex;
   justify-content: space-between;
@@ -59,7 +56,7 @@ body {
 }
 
 .alimentos-header h1 {
-  font-size: 2.25rem; /* 36px */
+  font-size: 2.25rem; 
   font-weight: 700;
 }
 
@@ -78,20 +75,18 @@ body {
   background-color: var(--color-gris-hover);
 }
 
-/* --- Contenedor Principal (2 columnas) --- */
 .menu-pedido-container {
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-/* --- Columna Izquierda: Menú --- */
 .menu-columna {
   width: 100%;
 }
 
 .columna-titulo {
-  font-size: 1.875rem; /* 30px */
+  font-size: 1.875rem; 
   font-weight: 600;
   margin-top: 0;
   margin-bottom: 16px;
@@ -238,7 +233,7 @@ body {
 .input-comentarios {
   margin-top: 8px;
   width: 100%;
-  box-sizing: border-box; /* Importante para que el padding no lo haga más ancho */
+  box-sizing: border-box;
   background-color: #3a3f3a;
   border: 1px solid var(--color-borde);
   border-radius: 4px;
@@ -259,7 +254,7 @@ body {
 }
 
 .total-precio {
-  font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem; 
   font-weight: 700;
   display: flex;
   justify-content: space-between;
@@ -289,21 +284,3 @@ body {
   cursor: not-allowed;
 }
 
-/* --- Responsividad --- */
-@media (min-width: 768px) {
-  .menu-pedido-container {
-    flex-direction: row;
-  }
-
-  .menu-columna {
-    width: 66.66%;
-  }
-
-  .pedido-columna {
-    width: 33.33%;
-  }
-
-  .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
