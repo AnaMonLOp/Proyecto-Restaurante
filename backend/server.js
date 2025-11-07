@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import { createServer } from 'http';      
+import { Server } from 'socket.io';       
 import supabase from './config/dataBase.js';
 
 const app = express();
@@ -7,6 +9,35 @@ const puerto = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Creamos el servidor HTTP y lo conectamos con express
+const httpServer = createServer(app);
+
+// Configuración socket.io sobre el servidor HTTP
+const io= new Server(httpServer, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    },
+});
+
+// Socket.io base (Parte en tiempo real)
+io.on('connection', (socket) => {
+    console.log(`Usuario conectado: ${socket.id}`);
+
+    // Evento de ejemplo, por lo mientras
+    socket.on('mensaje', (data) => {
+    console.log('Mensaje recibido:', data);
+    // Reenviamos a todos los clientes conectados
+    io.emit('mensaje', data);
+    });
+
+    // Cuando un cliente se desconecta
+    socket.on('disconnect', () => {
+        console.log(`Usuario desconectado: ${socket.id}`);
+    });
+});
+
 
 //-----------------------------------
 //-------- Platillos APIs
@@ -192,6 +223,6 @@ app.get('/api/usuarios/meseros', async (req, res) => {
 
 
 
-app.listen(puerto, () => {
-    console.log(`Servidor corriendo en puerto ${puerto}`); 
+httpServer.listen(puerto, () => {
+  console.log(`Servidor corriendo en puerto ${puerto}`);
 });
