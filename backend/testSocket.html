@@ -1,0 +1,15 @@
+<!-- Es solamente un ejemplo de que funciona correctamente! -->
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  const socket = io("http://localhost:3001");
+
+  socket.on("connect", () => {
+    console.log("🟢 Conectado al servidor:", socket.id);
+    socket.emit("mensaje", "Hola desde el cliente!");
+  });
+
+  socket.on("mensaje", (data) => {
+    console.log("📩 Mensaje recibido del servidor:", data);
+  });
+</script>
