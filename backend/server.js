@@ -179,9 +179,9 @@ app.post('/api/pedidos', async (req, res) => {
 
         const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
 
+        req.io.emit('nuevo_pedido', pedidoData[0]);
+
         if (detalleError) throw detalleError;
-        
-        
 
         res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
     } catch (error) {
