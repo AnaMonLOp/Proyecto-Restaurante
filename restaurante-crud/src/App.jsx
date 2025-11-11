@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "./api/axios.js"; // ✅ cambiamos esto
 import "./App.css";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 
   // 🔹 Cargar los platillos desde el backend al iniciar
   useEffect(() => {
-    axios.get("http://localhost:3000/platillos")
+    api.get("/platillos")
       .then(res => setPlatillos(res.data))
       .catch(err => console.error("Error al cargar platillos:", err));
   }, []);
@@ -25,21 +25,21 @@ function App() {
 
     if (editIndex === null) {
       // Agregar nuevo platillo
-      axios.post("http://localhost:3000/platillos", platillo)
+      api.post("/platillos", platillo)
         .then(() => {
           setPlatillo({ nombre: "", precio: "", categoria: "" });
-          return axios.get("http://localhost:3000/platillos");
+          return api.get("/platillos");
         })
         .then(res => setPlatillos(res.data))
         .catch(err => console.error("Error al agregar platillo:", err));
     } else {
       // Actualizar platillo existente
       const id = platillos[editIndex].id;
-      axios.put(`http://localhost:3000/platillos/${id}`, platillo)
+      api.put(`/platillos/${id}`, platillo)
         .then(() => {
           setEditIndex(null);
           setPlatillo({ nombre: "", precio: "", categoria: "" });
-          return axios.get("http://localhost:3000/platillos");
+          return api.get("/platillos");
         })
         .then(res => setPlatillos(res.data))
         .catch(err => console.error("Error al actualizar platillo:", err));
@@ -55,8 +55,8 @@ function App() {
   // 🔹 Eliminar platillo
   const handleDelete = (index) => {
     const id = platillos[index].id;
-    axios.delete(`http://localhost:3000/platillos/${id}`)
-      .then(() => axios.get("http://localhost:3000/platillos"))
+    api.delete(`/platillos/${id}`)
+      .then(() => api.get("/platillos"))
       .then(res => setPlatillos(res.data))
       .catch(err => console.error("Error al eliminar platillo:", err));
   };
