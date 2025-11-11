@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./PaginaAlimentos.css"; // <- Importamos el CSS
 import api from "../api/axios.js"
 
-
 const PaginaAlimentos = () => {
   const { id } = useParams(); // ID de la mesa
   const navigate = useNavigate();
@@ -80,30 +79,34 @@ const PaginaAlimentos = () => {
   };
 
   // --- FUNCIÓN PARA ENVIAR EL PEDIDO ---
-
   const handleEnviarPedido = async () => {
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const meseroId = "2fa2c8bb-7386-49cf-bdfc-7833443a97ff"; // UUID de prueba
+
+      const platillos = Object.values(pedidoActual).map((item) => ({
+        platillo_id: item.id,
+        cantidad: item.cantidad,
+        precio_unitario: Number(item.precio),
+        notas_item: item.comentarios?.trim() !== "" ? item.comentarios : null
+      }));
+
     const nuevoPedido = {
-      mesa: parseInt(id),
-      mesero: usuario?.nombre || "Desconocido",
-      estado: "En preparación",
-      hora: new Date().toLocaleTimeString("es-MX", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      total: calcularTotal(),
-      items: Object.values(pedidoActual),
+      mesa_id: 14,
+      mesero_id: meseroId,
+      platillos,
     };
 
     try {
-      await api.post("/pedidos", nuevoPedido);
+      const res = await api.post("/pedidos", nuevoPedido);
+      console.log("Pedido enviado:", res.data);
       setConfirmacion(true);
       setPedidoActual({});
-      setTimeout(() => { 
-        navigate("/");
-      }, 2000);
+      setTimeout(() => navigate("/"), 2000);
     } catch (error){
       console.error("Error al enviar el pedido:", error);
+      if(error.response){
+        console.error("Status:", error.response.status);
+        console.error("Data:", error.response.data);
+      }
     }
   };
   const itemsEnPedido = Object.values(pedidoActual);
@@ -137,7 +140,7 @@ const PaginaAlimentos = () => {
                 <div>
                   <h3>{platillo.nombre}</h3>
                   <p className="descripcion">{platillo.descripcion}</p>
-                  <p className="precio">${platillo.precio.toFixed(2)}</p>
+                  <p className="precio">${Number(platillo.precio).toFixed(2)}</p>
                 </div>
                 <button
                   onClick={() => agregarAlPedido(platillo)}
@@ -169,7 +172,7 @@ const PaginaAlimentos = () => {
                       Eliminar
                     </button>
                   </div>
-                  <p className="item-precio">${item.precio.toFixed(2)} c/u</p>
+                  <p className="item-precio">${Number(item.precio).toFixed(2)} c/u</p>
                   
                   <div className="cantidad-controles">
                     <label>Cant:</label>

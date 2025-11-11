@@ -1,7 +1,5 @@
 import express from 'express';
-import cors from 'cors';
-import { createServer } from 'http';      
-import { Server } from 'socket.io';       
+import cors from 'cors';    
 import supabase from './config/dataBase.js';
 
 const app = express();
@@ -9,41 +7,6 @@ const puerto = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-
-// Creamos el servidor HTTP y lo conectamos con express
-const httpServer = createServer(app);
-
-// Configuración socket.io sobre el servidor HTTP
-const io= new Server(httpServer, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    },
-});
-
-// Inyectar io en cada request
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
-// Socket.io base (Parte en tiempo real)
-io.on('connection', (socket) => {
-    console.log(`Usuario conectado: ${socket.id}`);
-
-    // Evento de ejemplo, por lo mientras
-    socket.on('mensaje', (data) => {
-    console.log('Mensaje recibido:', data);
-    // Reenviamos a todos los clientes conectados
-    io.emit('mensaje', data);
-    });
-
-    // Cuando un cliente se desconecta
-    socket.on('disconnect', () => {
-        console.log(`Usuario desconectado: ${socket.id}`);
-    });
-});
-
 
 //-----------------------------------
 //-------- Platillos APIs
@@ -182,36 +145,21 @@ app.post('/api/pedidos', async (req, res) => {
             pedido_id: nuevoPedidoId,
             item_menu_id: item.platillo_id,
             cantidad: item.cantidad,
-            precio_unitario: item.precio_unitario,
-            subtotal: item.cantidad * item.precio_unitario,
+            precio_unitario: item.precio_unitario || 0,
+            subtotal: (item.cantidad || 0) * (item.precio_unitario || 0),
+            notas_item: item.notas_item || null,
         }));
 
         const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
 
         if (detalleError) throw detalleError;
-
-        if(req.io){
-            req.io.emit('nuevo_pedido', pedidoData);
-        }
         res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
     } catch (error) {
         res.status(500).json({ mensaje: error.message });
     }
 });
 
-// eliminar pedidos vacíos (temporal)
-app.delete('/api/pedidos/limpiar', async (req, res) => {
-  try {
-    const { error } = await supabase
-      .from('pedidos')
-      .delete()
-      .eq('total', 0); // borra solo los que tienen total 0
 
-    if (error) throw error;
-    res.json({ mensaje: 'Pedidos vacíos eliminados correctamente ✅' });
-  } catch (error) {
-    res.status(500).json({ mensaje: error.message});}
-});
 
 //-----------------------------------
 //-------- Mesas APIs
@@ -246,7 +194,6 @@ app.get('/api/usuarios/meseros', async (req, res) => {
 });
 
 
-
-httpServer.listen(puerto, () => {
+app.listen(puerto, () => {
   console.log(`Servidor corriendo en puerto ${puerto}`);
 });
