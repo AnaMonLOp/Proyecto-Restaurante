@@ -7,18 +7,12 @@ function App() {
   const [platillos, setPlatillos] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
 
+  // 🔹 Cargar los platillos desde el backend al iniciar
   useEffect(() => {
-  api.get("/platillos")
-    .then(res => {
-      const data = res.data;
-      setPlatillos(Array.isArray(data) ? data : data.platillos || []);
-    })
-    .catch(err => {
-      console.error("Error al cargar platillos:", err);
-      setPlatillos([]); // Previene el error del map
-    });
-}, []);
-
+    api.get("/platillos")
+      .then(res => setPlatillos(res.data))
+      .catch(err => console.error("Error al cargar platillos:", err));
+  }, []);
 
   // 🔹 Actualizar valores del formulario
   const handleChange = (e) => {
