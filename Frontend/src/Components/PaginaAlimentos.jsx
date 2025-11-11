@@ -1,46 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./PaginaAlimentos.css"; // <- Importamos el CSS
+import api from "../api/axios.js"
 
-// --- DATOS DE EJEMPLO DEL MENÚ ---
-const menuData = [
-  {
-    id: 1,
-    nombre: "Tacos al Pastor",
-    precio: 18.0,
-    descripcion: "Tacos de cerdo marinado con piña, cilantro y cebolla.",
-    categoria: "Tacos",
-  },
-  {
-    id: 2,
-    nombre: "Guacamole",
-    precio: 85.0,
-    descripcion: "Aguacate fresco machacado con cebolla, cilantro, tomate y chile.",
-    categoria: "Entradas",
-  },
-  {
-    id: 3,
-    nombre: "Sopa de Tortilla",
-    precio: 75.0,
-    descripcion: "Caldo de jitomate con tiras de tortilla frita, aguacate, crema y queso.",
-    categoria: "Sopas",
-  },
-  {
-    id: 4,
-    nombre: "Agua de Horchata",
-    precio: 30.0,
-    descripcion: "Bebida refrescante de arroz, canela y vainilla.",
-    categoria: "Bebidas",
-  },
-];
-// ---------------------------------
 
 const PaginaAlimentos = () => {
   const { id } = useParams(); // ID de la mesa
   const navigate = useNavigate();
 
+  const [menuData, setMenuData] = useState([]);
   const [pedidoActual, setPedidoActual] = useState({});
   const [confirmacion, setConfirmacion] = useState(false);
+
+  // Cargar platillos desde backend
+  useEffect(() => {
+    const fetchPlatillos = async () => {
+      try {
+        const response = await api.get("/platillos");
+        setMenuData(response.data);
+      } catch (error) {
+        console.error("Error al obtener platillos:", error);
+      }
+    };
+    fetchPlatillos();
+  }, []);
+
 
   // --- FUNCIONES DEL PEDIDO ---
 
@@ -97,10 +81,9 @@ const PaginaAlimentos = () => {
 
   // --- FUNCIÓN PARA ENVIAR EL PEDIDO ---
 
-  const handleEnviarPedido = () => {
+  const handleEnviarPedido = async () => {
     const usuario = JSON.parse(localStorage.getItem("usuario"));
     const nuevoPedido = {
-      id: Date.now(),
       mesa: parseInt(id),
       mesero: usuario?.nombre || "Desconocido",
       estado: "En preparación",
@@ -112,20 +95,17 @@ const PaginaAlimentos = () => {
       items: Object.values(pedidoActual),
     };
 
-    const pedidosGuardados = JSON.parse(localStorage.getItem("pedidos") || "[]");
-    localStorage.setItem(
-      "pedidos",
-      JSON.stringify([...pedidosGuardados, nuevoPedido])
-    );
-
-    setConfirmacion(true);
-    setPedidoActual({});
-
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    try {
+      await api.post("/pedidos", nuevoPedido);
+      setConfirmacion(true);
+      setPedidoActual({});
+      setTimeout(() => { 
+        navigate("/");
+      }, 2000);
+    } catch (error){
+      console.error("Error al enviar el pedido:", error);
+    }
   };
-
   const itemsEnPedido = Object.values(pedidoActual);
 
   return (

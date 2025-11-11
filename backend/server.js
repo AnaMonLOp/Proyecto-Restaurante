@@ -21,6 +21,12 @@ const io= new Server(httpServer, {
     },
 });
 
+// Inyectar io en cada request
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
 // Socket.io base (Parte en tiempo real)
 io.on('connection', (socket) => {
     console.log(`Usuario conectado: ${socket.id}`);
@@ -163,30 +169,48 @@ app.post('/api/pedidos', async (req, res) => {
     }
 
     try {
-        const { data: pedidoData, error: pedidoError } = await supabase.from('pedidos').insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: 'pendiente' }])
-        .select().single();
+        const { data: pedidoData, error: pedidoError } = await supabase
+            .from('pedidos')
+            .insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: 'pendiente' }])
+            .select()
+            .single();
 
         if (pedidoError) throw pedidoError;
         const nuevoPedidoId = pedidoData.id;
 
         const itemsParaInsertar = platillos.map(item => ({
             pedido_id: nuevoPedidoId,
-            item_menu_id: item.item_menu_id,
+            item_menu_id: item.platillo_id,
             cantidad: item.cantidad,
             precio_unitario: item.precio_unitario,
-            subtotal: item.cantidad * item.precio_unitario
+            subtotal: item.cantidad * item.precio_unitario,
         }));
 
         const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
 
-        req.io.emit('nuevo_pedido', pedidoData[0]);
-
         if (detalleError) throw detalleError;
 
+        if(req.io){
+            req.io.emit('nuevo_pedido', pedidoData);
+        }
         res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
     } catch (error) {
         res.status(500).json({ mensaje: error.message });
     }
+});
+
+// eliminar pedidos vacíos (temporal)
+app.delete('/api/pedidos/limpiar', async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('pedidos')
+      .delete()
+      .eq('total', 0); // borra solo los que tienen total 0
+
+    if (error) throw error;
+    res.json({ mensaje: 'Pedidos vacíos eliminados correctamente ✅' });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message});}
 });
 
 //-----------------------------------
