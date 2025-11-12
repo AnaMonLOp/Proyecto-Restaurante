@@ -191,34 +191,6 @@ app.get('/api/usuarios/meseros', async (req, res) => {
     }
 });
 
-// Borra un pedido específico por ID
-app.delete('/api/admin/pedidos/:id', async (req, res) => {
-    const pedidoId = req.params.id;
-    
-    try {
-        // Borrar detalles primero
-        const { error: detError } = await supabase
-        .from('detalle_pedido')
-        .delete()
-        .eq('pedido_id', pedidoId);
-        
-        if (detError) throw detError;
-        
-        // Borrar pedido
-        const { error: pedError } = await supabase
-        .from('pedidos')
-        .delete()
-        .eq('id', pedidoId);
-        
-        if (pedError) throw pedError;
-        
-        res.status(200).json({ mensaje: `Pedido ${pedidoId} eliminado` });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
-});
-
-
 const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en puerto ${puerto}`);
