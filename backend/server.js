@@ -1,10 +1,8 @@
 import express from 'express';
-import cors from 'cors';    
+import cors from 'cors';
 import supabase from './config/dataBase.js';
 
 const app = express();
-const puerto = process.env.PORT || 3001;
-
 app.use(cors());
 app.use(express.json());
 
@@ -139,10 +137,9 @@ app.post('/api/pedidos', async (req, res) => {
             .single();
 
         if (pedidoError) throw pedidoError;
-        const nuevoPedidoId = pedidoData.id;
 
         const itemsParaInsertar = platillos.map(item => ({
-            pedido_id: nuevoPedidoId,
+            pedido_id: pedidoData.id,
             item_menu_id: item.platillo_id,
             cantidad: item.cantidad,
             precio_unitario: item.precio_unitario || 0,
@@ -153,6 +150,7 @@ app.post('/api/pedidos', async (req, res) => {
         const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
 
         if (detalleError) throw detalleError;
+
         res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
     } catch (error) {
         res.status(500).json({ mensaje: error.message });
@@ -194,6 +192,7 @@ app.get('/api/usuarios/meseros', async (req, res) => {
 });
 
 
+const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
-  console.log(`Servidor corriendo en puerto ${puerto}`);
+    console.log(`Servidor corriendo en puerto ${puerto}`);
 });
