@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import io from "socket.io-client";
+import api from "../api/axios.js"; // Igual que los demás
 import "./PantallaCocina.css";
-
-
-const socket = io("http://localhost:3001"); // conexión al backend
 
 const PantallaCocina = () => {
   const [pedidos, setPedidos] = useState([]);
@@ -13,7 +9,7 @@ const PantallaCocina = () => {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/pedidos");
+        const response = await api.get("/pedidos");
         setPedidos(response.data);
       } catch (error) {
         console.error("Error al obtener pedidos:", error);
@@ -22,28 +18,20 @@ const PantallaCocina = () => {
 
     fetchPedidos();
 
-    // Escuchar nuevos pedidos en tiempo real
-    socket.on("nuevo_pedido", (pedido) => {
-      setPedidos((prev) => [...prev, pedido]);
-    });
-
-    return () => {
-      socket.off("nuevo_pedido");
-    };
+    // Puedes actualizar cada 10 segundos para simular “tiempo real”
+    const interval = setInterval(fetchPedidos, 10000);
+    return () => clearInterval(interval);
   }, []);
 
+  // Cambiar estado del pedido
   const cambiarEstado = async (id, nuevoEstado) => {
     try {
-      await axios.put(`http://localhost:3001/api/pedidos/${id}`, {
-        estado: nuevoEstado,
-      });
+      await api.put(`/pedidos/${id}`, { estado: nuevoEstado });
       setPedidos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, estado: nuevoEstado } : p
-        )
+        prev.map((p) => (p.id === id ? { ...p, estado: nuevoEstado } : p))
       );
     } catch (error) {
-      console.error("Error al cambiar el estado:", error);
+      console.error("Error al cambiar estado:", error);
     }
   };
 
@@ -75,7 +63,7 @@ const PantallaCocina = () => {
             <path d="M3 14v1a6 6 0 1 0 12 0v-9a3 3 0 0 1 6 0" />
             <path d="M9 16c-.7 0-1.3 0-1.9-.1l-.5-.1c-2.1-.3-3.6-1-3.6-1.8s1.5-1.5 3.6-1.8l.5-.1c.6-.1 1.2-.1 1.9-.1s1.3 0 1.9.1l.5.1c2.1.3 3.6 1 3.6 1.8s-1.5 1.5-3.6 1.8l-.5.1c-.6.1-1.2.1-1.9.1z" />
           </svg>
-          <h1>Órdenes de Cocina Pendientes</h1>
+          <h1>Órdenes de Cocina</h1>
         </div>
         <nav>
           <button className="btn-menu activo">Todos</button>
@@ -94,16 +82,18 @@ const PantallaCocina = () => {
               {pedidos
                 .filter((p) => p.estado === estado.id)
                 .map((pedido) => (
-                  <div
-                    key={pedido.id}
-                    className={`pedido-card ${estado.color}`}
-                  >
+                  <div key={pedido.id} className={`pedido-card ${estado.color}`}>
                     <div className={`pedido-header ${estado.color}`}>
                       <div>
                         <h3>Orden #{pedido.id}</h3>
                         <p>Mesa {pedido.mesa_id || "-"}</p>
                       </div>
-                      <p>{new Date(pedido.fecha_pedido).toLocaleTimeString()}</p>
+                      <p>
+                        {new Date(pedido.fecha_pedido).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </div>
 
                     <div className="pedido-body">
@@ -149,7 +139,6 @@ const PantallaCocina = () => {
           ))}
         </div>
 
-        {/* Cancelados */}
         <div className="cancelados">
           <h2 className="titulo-estado rojo">Cancelados</h2>
           <div className="cancelados-grid">
