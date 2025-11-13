@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
 import api from "./api/axios.js"; // ✅ cambiamos esto
 import "./App.css";
+import Cuentas from "./components/Cuenta.jsx";
+
 
 function App() {
   const [platillo, setPlatillo] = useState({ nombre: "", precio: "", categoria: "" });
   const [platillos, setPlatillos] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const [pagina, setPagina] = useState("platillos");
+
+
+  
+
 
   // 🔹 Cargar los platillos desde el backend al iniciar
   useEffect(() => {
@@ -62,61 +69,73 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <h1>🍽️ Gestión de Platillos</h1>
-
-      <div className="form-container">
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre del platillo"
-          value={platillo.nombre}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="precio"
-          placeholder="Precio"
-          value={platillo.precio}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="categoria"
-          placeholder="Categoría"
-          value={platillo.categoria}
-          onChange={handleChange}
-        />
-        <button onClick={handleSubmit}>
-          {editIndex === null ? "Agregar Platillo" : "Guardar Cambios"}
-        </button>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Precio ($)</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {platillos.map((p, index) => (
-            <tr key={p.id}>
-              <td>{p.nombre}</td>
-              <td>{p.precio}</td>
-              <td>{p.categoria}</td>
-              <td>
-                <button className="edit" onClick={() => handleEdit(index)}>Editar</button>
-                <button className="delete" onClick={() => handleDelete(index)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <div className="app-container">
+    <div className="nav">
+      <button onClick={() => setPagina("platillos")}>🍽️ Platillos</button>
+      <button onClick={() => setPagina("cuentas")}>💳 Cuentas</button>
     </div>
-  );
+
+    {pagina === "platillos" ? (
+      <>
+        <h1>🍽️ Gestión de Platillos</h1>
+
+        <div className="form-container">
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre del platillo"
+            value={platillo.nombre}
+            onChange={handleChange}
+          />
+          <input
+            type="number"
+            name="precio"
+            placeholder="Precio"
+            value={platillo.precio}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="categoria"
+            placeholder="Categoría"
+            value={platillo.categoria}
+            onChange={handleChange}
+          />
+          <button onClick={handleSubmit}>
+            {editIndex === null ? "Agregar Platillo" : "Guardar Cambios"}
+          </button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Precio ($)</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {platillos.map((p, index) => (
+              <tr key={p.id}>
+                <td>{p.nombre}</td>
+                <td>{p.precio}</td>
+                <td>{p.categoria}</td>
+                <td>
+                  <button className="edit" onClick={() => handleEdit(index)}>Editar</button>
+                  <button className="delete" onClick={() => handleDelete(index)}>Eliminar</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    ) : (
+      <Cuentas />
+    )}
+  </div>
+);
+
 }
 
 export default App;
