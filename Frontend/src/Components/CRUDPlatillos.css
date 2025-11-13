@@ -38,6 +38,15 @@ input {
   width: 25%;
 }
 
+select {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #2b2b2b;
+  color: white;
+  width: 25%;
+}
+
 button {
   background-color: #00d4ff;
   color: #121212;

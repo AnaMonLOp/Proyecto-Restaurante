@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SelectorMesa.css";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios.js";
 
 const SelectorMesa = () => {
   const navigate = useNavigate();
@@ -14,36 +15,45 @@ const SelectorMesa = () => {
     return nuevoUsuario;
   });
 
-  const [mesas, setMesas] = useState(() => {
-    const guardadas = localStorage.getItem("mesas");
-    return guardadas
-      ? JSON.parse(guardadas)
-      : Array.from({ length: 8 }, (_, i) => ({
-          id: i + 1,
-          estado: "disponible",
-          mesero: null,
-        }));
+  const [mesas, setMesas] = useState([]);
+  const [ocupacion, setOcupacion] = useState(() => {
+    const guardado = localStorage.getItem("ocupacionMesas");
+    return guardado ? JSON.parse(guardado) : {};
   });
 
+  // Cargar mesas activas desde backend
   useEffect(() => {
-    localStorage.setItem("mesas", JSON.stringify(mesas));
-  }, [mesas]);
+    const cargarMesas = async () => {
+      try {
+        const res = await api.get("/mesas");
+        // Ordenamos por id para tener orden estable
+        const lista = (res.data || []).slice().sort((a, b) => a.id - b.id);
+        setMesas(lista);
+      } catch (err) {
+        console.error("Error al cargar mesas:", err);
+      }
+    };
+    cargarMesas();
+  }, []);
+
+  
+  useEffect(() => {
+    localStorage.setItem("ocupacionMesas", JSON.stringify(ocupacion));
+  }, [ocupacion]);
 
   const tomarMesa = (id) => {
-    setMesas((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, estado: "ocupada", mesero: usuario.nombre } : m
-      )
-    );
+    setOcupacion((prev) => ({
+      ...prev,
+      [id]: { estado: "ocupada", mesero: usuario.nombre },
+    }));
     navigate(`/alimentos/${id}`);
   };
 
   const liberarMesa = (id) => {
-    setMesas((prev) =>
-      prev.map((m) =>
-        m.id === id ? { ...m, estado: "disponible", mesero: null } : m
-      )
-    );
+    setOcupacion((prev) => ({
+      ...prev,
+      [id]: { estado: "disponible", mesero: null },
+    }));
   };
 
   const irAlMenu = (id) => {
@@ -76,11 +86,13 @@ const SelectorMesa = () => {
       <div className="selector-mesa-container">
         <h2 className="selector-titulo">Selección de Mesa</h2>
         <div className="mesas-grid">
-          {mesas.map((mesa) => {
+          {mesas.map((mesa, idx) => {
+            const estadoMesa = ocupacion[mesa.id]?.estado || "disponible";
+            const meseroMesa = ocupacion[mesa.id]?.mesero || null;
             const estadoClase =
-              mesa.estado === "disponible"
+              estadoMesa === "disponible"
                 ? "verde"
-                : mesa.mesero === usuario.nombre
+                : meseroMesa === usuario.nombre
                 ? "azul"
                 : "naranja";
 
@@ -96,20 +108,20 @@ const SelectorMesa = () => {
                 </div>
 
                 <div className="mesa-info">
-                  <p className="mesa-nombre">Mesa {mesa.id}</p>
+                  <p className="mesa-nombre">Mesa {idx + 1}</p>
                   <p className={`estado ${estadoClase}`}>
-                    {mesa.estado === "disponible"
+                    {estadoMesa === "disponible"
                       ? "Disponible"
-                      : mesa.mesero === usuario.nombre
+                      : meseroMesa === usuario.nombre
                       ? "Asignada a mí"
-                      : mesa.mesero
-                      ? `Atendida por ${mesa.mesero}`
+                      : meseroMesa
+                      ? `Atendida por ${meseroMesa}`
                       : "Sin mesero"}
                   </p>
                 </div>
 
                 <div className="mesa-botones">
-                  {mesa.estado === "disponible" && (
+                  {estadoMesa === "disponible" && (
                     <button
                       className="btn verde"
                       onClick={() => tomarMesa(mesa.id)}
@@ -117,8 +129,8 @@ const SelectorMesa = () => {
                       Tomar mesa
                     </button>
                   )}
-                  {mesa.estado === "ocupada" &&
-                    mesa.mesero === usuario.nombre && (
+                  {estadoMesa === "ocupada" &&
+                    meseroMesa === usuario.nombre && (
                       <>
                         <button
                           className="btn azul"

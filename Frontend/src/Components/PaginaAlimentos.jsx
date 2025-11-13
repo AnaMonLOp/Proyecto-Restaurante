@@ -89,7 +89,7 @@ const PaginaAlimentos = () => {
       }));
 
     const nuevoPedido = {
-      mesa_id: 14,
+      mesa_id: Number(id),
       mesero_id: meseroId,
       platillos,
     };
