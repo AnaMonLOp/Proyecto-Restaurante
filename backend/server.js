@@ -157,6 +157,65 @@ app.post('/api/pedidos', async (req, res) => {
     }
 });
 
+app.put('/api/pedidos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  try {
+    const { data: pedidoActual, error: errorPedido } = await supabase
+      .from('pedidos')
+      .select('estado')
+      .eq('id', id)
+      .single();
+
+    if (errorPedido) throw errorPedido;
+    if (!pedidoActual) {
+      return res.status(404).json({ mensaje: 'Pedido no encontrado' });
+    }
+
+    const estadoActual = pedidoActual.estado;
+    const transicionesValidas = {
+      pendiente: ['en_preparacion', 'cancelado'],
+      en_preparacion: ['listo', 'cancelado'],
+      listo: ['entregado', 'cancelado'],
+      entregado: [],
+      cancelado: [],
+    };
+
+    if (!transicionesValidas[estadoActual].includes(estado)) {
+      return res
+        .status(400)
+        .json({ mensaje: `Transición no válida de '${estadoActual}' a '${estado}'` });
+    }
+
+    const camposActualizar = {
+      estado,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (estado === 'listo') {
+      camposActualizar.fecha_listo = new Date().toISOString();
+    } else if (estado === 'entregado') {
+      camposActualizar.fecha_entregado = new Date().toISOString();
+    }
+
+    const { data: pedidoActualizado, error: errorUpdate } = await supabase
+      .from('pedidos')
+      .update(camposActualizar)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (errorUpdate) throw errorUpdate;
+
+    res.status(200).json({
+      mensaje: 'Estado actualizado correctamente',
+      pedido: pedidoActualizado,
+    });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 
 //-----------------------------------
