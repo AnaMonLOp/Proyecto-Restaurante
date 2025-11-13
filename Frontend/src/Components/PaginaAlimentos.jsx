@@ -25,7 +25,6 @@ const PaginaAlimentos = () => {
   }, []);
 
 
-  // --- FUNCIONES DEL PEDIDO ---
 
   const agregarAlPedido = (platillo) => {
     setPedidoActual((prev) => {
@@ -78,9 +77,9 @@ const PaginaAlimentos = () => {
     );
   };
 
-  // --- FUNCIÓN PARA ENVIAR EL PEDIDO ---
+
   const handleEnviarPedido = async () => {
-    const meseroId = "2fa2c8bb-7386-49cf-bdfc-7833443a97ff"; // UUID de prueba
+    const meseroId = "2fa2c8bb-7386-49cf-bdfc-7833443a97ff"; 
 
       const platillos = Object.values(pedidoActual).map((item) => ({
         platillo_id: item.id,
@@ -128,10 +127,8 @@ const PaginaAlimentos = () => {
         </button>
       </header>
 
-      {/* --- CONTENEDOR PRINCIPAL (MENÚ Y PEDIDO) --- */}
       <div className="menu-pedido-container">
         
-        {/* === COLUMNA IZQUIERDA: MENÚ === */}
         <div className="menu-columna">
           <h2 className="columna-titulo">Platillos</h2>
           <div className="menu-grid">
@@ -153,7 +150,6 @@ const PaginaAlimentos = () => {
           </div>
         </div>
 
-        {/* === COLUMNA DERECHA: TU PEDIDO === */}
         <aside className="pedido-columna">
           <h2 className="columna-titulo">Tu Pedido</h2>
           

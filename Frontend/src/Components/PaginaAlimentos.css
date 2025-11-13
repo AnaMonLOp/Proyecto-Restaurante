@@ -3,15 +3,19 @@
   --color-fondo-secundario: #1a1f1a;
   --color-fondo-terciario: #2a2f2a;
   --color-texto: #ffffff;
-  --color-texto-secundario: #d1d5db; 
-  --color-texto-terciario: #9ca3af; 
-  --color-primario: #16a34a; 
-  --color-primario-hover: #15803d; 
+  --color-texto-secundario: #d1d5db;
+  --color-texto-terciario: #9ca3af;
+  --color-primario: #16a34a;
+  --color-primario-hover: #15803d;
   --color-destaque: #4ade80;
-  --color-gris: #374151; 
-  --color-gris-hover: #4b5563; 
-  --color-rojo: #f87171; 
+  --color-gris: #374151;
+  --color-gris-hover: #4b5563;
+  --color-rojo: #f87171;
   --color-borde: #4b5563;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -21,12 +25,26 @@ body {
   color: var(--color-texto);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-fondo-secundario);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-gris-hover);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gris);
+}
+
 .pagina-alimentos {
   min-height: 100vh;
   background-color: var(--color-fondo);
   color: var(--color-texto);
   padding: 32px;
-  box-sizing: border-box;
 }
 
 .confirmacion-modal {
@@ -42,7 +60,7 @@ body {
 }
 
 .confirmacion-modal h2 {
-  font-size: 1.875rem; 
+  font-size: 1.875rem;
   font-weight: 700;
   text-align: center;
   margin: 0;
@@ -56,37 +74,41 @@ body {
 }
 
 .alimentos-header h1 {
-  font-size: 2.25rem; 
+  font-size: 2.25rem;
   font-weight: 700;
 }
 
 .btn-volver {
   padding: 12px 24px;
-  background-color: var(--color-gris);
+  background-color: var(--color-primario);
   border: none;
   color: var(--color-texto);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s ease-out;
   font-size: 1rem;
 }
 
 .btn-volver:hover {
-  background-color: var(--color-gris-hover);
+  background-color: var(--color-primario-hover);
+}
+
+.btn-volver:active {
+  transform: scale(0.98);
 }
 
 .menu-pedido-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 32px;
 }
 
 .menu-columna {
-  width: 100%;
+  flex: 2;
 }
 
 .columna-titulo {
-  font-size: 1.875rem; 
+  font-size: 1.875rem;
   font-weight: 600;
   margin-top: 0;
   margin-bottom: 16px;
@@ -96,7 +118,7 @@ body {
 
 .menu-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
@@ -108,10 +130,16 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
 }
 
 .menu-card h3 {
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-destaque);
   margin-top: 0;
@@ -120,13 +148,13 @@ body {
 
 .menu-card .descripcion {
   color: var(--color-texto-secundario);
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
 .menu-card .precio {
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
 }
@@ -140,7 +168,7 @@ body {
   color: var(--color-texto);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s ease-out;
   font-weight: 600;
 }
 
@@ -148,9 +176,12 @@ body {
   background-color: var(--color-primario-hover);
 }
 
-/* --- Columna Derecha: Pedido --- */
+.btn-agregar:active {
+  transform: scale(0.98);
+}
+
 .pedido-columna {
-  width: 100%;
+  flex: 1;
   background-color: var(--color-fondo-secundario);
   padding: 24px;
   border-radius: 8px;
@@ -199,7 +230,7 @@ body {
 }
 
 .item-precio {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   margin: 4px 0 0 0;
 }
 
@@ -223,6 +254,11 @@ body {
   color: var(--color-texto);
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cantidad:hover {
+    background-color: var(--color-gris-hover);
 }
 
 .cantidad-numero {
@@ -233,20 +269,25 @@ body {
 .input-comentarios {
   margin-top: 8px;
   width: 100%;
-  box-sizing: border-box;
   background-color: #3a3f3a;
   border: 1px solid var(--color-borde);
   border-radius: 4px;
   padding: 4px 8px;
   font-size: 0.875rem;
   color: var(--color-texto);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-comentarios::placeholder {
   color: var(--color-texto-terciario);
 }
 
-/* --- Sección Total del Pedido --- */
+.input-comentarios:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 2px var(--color-destaque_transparente, rgba(74, 222, 128, 0.3));
+}
+
 .pedido-total-seccion {
   margin-top: 24px;
   border-top: 1px solid var(--color-borde);
@@ -254,7 +295,7 @@ body {
 }
 
 .total-precio {
-  font-size: 1.5rem; 
+  font-size: 1.5rem;
   font-weight: 700;
   display: flex;
   justify-content: space-between;
@@ -270,7 +311,7 @@ body {
   color: var(--color-texto);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s ease-out;
   font-size: 1.125rem;
   font-weight: 600;
 }
@@ -279,8 +320,11 @@ body {
   background-color: var(--color-primario-hover);
 }
 
+.btn-enviar-pedido:active {
+  transform: scale(0.98);
+}
+
 .btn-enviar-pedido:disabled {
   background-color: var(--color-gris-hover);
   cursor: not-allowed;
 }
-
