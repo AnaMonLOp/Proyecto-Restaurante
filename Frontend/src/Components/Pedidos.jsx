@@ -58,12 +58,22 @@ const PedidosActivos = () => {
     setTimeout(() => setNotificacion(null), 4000);
   };
 
-  const cancelarPedido = (id) => {
-    setPedidos((prevPedidos) =>
-      prevPedidos.map((p) =>
-        p.id === id ? { ...p, estado: "cancelado" } : p
-      )
-    );
+  const cancelarPedido = async (id) => {
+    try {
+      const res = await api.put(`/pedidos/${id}`, { estado: "cancelado" });
+
+      if (res.status === 200) {
+        setPedidos((prevPedidos) =>
+          prevPedidos.map((p) =>
+            p.id === id ? { ...p, estado: "cancelado" } : p
+          )
+        );
+        mostrarNotificacion("Pedido cancelado correctamente");
+      }
+    } catch (error) {
+      console.error("Error al cancelar pedido:", error);
+      mostrarNotificacion("Error al cancelar el pedido");
+    }
   };
 
   const irADetalle = (id) => {

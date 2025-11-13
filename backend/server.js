@@ -157,6 +157,66 @@ app.post('/api/pedidos', async (req, res) => {
     }
 });
 
+// actualizar estado del pedido
+app.put('/api/pedidos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    try {
+        const { data: pedidoActual, error: errorPedido } = await supabase
+        .from('pedidos')
+        .select('estado')
+        .eq('id', id)
+        .single();
+
+        if (errorPedido) throw errorPedido;
+        if (!pedidoActual) {
+            return res.status(404).json({ mensaje: 'Pedido no encontrado' });
+        }
+
+        const estadoActual = pedidoActual.estado;
+        const transicionesValidas = {
+            pendiente: ['en_preparacion', 'cancelado'],
+            en_preparacion: ['listo', 'cancelado'],
+            listo: ['entregado', 'cancelado'],
+            entregado: [],
+            cancelado: [],
+        };
+
+        if (!transicionesValidas[estadoActual].includes(estado)) {
+        return res
+            .status(400)
+            .json({ mensaje: `Transición no válida de '${estadoActual}' a '${estado}'` });
+        }
+
+        const camposActualizar = {
+            estado,
+            updated_at: new Date().toISOString(),
+        };
+
+        if (estado === 'listo') {
+            camposActualizar.fecha_listo = new Date().toISOString();
+        } else if (estado === 'entregado') {
+            camposActualizar.fecha_entregado = new Date().toISOString();
+        }
+
+        const { data: pedidoActualizado, error: errorUpdate } = await supabase
+            .from('pedidos')
+            .update(camposActualizar)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (errorUpdate) throw errorUpdate;
+
+        res.status(200).json({
+            mensaje: 'Estado actualizado correctamente',
+            pedido: pedidoActualizado,
+        });
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
+    }
+});
 
 
 //-----------------------------------
@@ -186,6 +246,71 @@ app.get('/api/usuarios/meseros', async (req, res) => {
 
         if (error) throw error;
         res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
+    }
+});
+
+//-----------------------------------
+//-------- Cuentas APIs
+//-----------------------------------
+
+// calcular y guardar cuenta con propina
+app.post('/api/cuentas', async (req, res) => {
+    const { pedido_id, porcentaje_propina = 10, metodo_pago } = req.body;
+
+    if (!pedido_id) {
+        return res.status(400).json({ mensaje: "El pedido_id es obligatorio" });
+    }
+
+    try {
+        // información del pedido
+        const { data: pedido, error: pedidoError } = await supabase
+            .from('pedidos')
+            .select('id, mesa_id, mesero_id, total')
+            .eq('id', pedido_id)
+            .single();
+
+        if (pedidoError) throw pedidoError;
+        if (!pedido) {
+            return res.status(404).json({ mensaje: "Pedido no encontrado" });
+        }
+
+        // Calcular propina y total
+        const subtotal = pedido.total || 0;
+        const propina = (subtotal * porcentaje_propina) / 100;
+        const total = subtotal + propina;
+
+        const { data: cuenta, error: cuentaError } = await supabase
+            .from('cuentas')
+            .insert([{
+                pedido_id: pedido.id,
+                mesa_id: pedido.mesa_id,
+                mesero_id: pedido.mesero_id,
+                subtotal: parseFloat(subtotal.toFixed(2)),
+                propina: parseFloat(propina.toFixed(2)),
+                total: parseFloat(total.toFixed(2)),
+                metodo_pago: metodo_pago || null,
+                estado: metodo_pago ? 'pagada' : 'pendiente',
+                fecha_pago: metodo_pago ? new Date().toISOString() : null
+            }])
+            .select()
+            .single();
+
+        if (cuentaError) throw cuentaError;
+
+        res.status(201).json({
+            mensaje: "Cuenta creada exitosamente",
+            cuenta: {
+                id: cuenta.id,
+                pedido_id: cuenta.pedido_id,
+                subtotal: cuenta.subtotal,
+                propina: cuenta.propina,
+                total: cuenta.total,
+                metodo_pago: cuenta.metodo_pago,
+                estado: cuenta.estado
+            }
+        });
     } catch (error) {
         res.status(500).json({ mensaje: error.message });
     }
