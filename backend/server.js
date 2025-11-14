@@ -316,6 +316,59 @@ app.post('/api/cuentas', async (req, res) => {
     }
 });
 
+// Temporal para pruebas del endpoint reportes
+app.get('/api/cuentas', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('cuentas')
+            .select('*')
+            .order('id', { ascending: true });
+
+        if (error) throw error;
+
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ mensaje: err.message });
+    }
+});
+
+
+//-----------------------------------
+//-------- REPORTES APIs
+//-----------------------------------
+app.get('/api/reportes', async (req, res) => {
+    const { fecha } = req.query;
+
+    if (!fecha) {
+        return res.status(400).json({ mensaje: "La fecha es obligatoria (YYYY-MM-DD)" });
+    }
+
+    try {
+        // Obtener cuentas pagadas del día
+        const { data: cuentas, error } = await supabase
+            .from('cuentas')
+            .select('id, total')
+            .eq('estado', 'pagada')
+            .gte('fecha_pago', `${fecha} 00:00:00`)
+            .lte('fecha_pago', `${fecha} 23:59:59`);
+
+        if (error) throw error;
+
+        const total_pedidos = cuentas.length;
+        const monto_total = cuentas.reduce((acumulador, dato) => acumulador + Number(dato.total), 0);
+        const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
+
+        res.status(200).json({
+            fecha,
+            total_pedidos,
+            monto_total_vendido: Number(monto_total.toFixed(2)),
+            promedio_por_pedido: Number(promedio.toFixed(2)),
+        });
+    } catch (err) {
+        res.status(500).json({ mensaje: err.message });
+    }
+});
+
 const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en puerto ${puerto}`);
