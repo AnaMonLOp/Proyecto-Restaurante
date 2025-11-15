@@ -776,6 +776,55 @@ app.put("/api/cuentas/:id", async (req, res) => {
   }
 });
 
+//-----------------------------------
+//-------- Autenticación
+//-----------------------------------
+
+// Login
+app.post("/api/auth/login", async (req, res) => {
+  const { identificador, password } = req.body;
+
+  if (!identificador || !password) {
+    return res.status(400).json({
+      mensaje: "Identificador y contraseña son obligatorios",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("identificador", identificador)
+      .eq("activo", true);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(401).json({
+        mensaje: "Credenciales incorrectas",
+      });
+    }
+
+    const usuario = data[0];
+
+    if (usuario.password !== password) {
+      return res.status(401).json({
+        mensaje: "Credenciales incorrectas",
+      });
+    }
+
+    const { password: _, ...usuarioSinPassword } = usuario;
+
+    res.status(200).json({
+      mensaje: "Login exitoso",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    console.error("Error en login:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
 httpServer.listen(puerto, () => {
   console.log(`Servidor corriendo en puerto ${puerto}`);
 });
