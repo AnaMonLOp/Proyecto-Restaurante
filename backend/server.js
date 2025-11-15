@@ -825,6 +825,47 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+// Registro
+app.post("/api/auth/registro", async (req, res) => {
+  const { identificador, password, nombre, rol } = req.body;
+
+  if (!identificador || !password || !nombre || !rol) {
+    return res.status(400).json({
+      mensaje: "Identificador, password, nombre y rol son obligatorios",
+    });
+  }
+
+  const rolesValidos = ["administrador", "mesero", "cocina"];
+  if (!rolesValidos.includes(rol)) {
+    return res.status(400).json({
+      mensaje: "Rol inválido. Debe ser: administrador, mesero o cocina",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .insert([{ identificador, password, nombre, rol }])
+      .select("id, identificador, nombre, rol, activo, created_at");
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Usuario registrado exitosamente",
+      usuario: data[0],
+    });
+  } catch (error) {
+    // Error específico si el identificador ya existe
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "El identificador ya existe",
+      });
+    }
+    console.error("Error al registrar usuario:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
 httpServer.listen(puerto, () => {
   console.log(`Servidor corriendo en puerto ${puerto}`);
 });
