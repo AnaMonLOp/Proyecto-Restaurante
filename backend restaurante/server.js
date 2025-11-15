@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import mysql from "mysql2";
+import supabase from "./config/dataBase.js";
 
 const app = express();
 const port = 3000;
@@ -8,66 +8,53 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-// 🔹 Conexión a MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",        // <-- cámbialo si usas otro usuario
-  password: "Gordito1705",        // <-- pon tu contraseña de MySQL si tienes una
-  database: "restaurante_db",
+// Ruta de prueba
+app.get("/", (req, res) => {
+    res.json({ mensaje: "Backend funcionando correctamente" });
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("❌ Error de conexión a MySQL:", err);
-    return;
-  }
-  console.log("✅ Conectado a la base de datos MySQL");
-});
+// 🔹 Obtener cuentas completas por mesa
+app.get("/cuentas", async(req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from("pedidos")
+            .select(`
+        id,
+        mesa_id,
+        estado,
+        detalle_pedido (
+          cantidad,
+          precio_unitario,
+          subtotal,
+          items_menu ( nombre )
+        )
+      `);
 
-// 📋 Obtener todos los platillos
-app.get("/platillos", (req, res) => {
-  db.query("SELECT * FROM platillos", (err, result) => {
-    if (err) return res.status(500).send(err);
-    res.json(result);
-  });
-});
+        if (error) throw error;
 
-// ➕ Agregar platillo
-app.post("/platillos", (req, res) => {
-  const { nombre, precio, categoria } = req.body;
-  db.query(
-    "INSERT INTO platillos (nombre, precio, categoria) VALUES (?, ?, ?)",
-    [nombre, precio, categoria],
-    (err, result) => {
-      if (err) return res.status(500).send(err);
-      res.json({ id: result.insertId, nombre, precio, categoria });
+        const cuentas = data.map((p) => {
+            const total = p.detalle_pedido.reduce((acc, item) => acc + item.subtotal, 0);
+            return {
+                id: p.id,
+                mesa: p.mesa_id,
+                estado: p.estado,
+                total,
+                platillos: p.detalle_pedido.map((d) => ({
+                    nombre: d.items_menu.nombre,
+                    cantidad: d.cantidad,
+                    precio: d.precio_unitario,
+                    subtotal: d.subtotal,
+                })),
+            };
+        });
+
+        res.status(200).json(cuentas);
+    } catch (error) {
+        console.error("Error al obtener cuentas:", error);
+        res.status(500).json({ mensaje: "Error al obtener cuentas" });
     }
-  );
-});
-
-// ✏️ Actualizar platillo
-app.put("/platillos/:id", (req, res) => {
-  const { id } = req.params;
-  const { nombre, precio, categoria } = req.body;
-  db.query(
-    "UPDATE platillos SET nombre=?, precio=?, categoria=? WHERE id=?",
-    [nombre, precio, categoria, id],
-    (err) => {
-      if (err) return res.status(500).send(err);
-      res.json({ id, nombre, precio, categoria });
-    }
-  );
-});
-
-// ❌ Eliminar platillo
-app.delete("/platillos/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM platillos WHERE id=?", [id], (err) => {
-    if (err) return res.status(500).send(err);
-    res.sendStatus(204);
-  });
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
+    console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });
