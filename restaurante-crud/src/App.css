@@ -232,3 +232,28 @@ th {
 .btn-agregar-mesa:hover {
     background-color: #0d6efd;
 }
+
+
+/* Estilos para Reporte Diario */
+
+.app-container {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ... resto del CSS ... */
+
+.nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
