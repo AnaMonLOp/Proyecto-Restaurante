@@ -4,6 +4,8 @@ import SelectorMesa from "./Components/SelectorMesa";
 import PaginaAlimentos from "./Components/PaginaAlimentos";
 import PedidosActivos from "./Components/Pedidos";
 import PantallaCocina from "./Components/PantallaCocina";
+import RegistroUsuario from "./Components/RegistroUsuario";
+import RegistroAdmin from "./Components/RegistroAdmin";
 import "./App.css";
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
         <Route path="/pedidos" element={<PedidosActivos />} />
         <Route path="/pantallaCocina" element={<PantallaCocina />} />
         <Route path="/CRUDPlatillos" element={<CRUDPlatillos />} />
+        <Route path="/registro" element={<RegistroUsuario />} />
+        <Route path="/registro-admin" element={<RegistroAdmin />} />
       </Routes>
   );
 }
