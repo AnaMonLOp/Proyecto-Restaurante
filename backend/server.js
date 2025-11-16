@@ -306,6 +306,57 @@ app.put("/api/pedidos/:id", async (req, res) => {
 });
 
 //-----------------------------------
+//-------- Detalles Pedidos APIs
+//-----------------------------------
+
+// todos los detalles de pedidos
+app.get("/api/pedidos/detalles", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("detalle_pedido").select("*");
+    //.order("fecha_pedido", { ascending: true });
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// detalles por id
+app.get("/api/pedidos/detalles/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("detalle_pedido")
+      .select("*")
+      .eq("id", id);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// detalles por pedido_id
+app.get("/api/pedidos/detallespedido/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("detalle_pedido")
+      .select("*")
+      .eq("pedido_id", id);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+//-----------------------------------
 //-------- Mesas APIs
 //-----------------------------------
 
@@ -777,7 +828,7 @@ app.put("/api/cuentas/:id", async (req, res) => {
 });
 
 //-----------------------------------
-//-------- Autenticación
+//-------- LOGIN & REGISTRO
 //-----------------------------------
 
 // Login
