@@ -1,0 +1,296 @@
+/* 🌙 Modo oscuro elegante y centrado */
+
+body {
+    background-color: #121212;
+    color: #f1f1f1;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 40px;
+}
+
+.app-container {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #00d4ff;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #2b2b2b;
+    color: white;
+    width: 25%;
+}
+
+button {
+    background-color: #00d4ff;
+    color: #121212;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #009ac7;
+}
+
+
+/* Tabla */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+}
+
+th {
+    color: #00d4ff;
+}
+
+.edit {
+    background-color: #ffc107;
+}
+
+.delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.edit:hover {
+    background-color: #ffcd38;
+}
+
+.delete:hover {
+    background-color: #ff5a4d;
+}
+
+.cuentas-container {
+    background-color: #1e1e1e;
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 700px;
+    margin: 2rem auto;
+}
+
+.cuentas-container table {
+    width: 100%;
+    margin-top: 1rem;
+    border-collapse: collapse;
+}
+
+.cuentas-container th,
+.cuentas-container td {
+    border: 1px solid #444;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.cuentas-container th {
+    background-color: #333;
+}
+
+.totales {
+    margin-top: 1.5rem;
+}
+
+.totales input {
+    width: 80px;
+    margin-left: 5px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.btn-pagada {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.btn-pagada:hover {
+    background-color: #2ecc71;
+}
+
+.mesas-lista {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.mesa-btn {
+    background-color: #00d4ff;
+    color: #121212;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: 0.3s;
+}
+
+.mesa-btn:hover {
+    background-color: #00a8cc;
+}
+
+.volver {
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.mesas-lista {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.mesa-btn {
+    background-color: #00d4ff;
+    color: #121212;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: 0.3s;
+}
+
+.mesa-btn:hover {
+    background-color: #00a8cc;
+}
+
+.volver {
+    background: #444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.btn-agregar-mesa {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-agregar-mesa:hover {
+    background-color: #0d6efd;
+}
+
+
+/* Estilos para Reporte Diario */
+
+.app-container {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* ... resto del CSS ... */
+
+.nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.metric-cards {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 140px;
+}
+
+.metric-card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #444;
+}
+
+.metric-card p {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.chart-wrapper {
+    background: #ffffff;
+    margin-top: 25px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
