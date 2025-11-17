@@ -1,72 +1,114 @@
-import express from 'express';
-import cors from 'cors';
-import supabase from './config/dataBase.js';
+import express from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import supabase from "./config/dataBase.js";
 
 const app = express();
+const puerto = process.env.PORT || 3001;
+
 app.use(cors());
 app.use(express.json());
+
+// Creamos el servidor HTTP y lo conectamos con express
+const httpServer = createServer(app);
+
+// Configuración socket.io sobre el servidor HTTP
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  },
+});
+
+// Socket.io base (Parte en tiempo real)
+io.on("connection", (socket) => {
+  console.log(`Usuario conectado: ${socket.id}`);
+
+  // Evento de ejemplo, por lo mientras
+  socket.on("mensaje", (data) => {
+    console.log("Mensaje recibido:", data);
+    // Reenviamos a todos los clientes conectados
+    io.emit("mensaje", data);
+  });
+
+  // Cuando un cliente se desconecta
+  socket.on("disconnect", () => {
+    console.log(`Usuario desconectado: ${socket.id}`);
+  });
+});
 
 //-----------------------------------
 //-------- Platillos APIs
 //-----------------------------------
 
 // obtener todos los platillos
-app.get('/api/platillos', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('items_menu').select('*');
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+app.get("/api/platillos", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("items_menu").select("*");
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 // crear platillo
-app.post('/api/platillos', async (req, res) => { 
-    const { nombre, descripcion, precio, categoria_id } = req.body;
-    if (!nombre || !precio) {
-        return res.status(400).json({ mensaje: "Nombre y precio son obligatorios" });
-    }
-    try {
-        const { data, error } = await supabase
-            .from('items_menu').insert([{ nombre, descripcion, precio, categoria_id }]).select();
+app.post("/api/platillos", async (req, res) => {
+  const { nombre, descripcion, precio, categoria_id } = req.body;
+  if (!nombre || !precio) {
+    return res
+      .status(400)
+      .json({ mensaje: "Nombre y precio son obligatorios" });
+  }
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .insert([{ nombre, descripcion, precio, categoria_id }])
+      .select();
 
-        if (error) throw error;
-        res.status(201).json({ mensaje: "Platillo creado", platillo: data[0] });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(201).json({ mensaje: "Platillo creado", platillo: data[0] });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 // actualizar platillo
-app.put('/api/platillos/:id', async (req, res) => {
-    const idPlatillo = req.params.id;
-    const { nombre, descripcion, precio, categoria_id } = req.body;
+app.put("/api/platillos/:id", async (req, res) => {
+  const idPlatillo = req.params.id;
+  const { nombre, descripcion, precio, categoria_id } = req.body;
 
-    if (!nombre || !precio) {
-        return res.status(400).json({ mensaje: "Faltan datos" });
-    }
-    try {
-        const { data, error } = await supabase.from('items_menu').update({ nombre, descripcion, precio, categoria_id }).eq('id', idPlatillo); 
+  if (!nombre || !precio) {
+    return res.status(400).json({ mensaje: "Faltan datos" });
+  }
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .update({ nombre, descripcion, precio, categoria_id })
+      .eq("id", idPlatillo);
 
-        if (error) throw error;
-        res.status(200).json({ mensaje: "Platillo actualizado" });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json({ mensaje: "Platillo actualizado" });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 // eliminar platillo
-app.delete('/api/platillos/:id', async (req, res) => {
-    const idPlatillo = req.params.id;
-    try {
-        const { data, error } = await supabase.from('items_menu').delete().eq('id', idPlatillo);
+app.delete("/api/platillos/:id", async (req, res) => {
+  const idPlatillo = req.params.id;
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .delete()
+      .eq("id", idPlatillo);
 
-        if (error) throw error;
-        res.status(200).json({ mensaje: "Platillo eliminado" });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json({ mensaje: "Platillo eliminado" });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 //-----------------------------------
@@ -74,249 +116,807 @@ app.delete('/api/platillos/:id', async (req, res) => {
 //-----------------------------------
 
 // obtener categorias
-app.get('/api/categorias', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('categorias_menu').select('*'); 
+app.get("/api/categorias", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("categorias_menu").select("*");
 
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (error) {
-        console.error("Error al consultar categorías:", error.message);
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error al consultar categorías:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 // crear categoria
-app.post('/api/categorias', async (req, res) => {
-    const { nombre, descripcion } = req.body; 
+app.post("/api/categorias", async (req, res) => {
+  const { nombre, descripcion } = req.body;
 
-    if (!nombre) {
-        return res.status(400).json({ mensaje: "El nombre es obligatorio" });
-    }
-    try {
-        const { data, error } = await supabase
-            .from('categorias_menu').insert([ { nombre, descripcion } ]).select().single();
+  if (!nombre) {
+    return res.status(400).json({ mensaje: "El nombre es obligatorio" });
+  }
+  try {
+    const { data, error } = await supabase
+      .from("categorias_menu")
+      .insert([{ nombre, descripcion }])
+      .select()
+      .single();
 
-        if (error) throw error;
-        res.status(201).json({ mensaje: "Categoría creada", categoria: data });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(201).json({ mensaje: "Categoría creada", categoria: data });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
+// editar categoria ::: ya tiene estado activo o inactivo
+app.put("/api/categorias/:id", async (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, orden, activa } = req.body;
+
+  if (
+    !nombre &&
+    descripcion === undefined &&
+    orden === undefined &&
+    activa === undefined
+  ) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
+  }
+
+  try {
+    const updateData = {};
+    if (nombre !== undefined) updateData.nombre = nombre;
+    if (descripcion !== undefined) updateData.descripcion = descripcion;
+    if (orden !== undefined) updateData.orden = orden;
+    if (activa !== undefined) updateData.activa = activa;
+
+    const { data, error } = await supabase
+      .from("categorias_menu")
+      .update(nombre, descripcion, orden, activa)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.status(404).json({ mensaje: "Categoría no encontrada" });
+    }
+
+    res.status(200).json({ mensaje: "Categoría actualizada", categoria: data });
+  } catch (error) {
+    console.error("Error al actualizar categoría:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- Pedidos APIs
 //-----------------------------------
 
 // obtener pedidos
-app.get('/api/pedidos', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('pedidos') .select('*').order('fecha_pedido', { ascending: true });
+app.get("/api/pedidos", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("pedidos")
+      .select("*")
+      .order("fecha_pedido", { ascending: true });
 
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 // crear pedido
-app.post('/api/pedidos', async (req, res) => {
-    const { mesa_id, mesero_id, platillos } = req.body;
-    
-    if (!mesa_id || !platillos || platillos.length === 0) {
-        return res.status(400).json({ mensaje: "Faltan mesa_id o platillos" });
-    }
+app.post("/api/pedidos", async (req, res) => {
+  const { mesa_id, mesero_id, platillos } = req.body;
 
-    try {
-        const { data: pedidoData, error: pedidoError } = await supabase
-            .from('pedidos')
-            .insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: 'pendiente' }])
-            .select()
-            .single();
+  if (!mesa_id || !platillos || platillos.length === 0) {
+    return res.status(400).json({ mensaje: "Faltan mesa_id o platillos" });
+  }
 
-        if (pedidoError) throw pedidoError;
+  try {
+    const { data: pedidoData, error: pedidoError } = await supabase
+      .from("pedidos")
+      .insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: "pendiente" }])
+      .select()
+      .single();
 
-        const itemsParaInsertar = platillos.map(item => ({
-            pedido_id: pedidoData.id,
-            item_menu_id: item.platillo_id,
-            cantidad: item.cantidad,
-            precio_unitario: item.precio_unitario || 0,
-            subtotal: (item.cantidad || 0) * (item.precio_unitario || 0),
-            notas_item: item.notas_item || null,
-        }));
+    if (pedidoError) throw pedidoError;
+    const nuevoPedidoId = pedidoData.id;
 
-        const { error: detalleError } = await supabase.from('detalle_pedido').insert(itemsParaInsertar);
+    const itemsParaInsertar = platillos.map((item) => ({
+      pedido_id: nuevoPedidoId,
+      item_menu_id: item.item_menu_id,
+      cantidad: item.cantidad,
+      precio_unitario: item.precio_unitario,
+      subtotal: item.cantidad * item.precio_unitario,
+    }));
 
-        if (detalleError) throw detalleError;
+    const { error: detalleError } = await supabase
+      .from("detalle_pedido")
+      .insert(itemsParaInsertar);
 
-        res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    req.io.emit("nuevo_pedido", pedidoData[0]);
+
+    if (detalleError) throw detalleError;
+
+    res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
-// actualizar estado del pedido
-app.put('/api/pedidos/:id', async (req, res) => {
-    const { id } = req.params;
-    const { estado } = req.body;
+// actualizar pedido (solo estado y notas)
+app.put("/api/pedidos/:id", async (req, res) => {
+  const { id } = req.params;
+  const { estado, notas } = req.body;
 
-    try {
-        const { data: pedidoActual, error: errorPedido } = await supabase
-        .from('pedidos')
-        .select('estado')
-        .eq('id', id)
-        .single();
+  if (estado === undefined && notas === undefined) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
+  }
 
-        if (errorPedido) throw errorPedido;
-        if (!pedidoActual) {
-            return res.status(404).json({ mensaje: 'Pedido no encontrado' });
-        }
+  const estadosValidos = [
+    "pendiente",
+    "en_preparacion",
+    "listo",
+    "entregado",
+    "cancelado",
+  ];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje:
+        "Estado inválido. Debe ser: pendiente, en_preparacion, listo, entregado o cancelado",
+    });
+  }
 
-        const estadoActual = pedidoActual.estado;
-        const transicionesValidas = {
-            pendiente: ['en_preparacion', 'cancelado'],
-            en_preparacion: ['listo', 'cancelado'],
-            listo: ['entregado', 'cancelado'],
-            entregado: [],
-            cancelado: [],
-        };
+  try {
+    const updateData = {};
+    if (estado !== undefined) updateData.estado = estado;
+    if (notas !== undefined) updateData.notas = notas;
 
-        if (!transicionesValidas[estadoActual].includes(estado)) {
-        return res
-            .status(400)
-            .json({ mensaje: `Transición no válida de '${estadoActual}' a '${estado}'` });
-        }
-
-        const camposActualizar = {
-            estado,
-            updated_at: new Date().toISOString(),
-        };
-
-        if (estado === 'listo') {
-            camposActualizar.fecha_listo = new Date().toISOString();
-        } else if (estado === 'entregado') {
-            camposActualizar.fecha_entregado = new Date().toISOString();
-        }
-
-        const { data: pedidoActualizado, error: errorUpdate } = await supabase
-            .from('pedidos')
-            .update(camposActualizar)
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (errorUpdate) throw errorUpdate;
-
-        res.status(200).json({
-            mensaje: 'Estado actualizado correctamente',
-            pedido: pedidoActualizado,
-        });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
+    if (estado === "listo") {
+      updateData.fecha_listo = new Date().toISOString();
     }
+    if (estado === "entregado") {
+      updateData.fecha_entregado = new Date().toISOString();
+    }
+
+    const { data, error } = await supabase
+      .from("pedidos")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    res.status(200).json({
+      mensaje: "Pedido actualizado",
+      pedido: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar pedido:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
+//-----------------------------------
+//-------- Detalles Pedidos APIs
+//-----------------------------------
+
+// todos los detalles de pedidos
+app.get("/api/pedidos/detalles", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("detalle_pedido").select("*");
+    //.order("fecha_pedido", { ascending: true });
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// detalles por id
+app.get("/api/pedidos/detalles/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("detalle_pedido")
+      .select("*")
+      .eq("id", id);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// detalles por pedido_id
+app.get("/api/pedidos/detallespedido/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("detalle_pedido")
+      .select("*")
+      .eq("pedido_id", id);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- Mesas APIs
 //-----------------------------------
 
-app.get('/api/mesas', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('mesas').select('*').eq('activa', true);
+//Obtener mesas
+app.get("/api/mesas", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("mesas")
+      .select("*")
+      .eq("activa", true);
 
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// crear mesa
+app.post("/api/mesas", async (req, res) => {
+  const { numero, capacidad, estado } = req.body;
+
+  if (!numero || !capacidad) {
+    return res
+      .status(400)
+      .json({ mensaje: "Número y capacidad son obligatorios" });
+  }
+
+  const estadosValidos = ["disponible", "ocupada", "reservada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("mesas")
+      .insert([
+        {
+          numero,
+          capacidad,
+          estado: estado || "disponible", // Por defecto disponible
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Mesa creada",
+      mesa: data[0],
+    });
+  } catch (error) {
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "Ya existe una mesa con ese número",
+      });
     }
+    console.error("Error al crear mesa:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// editar mesa (capacidad, estado y activa)
+app.put("/api/mesas/:id", async (req, res) => {
+  const { id } = req.params;
+  const { capacidad, estado, activa } = req.body;
+
+  if (capacidad === undefined && estado === undefined && activa === undefined) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
+  }
+
+  const estadosValidos = ["disponible", "ocupada", "reservada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
+    });
+  }
+
+  try {
+    const updateData = {};
+    if (capacidad !== undefined) updateData.capacidad = capacidad;
+    if (estado !== undefined) updateData.estado = estado;
+    if (activa !== undefined) updateData.activa = activa;
+
+    const { data, error } = await supabase
+      .from("mesas")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Mesa no encontrada" });
+    }
+
+    res.status(200).json({
+      mensaje: "Mesa actualizada",
+      mesa: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar mesa:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 //-----------------------------------
-//-------- Meseros APIs
+//-------- Usuarios APIs
 //-----------------------------------
 
-app.get('/api/usuarios/meseros', async (req, res) => {
-    try {
-        const { data, error } = await supabase
-            .from('usuarios').select('id, nombre').eq('rol', 'mesero');
+// Obtener TODOS los usuarios
+app.get("/api/usuarios", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, identificador, nombre, rol, activo, created_at, updated_at");
 
-        if (error) throw error;
-        res.status(200).json(data);
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error al consultar usuarios:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Obtener solo meseros
+app.get("/api/usuarios/meseros", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "mesero");
+    //.eq("activo", true);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Obtener solo cocina
+app.get("/api/usuarios/cocina", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "cocina");
+    //.eq("activo", true);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Obtener solo administradores
+app.get("/api/usuarios/administradores", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "administrador");
+    //.eq("activo", true);
+
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Crear usuario
+app.post("/api/usuarios", async (req, res) => {
+  const { identificador, password, nombre, rol } = req.body;
+
+  if (!identificador || !password || !nombre || !rol) {
+    return res.status(400).json({
+      mensaje: "Identificador, password, nombre y rol son obligatorios",
+    });
+  }
+
+  const rolesValidos = ["administrador", "mesero", "cocina"];
+  if (!rolesValidos.includes(rol)) {
+    return res.status(400).json({
+      mensaje: "Rol inválido. Debe ser: administrador, mesero o cocina",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .insert([{ identificador, password, nombre, rol }])
+      .select("id, identificador, nombre, rol, activo, created_at");
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Usuario creado",
+      usuario: data[0],
+    });
+  } catch (error) {
+    // Error específico si el identificador ya existe
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "Ya existe un usuario con ese identificador",
+      });
     }
+    console.error("Error al crear usuario:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+//Editar usuario
+app.put("/api/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+  const { identificador, password, nombre, rol, activo } = req.body;
+
+  if (
+    identificador === undefined &&
+    password === undefined &&
+    nombre === undefined &&
+    rol === undefined &&
+    activo === undefined
+  ) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
+  }
+
+  const rolesValidos = ["administrador", "mesero", "cocina"];
+  if (rol && !rolesValidos.includes(rol)) {
+    return res.status(400).json({
+      mensaje: "Rol inválido. Debe ser: administrador, mesero o cocina",
+    });
+  }
+
+  try {
+    const updateData = {};
+    if (identificador !== undefined) updateData.identificador = identificador;
+    if (password !== undefined) updateData.password = password;
+    if (nombre !== undefined) updateData.nombre = nombre;
+    if (rol !== undefined) updateData.rol = rol;
+    if (activo !== undefined) updateData.activo = activo;
+
+    // Actualizar timestamp
+    updateData.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from("usuarios")
+      .update(updateData)
+      .eq("id", id)
+      .select("id, identificador, nombre, rol, activo, created_at, updated_at");
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({
+      mensaje: "Usuario actualizado",
+      usuario: data[0],
+    });
+  } catch (error) {
+    // Error específico si el identificador ya existe
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "Ya existe un usuario con ese identificador",
+      });
+    }
+    console.error("Error al actualizar usuario:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Eliminar usuario (borrado lógico)
+app.delete("/api/usuarios/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .update({ activo: false, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select("id, identificador, nombre, rol, activo");
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.status(200).json({
+      mensaje: "Usuario desactivado",
+      usuario: data[0],
+    });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
 //-----------------------------------
 //-------- Cuentas APIs
 //-----------------------------------
 
-// calcular y guardar cuenta con propina
-app.post('/api/cuentas', async (req, res) => {
-    const { pedido_id, porcentaje_propina = 10, metodo_pago } = req.body;
+//Obtener todas las cuentas
+app.get("/api/cuentas", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("cuentas")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-    if (!pedido_id) {
-        return res.status(400).json({ mensaje: "El pedido_id es obligatorio" });
-    }
-
-    try {
-        // información del pedido
-        const { data: pedido, error: pedidoError } = await supabase
-            .from('pedidos')
-            .select('id, mesa_id, mesero_id, total')
-            .eq('id', pedido_id)
-            .single();
-
-        if (pedidoError) throw pedidoError;
-        if (!pedido) {
-            return res.status(404).json({ mensaje: "Pedido no encontrado" });
-        }
-
-        // Calcular propina y total
-        const subtotal = pedido.total || 0;
-        const propina = (subtotal * porcentaje_propina) / 100;
-        const total = subtotal + propina;
-
-        const { data: cuenta, error: cuentaError } = await supabase
-            .from('cuentas')
-            .insert([{
-                pedido_id: pedido.id,
-                mesa_id: pedido.mesa_id,
-                mesero_id: pedido.mesero_id,
-                subtotal: parseFloat(subtotal.toFixed(2)),
-                propina: parseFloat(propina.toFixed(2)),
-                total: parseFloat(total.toFixed(2)),
-                metodo_pago: metodo_pago || null,
-                estado: metodo_pago ? 'pagada' : 'pendiente',
-                fecha_pago: metodo_pago ? new Date().toISOString() : null
-            }])
-            .select()
-            .single();
-
-        if (cuentaError) throw cuentaError;
-
-        res.status(201).json({
-            mensaje: "Cuenta creada exitosamente",
-            cuenta: {
-                id: cuenta.id,
-                pedido_id: cuenta.pedido_id,
-                subtotal: cuenta.subtotal,
-                propina: cuenta.propina,
-                total: cuenta.total,
-                metodo_pago: cuenta.metodo_pago,
-                estado: cuenta.estado
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error al consultar cuentas:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
 });
 
-const puerto = process.env.PORT || 3001;
-app.listen(puerto, () => {
-    console.log(`Servidor corriendo en puerto ${puerto}`);
+//Obtener cuenta por pedido_id
+app.get("/api/cuentas/pedido/:pedido_id", async (req, res) => {
+  const { pedido_id } = req.params;
+
+  try {
+    const { data, error } = await supabase
+      .from("cuentas")
+      .select("*")
+      .eq("pedido_id", pedido_id);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res
+        .status(404)
+        .json({ mensaje: "No hay cuenta para este pedido" });
+    }
+
+    res.status(200).json(data[0]);
+  } catch (error) {
+    console.error("Error al consultar cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Crear cuenta
+app.post("/api/cuentas", async (req, res) => {
+  const { pedido_id, mesa_id, mesero_id, subtotal, propina } = req.body;
+
+  if (!pedido_id || !mesa_id || !mesero_id || subtotal === undefined) {
+    return res.status(400).json({
+      mensaje: "pedido_id, mesa_id, mesero_id y subtotal son obligatorios",
+    });
+  }
+
+  try {
+    const propinaFinal = propina || 0;
+    const total = parseFloat(subtotal) + parseFloat(propinaFinal);
+
+    const { data, error } = await supabase
+      .from("cuentas")
+      .insert([
+        {
+          pedido_id,
+          mesa_id,
+          mesero_id,
+          subtotal,
+          propina: propinaFinal,
+          total,
+          estado: "pendiente",
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Cuenta creada",
+      cuenta: data[0],
+    });
+  } catch (error) {
+    console.error("Error al crear cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Editar cuenta (propina, método de pago, estado)
+app.put("/api/cuentas/:id", async (req, res) => {
+  const { id } = req.params;
+  const { propina, metodo_pago, estado } = req.body;
+
+  if (
+    propina === undefined &&
+    metodo_pago === undefined &&
+    estado === undefined
+  ) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
+  }
+
+  const metodosValidos = ["efectivo", "tarjeta", "transferencia", "mixto"];
+  if (metodo_pago && !metodosValidos.includes(metodo_pago)) {
+    return res.status(400).json({
+      mensaje:
+        "Método de pago inválido. Debe ser: efectivo, tarjeta, transferencia o mixto",
+    });
+  }
+
+  const estadosValidos = ["pendiente", "pagada", "cancelada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: pendiente, pagada o cancelada",
+    });
+  }
+
+  try {
+    const { data: cuentaActual, error: errorConsulta } = await supabase
+      .from("cuentas")
+      .select("subtotal, propina")
+      .eq("id", id);
+
+    if (errorConsulta) throw errorConsulta;
+
+    if (!cuentaActual || cuentaActual.length === 0) {
+      return res.status(404).json({ mensaje: "Cuenta no encontrada" });
+    }
+
+    const updateData = {};
+
+    if (propina !== undefined) {
+      updateData.propina = propina;
+      updateData.total =
+        parseFloat(cuentaActual[0].subtotal) + parseFloat(propina);
+    }
+
+    if (metodo_pago !== undefined) updateData.metodo_pago = metodo_pago;
+
+    if (estado !== undefined) {
+      updateData.estado = estado;
+
+      if (estado === "pagada") {
+        updateData.fecha_pago = new Date().toISOString();
+      }
+    }
+
+    const { data, error } = await supabase
+      .from("cuentas")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Cuenta no encontrada" });
+    }
+
+    res.status(200).json({
+      mensaje: "Cuenta actualizada",
+      cuenta: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+//-----------------------------------
+//-------- LOGIN & REGISTRO
+//-----------------------------------
+
+// Login
+app.post("/api/auth/login", async (req, res) => {
+  const { identificador, password } = req.body;
+
+  if (!identificador || !password) {
+    return res.status(400).json({
+      mensaje: "Identificador y contraseña son obligatorios",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("*")
+      .eq("identificador", identificador)
+      .eq("activo", true);
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(401).json({
+        mensaje: "Credenciales incorrectas",
+      });
+    }
+
+    const usuario = data[0];
+
+    if (usuario.password !== password) {
+      return res.status(401).json({
+        mensaje: "Credenciales incorrectas",
+      });
+    }
+
+    const { password: _, ...usuarioSinPassword } = usuario;
+
+    res.status(200).json({
+      mensaje: "Login exitoso",
+      usuario: usuarioSinPassword,
+    });
+  } catch (error) {
+    console.error("Error en login:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+// Registro
+app.post("/api/auth/registro", async (req, res) => {
+  const { identificador, password, nombre, rol } = req.body;
+
+  if (!identificador || !password || !nombre || !rol) {
+    return res.status(400).json({
+      mensaje: "Identificador, password, nombre y rol son obligatorios",
+    });
+  }
+
+  const rolesValidos = ["administrador", "mesero", "cocina"];
+  if (!rolesValidos.includes(rol)) {
+    return res.status(400).json({
+      mensaje: "Rol inválido. Debe ser: administrador, mesero o cocina",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .insert([{ identificador, password, nombre, rol }])
+      .select("id, identificador, nombre, rol, activo, created_at");
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Usuario registrado exitosamente",
+      usuario: data[0],
+    });
+  } catch (error) {
+    // Error específico si el identificador ya existe
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "El identificador ya existe",
+      });
+    }
+    console.error("Error al registrar usuario:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
+httpServer.listen(puerto, () => {
+  console.log(`Servidor corriendo en puerto ${puerto}`);
 });
