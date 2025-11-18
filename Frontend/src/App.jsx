@@ -7,6 +7,7 @@ import PantallaCocina from "./Components/PantallaCocina";
 import RegistroUsuario from "./Components/RegistroUsuario";
 import RegistroAdmin from "./Components/RegistroAdmin";
 import GestionUsuarios from "./Components/GestionUsuarios";
+import FiltroReporte from "./Components/FiltroReporte";
 import "./App.css";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/registro" element={<RegistroUsuario />} />
         <Route path="/registro-admin" element={<RegistroAdmin />} />
         <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+        <Route path="/filtroReportes" element={<FiltroReporte />} />
       </Routes>
   );
 }
