@@ -6,6 +6,7 @@ import PedidosActivos from "./Components/Pedidos";
 import PantallaCocina from "./Components/PantallaCocina";
 import RegistroUsuario from "./Components/RegistroUsuario";
 import RegistroAdmin from "./Components/RegistroAdmin";
+import GestionUsuarios from "./Components/GestionUsuarios";
 import "./App.css";
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/CRUDPlatillos" element={<CRUDPlatillos />} />
         <Route path="/registro" element={<RegistroUsuario />} />
         <Route path="/registro-admin" element={<RegistroAdmin />} />
+        <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
       </Routes>
   );
 }

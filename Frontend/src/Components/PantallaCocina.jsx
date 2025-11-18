@@ -58,8 +58,6 @@ const PantallaCocina = () => {
     { id: "entregado", titulo: "Entregados", color: "blue" },
   ];
 
-  const cancelados = pedidos.filter((p) => p.estado === "cancelado");
-
   return (
     <div className="pantalla-cocina">
       <header className="top-bar">
@@ -115,9 +113,16 @@ const PantallaCocina = () => {
                     <div className="pedido-body">
                       {pedido.detalle_pedido?.length ? (
                         pedido.detalle_pedido.map((item, index) => (
-                          <p key={index}>
-                            {item.cantidad}x {item.item_menu_id}
-                          </p>
+                          <div key={index} className="item-pedido">
+                            <p className="item-principal">
+                              {item.cantidad}x {item.items_menu?.nombre || "Platillo desconocido"}
+                            </p>
+                            {item.notas_item && (
+                              <p className="item-nota">
+                                → {item.notas_item}
+                              </p>
+                            )}
+                          </div>
                         ))
                       ) : (
                         <p>Sin detalles</p>
@@ -153,29 +158,6 @@ const PantallaCocina = () => {
                 ))}
             </div>
           ))}
-        </div>
-
-        <div className="cancelados">
-          <h2 className="titulo-estado rojo">Cancelados</h2>
-          <div className="cancelados-grid">
-            {cancelados.length > 0 ? (
-              cancelados.map((pedido) => (
-                <div key={pedido.id} className="pedido-card rojo">
-                  <div className="pedido-header rojo">
-                    <div>
-                      <h3>Orden #{pedido.id}</h3>
-                      <p>Mesa {mesaIndexMap[pedido.mesa_id] || pedido.mesa_id || "-"}</p>
-                    </div>
-                  </div>
-                  <div className="pedido-body">
-                    <p>Pedido cancelado</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="sin-cancelados">No hay pedidos cancelados</p>
-            )}
-          </div>
         </div>
       </main>
     </div>

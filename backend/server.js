@@ -112,7 +112,22 @@ app.post('/api/categorias', async (req, res) => {
 // obtener pedidos
 app.get('/api/pedidos', async (req, res) => {
     try {
-        const { data, error } = await supabase.from('pedidos') .select('*').order('fecha_pedido', { ascending: true });
+        const { data, error } = await supabase.from('pedidos') 
+        .select(`
+                *,
+                detalle_pedido (
+                    id,
+                    cantidad,
+                    precio_unitario,
+                    subtotal,
+                    notas_item,
+                    items_menu (
+                        id,
+                        nombre
+                    )
+                )
+            `)
+        .order('fecha_pedido', { ascending: true });
 
         if (error) throw error;
         res.status(200).json(data);
@@ -251,70 +266,9 @@ app.get('/api/usuarios/meseros', async (req, res) => {
     }
 });
 
-//-----------------------------------
-//-------- Cuentas APIs
-//-----------------------------------
 
-// calcular y guardar cuenta con propina
-app.post('/api/cuentas', async (req, res) => {
-    const { pedido_id, porcentaje_propina = 10, metodo_pago } = req.body;
 
-    if (!pedido_id) {
-        return res.status(400).json({ mensaje: "El pedido_id es obligatorio" });
-    }
 
-    try {
-        // información del pedido
-        const { data: pedido, error: pedidoError } = await supabase
-            .from('pedidos')
-            .select('id, mesa_id, mesero_id, total')
-            .eq('id', pedido_id)
-            .single();
-
-        if (pedidoError) throw pedidoError;
-        if (!pedido) {
-            return res.status(404).json({ mensaje: "Pedido no encontrado" });
-        }
-
-        // Calcular propina y total
-        const subtotal = pedido.total || 0;
-        const propina = (subtotal * porcentaje_propina) / 100;
-        const total = subtotal + propina;
-
-        const { data: cuenta, error: cuentaError } = await supabase
-            .from('cuentas')
-            .insert([{
-                pedido_id: pedido.id,
-                mesa_id: pedido.mesa_id,
-                mesero_id: pedido.mesero_id,
-                subtotal: parseFloat(subtotal.toFixed(2)),
-                propina: parseFloat(propina.toFixed(2)),
-                total: parseFloat(total.toFixed(2)),
-                metodo_pago: metodo_pago || null,
-                estado: metodo_pago ? 'pagada' : 'pendiente',
-                fecha_pago: metodo_pago ? new Date().toISOString() : null
-            }])
-            .select()
-            .single();
-
-        if (cuentaError) throw cuentaError;
-
-        res.status(201).json({
-            mensaje: "Cuenta creada exitosamente",
-            cuenta: {
-                id: cuenta.id,
-                pedido_id: cuenta.pedido_id,
-                subtotal: cuenta.subtotal,
-                propina: cuenta.propina,
-                total: cuenta.total,
-                metodo_pago: cuenta.metodo_pago,
-                estado: cuenta.estado
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ mensaje: error.message });
-    }
-});
 
 const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
