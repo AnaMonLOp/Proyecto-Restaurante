@@ -266,9 +266,124 @@ app.get('/api/usuarios/meseros', async (req, res) => {
     }
 });
 
+//-----------------------------------
+//-------- Cuentas APIs
+//-----------------------------------
+
+// calcular y guardar cuenta con propina
+app.post('/api/cuentas', async (req, res) => {
+    const { pedido_id, porcentaje_propina = 10, metodo_pago } = req.body;
+
+    if (!pedido_id) {
+        return res.status(400).json({ mensaje: "El pedido_id es obligatorio" });
+    }
+
+    try {
+        // información del pedido
+        const { data: pedido, error: pedidoError } = await supabase
+            .from('pedidos')
+            .select('id, mesa_id, mesero_id, total')
+            .eq('id', pedido_id)
+            .single();
+
+        if (pedidoError) throw pedidoError;
+        if (!pedido) {
+            return res.status(404).json({ mensaje: "Pedido no encontrado" });
+        }
+
+        // Calcular propina y total
+        const subtotal = pedido.total || 0;
+        const propina = (subtotal * porcentaje_propina) / 100;
+        const total = subtotal + propina;
+
+        const { data: cuenta, error: cuentaError } = await supabase
+            .from('cuentas')
+            .insert([{
+                pedido_id: pedido.id,
+                mesa_id: pedido.mesa_id,
+                mesero_id: pedido.mesero_id,
+                subtotal: parseFloat(subtotal.toFixed(2)),
+                propina: parseFloat(propina.toFixed(2)),
+                total: parseFloat(total.toFixed(2)),
+                metodo_pago: metodo_pago || null,
+                estado: metodo_pago ? 'pagada' : 'pendiente',
+                fecha_pago: metodo_pago ? new Date().toISOString() : null
+            }])
+            .select()
+            .single();
+
+        if (cuentaError) throw cuentaError;
+
+        res.status(201).json({
+            mensaje: "Cuenta creada exitosamente",
+            cuenta: {
+                id: cuenta.id,
+                pedido_id: cuenta.pedido_id,
+                subtotal: cuenta.subtotal,
+                propina: cuenta.propina,
+                total: cuenta.total,
+                metodo_pago: cuenta.metodo_pago,
+                estado: cuenta.estado
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ mensaje: error.message });
+    }
+});
 
 
+// Temporal para pruebas del endpoint reportes
+app.get('/api/cuentas', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('cuentas')
+            .select('*')
+            .order('id', { ascending: true });
 
+        if (error) throw error;
+
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ mensaje: err.message });
+    }
+});
+
+
+//-----------------------------------
+//-------- REPORTES APIs
+//-----------------------------------
+app.get('/api/reportes', async (req, res) => {
+    const { fecha } = req.query;
+
+    if (!fecha) {
+        return res.status(400).json({ mensaje: "La fecha es obligatoria (YYYY-MM-DD)" });
+    }
+
+    try {
+        // Obtener cuentas pagadas del día
+        const { data: cuentas, error } = await supabase
+            .from('cuentas')
+            .select('id, total')
+            .eq('estado', 'pagada')
+            .gte('fecha_pago', `${fecha} 00:00:00`)
+            .lte('fecha_pago', `${fecha} 23:59:59`);
+
+        if (error) throw error;
+
+        const total_pedidos = cuentas.length;
+        const monto_total = cuentas.reduce((acumulador, dato) => acumulador + Number(dato.total), 0);
+        const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
+
+        res.status(200).json({
+            fecha,
+            total_pedidos,
+            monto_total_vendido: Number(monto_total.toFixed(2)),
+            promedio_por_pedido: Number(promedio.toFixed(2)),
+        });
+    } catch (err) {
+        res.status(500).json({ mensaje: err.message });
+    }
+});
 
 const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
