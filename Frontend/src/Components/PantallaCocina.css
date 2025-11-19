@@ -91,6 +91,23 @@ body {
   padding: 10px;
 }
 
+.item-pedido {
+  margin-bottom: 8px;
+}
+
+.item-principal {
+  margin: 0;
+  font-weight: 500;
+  color: #f6f8f6;
+}
+
+.item-nota {
+  margin: 2px 0 0 12px;
+  font-size: 0.85em;
+  color: #b5b5b5;
+  font-style: italic;
+}
+
 .pedido-footer {
   padding: 10px;
   text-align: center;

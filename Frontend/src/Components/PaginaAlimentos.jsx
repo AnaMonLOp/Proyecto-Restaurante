@@ -10,6 +10,7 @@ const PaginaAlimentos = () => {
   const [menuData, setMenuData] = useState([]);
   const [pedidoActual, setPedidoActual] = useState({});
   const [confirmacion, setConfirmacion] = useState(false);
+  const [mesaIndexMap, setMesaIndexMap] = useState({});
 
   // Cargar platillos desde backend
   useEffect(() => {
@@ -22,6 +23,22 @@ const PaginaAlimentos = () => {
       }
     };
     fetchPlatillos();
+  }, []);
+
+  // Cargar mesas y crear mapeo
+  useEffect(() => {
+    const fetchMesas = async () => {
+      try {
+        const res = await api.get("/mesas");
+        const lista = (res.data || []).slice().sort((a, b) => a.id - b.id);
+        const map = {};
+        lista.forEach((m, idx) => (map[m.id] = idx + 1));
+        setMesaIndexMap(map);
+      } catch (error) {
+        console.error("Error al obtener mesas:", error);
+      }
+    };
+    fetchMesas();
   }, []);
 
 
@@ -120,7 +137,7 @@ const PaginaAlimentos = () => {
 
 
       <header className="alimentos-header">
-        <h1>Menú de la Mesa {id}</h1>
+        <h1>Menú de la Mesa {mesaIndexMap[id] || id}</h1>
         <button onClick={() => navigate("/")} className="btn-volver">
           ← Volver al selector
         </button>

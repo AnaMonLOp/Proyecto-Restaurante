@@ -6,10 +6,13 @@ import PaginaAlimentos from "./Components/PaginaAlimentos";
 import PedidosActivos from "./Components/Pedidos";
 import PantallaCocina from "./Components/PantallaCocina";
 import Login from "./Components/Login";
-
+import RegistroUsuario from "./Components/RegistroUsuario";
+import RegistroAdmin from "./Components/RegistroAdmin";
+import GestionUsuarios from "./Components/GestionUsuarios";
+import FiltroReporte from "./Components/FiltroReporte";
 import "./App.css";
 
-// 🔐 RUTA PROTEGIDA (token + usuario)
+// 🔐 RUTA PROTEGIDA
 const RutaProtegida = ({ children }) => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const token = localStorage.getItem("token");
@@ -41,8 +44,10 @@ const CerrarSesion = () => {
 function App() {
   return (
     <Routes>
-      {/* LOGIN */}
+      {/* LOGIN / REGISTROS (PÚBLICOS) */}
       <Route path="/login" element={<Login />} />
+      <Route path="/registro" element={<RegistroUsuario />} />
+      <Route path="/registro-admin" element={<RegistroAdmin />} />
 
       {/* LOGOUT */}
       <Route path="/logout" element={<CerrarSesion />} />
@@ -95,7 +100,24 @@ function App() {
         }
       />
 
-      {/* CUALQUIER OTRA RUTA */}
+      <Route
+        path="/gestion-usuarios"
+        element={
+          <RutaProtegida>
+            <GestionUsuarios />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/filtroReportes"
+        element={
+          <RutaProtegida>
+            <FiltroReporte />
+          </RutaProtegida>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
