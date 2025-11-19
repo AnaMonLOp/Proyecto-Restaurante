@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import api from "../api/axios";
 import {
   BarChart,
   Bar,
@@ -16,39 +16,75 @@ const ReporteDiario = () => {
   const [reporte, setReporte] = useState(null);
   const [cargando, setCargando] = useState(false);
 
-  // Datos demo si no hay reporte aún
-  const datosDemo = {
-    total_pedidos: 12,
-    monto_total_vendido: 2450,
-  };
-
   const handleGenerarReporte = async () => {
-    if (!fecha) return alert("Selecciona una fecha primero.");
+    if (!fecha) {
+      alert("Selecciona una fecha primero.");
+      return;
+    }
+
     setCargando(true);
 
     try {
-      const response = await axios.get(
-        `http://localhost:5000/reporte-diario?fecha=${fecha}`
+      // Obtener todos los pedidos
+      const res = await api.get("/pedidos");
+      const pedidos = res.data || [];
+
+      // Filtrar pedidos por fecha exacta (YYYY-MM-DD)
+      const pedidosDelDia = pedidos.filter(
+        (p) => p.fecha && p.fecha.startsWith(fecha)
       );
-      setReporte(response.data);
+
+      if (pedidosDelDia.length === 0) {
+        setReporte({
+          total_pedidos: 0,
+          monto_total_vendido: 0,
+        });
+        setCargando(false);
+        return;
+      }
+
+      // Total de pedidos
+      const totalPedidos = pedidosDelDia.length;
+
+      // Total vendido (sumar subtotales de detalle_pedido)
+      const montoTotal = pedidosDelDia.reduce((acc, pedido) => {
+        if (!pedido.detalle_pedido) return acc;
+
+        const subtotalPedido = pedido.detalle_pedido.reduce(
+          (sub, item) => sub + Number(item.subtotal || 0),
+          0
+        );
+
+        return acc + subtotalPedido;
+      }, 0);
+
+      setReporte({
+        total_pedidos: totalPedidos,
+        monto_total_vendido: montoTotal,
+      });
     } catch (error) {
-      console.error("Error al obtener reporte", error);
-      alert("No se pudo obtener el reporte. Usando datos de ejemplo.");
-      setReporte(datosDemo);
+      console.error("Error obteniendo reporte diario:", error);
+
+      setReporte({
+        total_pedidos: 0,
+        monto_total_vendido: 0,
+      });
+
+      alert("Error al generar el reporte");
     } finally {
       setCargando(false);
     }
   };
 
-  // Usa reporte real si existe, si no usa demo
+  // Datos para la gráfica
   const data = [
     {
       name: "Pedidos",
-      value: reporte?.total_pedidos ?? datosDemo.total_pedidos,
+      value: reporte?.total_pedidos ?? 0,
     },
     {
       name: "Ventas $",
-      value: reporte?.monto_total_vendido ?? datosDemo.monto_total_vendido,
+      value: reporte?.monto_total_vendido ?? 0,
     },
   ];
 
@@ -76,13 +112,14 @@ const ReporteDiario = () => {
         <div className="bg-gray-800 p-4 rounded shadow text-center">
           <p className="text-lg">📦 Pedidos</p>
           <p className="text-3xl font-bold">
-            {reporte?.total_pedidos ?? datosDemo.total_pedidos}
+            {reporte?.total_pedidos ?? 0}
           </p>
         </div>
+
         <div className="bg-gray-800 p-4 rounded shadow text-center">
           <p className="text-lg">💰 Ventas totales</p>
           <p className="text-3xl font-bold">
-            ${reporte?.monto_total_vendido ?? datosDemo.monto_total_vendido}
+            ${reporte?.monto_total_vendido ?? 0}
           </p>
         </div>
       </div>
