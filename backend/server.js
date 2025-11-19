@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const puerto = process.env.PORT || 3001;
+//const puerto = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(cors());
@@ -19,7 +19,7 @@ app.use(express.json());
 //-------- Middleware de autenticación JWT
 //-----------------------------------
 const verificarToken = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Formato: "Bearer TOKEN"
+  const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
     return res.status(403).json({ mensaje: "Token no proporcionado" });
@@ -280,7 +280,7 @@ app.get("/api/pedidos", verificarToken, async (req, res) => {
 app.post(
   "/api/pedidos",
   verificarToken,
-  verificarRol("mesero"),
+  verificarRol("mesero", "administrador"),
   async (req, res) => {
     const { mesa_id, mesero_id, platillos } = req.body;
 
@@ -324,66 +324,61 @@ app.post(
 );
 
 // actualizar pedido (solo estado y notas)
-app.put(
-  "/api/pedidos/:id",
-  verificarToken,
-  verificarRol("mesero", "cocina"),
-  async (req, res) => {
-    const { id } = req.params;
-    const { estado, notas } = req.body;
+app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
+  const { id } = req.params;
+  const { estado, notas } = req.body;
 
-    if (estado === undefined && notas === undefined) {
-      return res.status(400).json({ mensaje: "No hay datos para actualizar" });
-    }
-
-    const estadosValidos = [
-      "pendiente",
-      "en_preparacion",
-      "listo",
-      "entregado",
-      "cancelado",
-    ];
-    if (estado && !estadosValidos.includes(estado)) {
-      return res.status(400).json({
-        mensaje:
-          "Estado inválido. Debe ser: pendiente, en_preparacion, listo, entregado o cancelado",
-      });
-    }
-
-    try {
-      const updateData = {};
-      if (estado !== undefined) updateData.estado = estado;
-      if (notas !== undefined) updateData.notas = notas;
-
-      if (estado === "listo") {
-        updateData.fecha_listo = new Date().toISOString();
-      }
-      if (estado === "entregado") {
-        updateData.fecha_entregado = new Date().toISOString();
-      }
-
-      const { data, error } = await supabase
-        .from("pedidos")
-        .update(updateData)
-        .eq("id", id)
-        .select();
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        return res.status(404).json({ mensaje: "Pedido no encontrado" });
-      }
-
-      res.status(200).json({
-        mensaje: "Pedido actualizado",
-        pedido: data[0],
-      });
-    } catch (error) {
-      console.error("Error al actualizar pedido:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (estado === undefined && notas === undefined) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
   }
-);
+
+  const estadosValidos = [
+    "pendiente",
+    "en_preparacion",
+    "listo",
+    "entregado",
+    "cancelado",
+  ];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje:
+        "Estado inválido. Debe ser: pendiente, en_preparacion, listo, entregado o cancelado",
+    });
+  }
+
+  try {
+    const updateData = {};
+    if (estado !== undefined) updateData.estado = estado;
+    if (notas !== undefined) updateData.notas = notas;
+
+    if (estado === "listo") {
+      updateData.fecha_listo = new Date().toISOString();
+    }
+    if (estado === "entregado") {
+      updateData.fecha_entregado = new Date().toISOString();
+    }
+
+    const { data, error } = await supabase
+      .from("pedidos")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    res.status(200).json({
+      mensaje: "Pedido actualizado",
+      pedido: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar pedido:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- Detalles Pedidos APIs
@@ -436,24 +431,90 @@ app.get("/api/pedidos/detallespedido/:id", verificarToken, async (req, res) => {
   }
 });
 
+// actualizar estado del pedido
+app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
+  const { id } = req.params;
+  const { estado } = req.body;
+
+  try {
+    const { data: pedidoActual, error: errorPedido } = await supabase
+      .from("pedidos")
+      .select("estado")
+      .eq("id", id)
+      .single();
+
+    if (errorPedido) throw errorPedido;
+    if (!pedidoActual) {
+      return res.status(404).json({ mensaje: "Pedido no encontrado" });
+    }
+
+    const estadoActual = pedidoActual.estado;
+    const transicionesValidas = {
+      pendiente: ["en_preparacion", "cancelado"],
+      en_preparacion: ["listo", "cancelado"],
+      listo: ["entregado", "cancelado"],
+      entregado: [],
+      cancelado: [],
+    };
+
+    if (!transicionesValidas[estadoActual].includes(estado)) {
+      return res.status(400).json({
+        mensaje: `Transición no válida de '${estadoActual}' a '${estado}'`,
+      });
+    }
+
+    const camposActualizar = {
+      estado,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (estado === "listo") {
+      camposActualizar.fecha_listo = new Date().toISOString();
+    } else if (estado === "entregado") {
+      camposActualizar.fecha_entregado = new Date().toISOString();
+    }
+
+    const { data: pedidoActualizado, error: errorUpdate } = await supabase
+      .from("pedidos")
+      .update(camposActualizar)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (errorUpdate) throw errorUpdate;
+
+    res.status(200).json({
+      mensaje: "Estado actualizado correctamente",
+      pedido: pedidoActualizado,
+    });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
+
 //-----------------------------------
 //-------- Mesas APIs
 //-----------------------------------
 
 //Obtener mesas
-app.get("/api/mesas", verificarToken, async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from("mesas")
-      .select("*")
-      .eq("activa", true);
+app.get(
+  "/api/mesas",
+  verificarToken,
+  verificarRol("mesero", "administrador"),
+  async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("mesas")
+        .select("*")
+        .eq("activa", true);
 
-    if (error) throw error;
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ mensaje: error.message });
+      if (error) throw error;
+      res.status(200).json(data);
+    } catch (error) {
+      res.status(500).json({ mensaje: error.message });
+    }
   }
-});
+);
 
 // crear mesa
 app.post(
@@ -1082,6 +1143,56 @@ app.post("/api/auth/registro", async (req, res) => {
   }
 });
 
+//-----------------------------------
+//-------- REPORTES APIs
+//-----------------------------------
+app.get(
+  "/api/reportes",
+  verificarToken,
+  verificarRol("administrador"),
+  async (req, res) => {
+    const { fecha } = req.query;
+
+    if (!fecha) {
+      return res
+        .status(400)
+        .json({ mensaje: "La fecha es obligatoria (YYYY-MM-DD)" });
+    }
+
+    try {
+      // Obtener cuentas pagadas del día
+      const { data: cuentas, error } = await supabase
+        .from("cuentas")
+        .select("id, total")
+        .eq("estado", "pagada")
+        .gte("fecha_pago", `${fecha} 00:00:00`)
+        .lte("fecha_pago", `${fecha} 23:59:59`);
+
+      if (error) throw error;
+
+      const total_pedidos = cuentas.length;
+      const monto_total = cuentas.reduce(
+        (acumulador, dato) => acumulador + Number(dato.total),
+        0
+      );
+      const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
+
+      res.status(200).json({
+        fecha,
+        total_pedidos,
+        monto_total_vendido: Number(monto_total.toFixed(2)),
+        promedio_por_pedido: Number(promedio.toFixed(2)),
+      });
+    } catch (err) {
+      res.status(500).json({ mensaje: err.message });
+    }
+  }
+);
+
+/* const puerto = process.env.PORT || 3001;
+app.listen(puerto, () => {
+    console.log(`Servidor corriendo en puerto ${puerto}`);
+}); */
 httpServer.listen(puerto, () => {
   console.log(`Servidor corriendo en puerto ${puerto}`);
 });
