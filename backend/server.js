@@ -266,7 +266,14 @@ app.get("/api/pedidos", verificarToken, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("pedidos")
-      .select("*")
+      .select(`
+        *,
+        detalle_pedido (
+          *,
+          items_menu (*)
+        )
+      `)
+      .neq("estado", "cancelado")
       .order("fecha_pedido", { ascending: true });
 
     if (error) throw error;
@@ -322,7 +329,7 @@ app.post(
     }
   }
 );
-
+/*
 // actualizar pedido (solo estado y notas)
 app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
   const { id } = req.params;
@@ -379,6 +386,7 @@ app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
     res.status(500).json({ mensaje: error.message });
   }
 });
+*/
 
 //-----------------------------------
 //-------- Detalles Pedidos APIs

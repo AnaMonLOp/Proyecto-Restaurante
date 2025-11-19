@@ -127,6 +127,30 @@
     border: 1px solid rgba(0, 212, 106, 0.3);
 }
 
+.badge-estado {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-estado.activo {
+    background: rgba(0, 212, 106, 0.15);
+    color: #00d46a;
+    border: 1px solid rgba(0, 212, 106, 0.3);
+}
+
+.badge-estado.inactivo {
+    background: rgba(255, 77, 77, 0.15);
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+}
+
+.usuario-inactivo {
+    opacity: 0.6;
+}
+
 .texto-bloqueado {
     color: var(--color-texto-secundario);
     font-size: 0.9rem;
@@ -156,6 +180,50 @@
 }
 
 .btn-cambiar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-activar {
+    background: var(--color-verde);
+    color: #06120a;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-activar:hover:not(:disabled) {
+    background: var(--color-verde-hover);
+    transform: translateY(-1px);
+}
+
+.btn-activar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-desactivar {
+    background: #ffa940;
+    color: #06120a;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.btn-desactivar:hover:not(:disabled) {
+    background: #ffb75c;
+    transform: translateY(-1px);
+}
+
+.btn-desactivar:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }

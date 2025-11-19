@@ -18,6 +18,8 @@ function GestionUsuarios() {
         setError("");
         try {
             const { data } = await api.get("/usuarios");
+            console.log("Usuarios cargados desde backend:", data);
+            console.log("¿Existe mesero06?", data.find(u => u.identificador === "mesero06"));
             setUsuarios(data || []);
         } catch (err) {
             console.error("Error al cargar usuarios:", err);
@@ -65,7 +67,23 @@ function GestionUsuarios() {
         }
     }
 
-    const usuariosActivos = usuarios.filter(u => u.activo);
+    async function toggleActivo(id, activoActual, rolActual) {
+        if (rolActual === "administrador") return;
+
+        setEditandoId(id);
+        try {
+            await api.put(`/usuarios/${id}`, { activo: !activoActual });
+            
+            setUsuarios(prev => 
+                prev.map(u => u.id === id ? { ...u, activo: !activoActual } : u)
+            );
+        } catch (err) {
+            console.error("Error al cambiar estado:", err);
+            alert("No se pudo cambiar el estado. Intenta de nuevo");
+        } finally {
+            setEditandoId(null);
+        }
+    }
 
     if (cargando) {
         return (
@@ -93,25 +111,31 @@ function GestionUsuarios() {
                             <th>Nombre</th>
                             <th>Identificador</th>
                             <th>Rol</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {usuariosActivos.length === 0 ? (
+                        {usuarios.length === 0 ? (
                             <tr>
-                                <td colSpan="4" className="sin-datos">
+                                <td colSpan="5" className="sin-datos">
                                     No hay usuarios registrados
                                 </td>
                             </tr>
                         ) : (
-                            usuariosActivos.map(usuario => (
-                                <tr key={usuario.id}>
+                            usuarios.map(usuario => (
+                                <tr key={usuario.id} className={!usuario.activo ? "usuario-inactivo" : ""}>
                                     <td>{usuario.nombre}</td>
                                     <td>{usuario.identificador}</td>
                                     <td>
                                         <span className={`badge-rol ${usuario.rol}`}>
                                             {usuario.rol === "administrador" ? "Administrador" :
                                              usuario.rol === "mesero" ? "Mesero" : "Cocinero"}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`badge-estado ${usuario.activo ? "activo" : "inactivo"}`}>
+                                            {usuario.activo ? "Activo" : "Inactivo"}
                                         </span>
                                     </td>
                                     <td>
@@ -124,7 +148,7 @@ function GestionUsuarios() {
                                                 <button
                                                     className="btn-cambiar"
                                                     onClick={() => cambiarRol(usuario.id, usuario.rol)}
-                                                    disabled={editandoId === usuario.id}
+                                                    disabled={editandoId === usuario.id || !usuario.activo}
                                                 >
                                                     {editandoId === usuario.id ? (
                                                         "Cambiando..."
@@ -133,6 +157,13 @@ function GestionUsuarios() {
                                                             Cambiar a {usuario.rol === "mesero" ? "Cocinero" : "Mesero"}
                                                         </>
                                                     )}
+                                                </button>
+                                                <button
+                                                    className={usuario.activo ? "btn-desactivar" : "btn-activar"}
+                                                    onClick={() => toggleActivo(usuario.id, usuario.activo, usuario.rol)}
+                                                    disabled={editandoId === usuario.id}
+                                                >
+                                                    {editandoId === usuario.id ? "Procesando..." : (usuario.activo ? "Desactivar" : "Activar")}
                                                 </button>
                                                 <button
                                                     className="btn-eliminar"
@@ -152,9 +183,9 @@ function GestionUsuarios() {
             </div>
 
             <div className="info-footer">
-                <p>Total de usuarios activos: <strong>{usuariosActivos.length}</strong></p>
+                <p>Total de usuarios: <strong>{usuarios.length}</strong> ({usuarios.filter(u => u.activo).length} activos)</p>
                 <p className="nota">
-                    * Solo puedes cambiar roles entre Mesero y Cocinero
+                    * Los usuarios inactivos no pueden iniciar sesión
                 </p>
             </div>
         </div>
