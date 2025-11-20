@@ -13,6 +13,7 @@ const PantallaCocina = () => {
     const fetchPedidos = async () => {
       try {
         const response = await api.get("/pedidos");
+        console.log("Pedidos recibidos:", response.data);
         setPedidos(response.data);
       } catch (error) {
         console.error("Error al obtener pedidos:", error);
@@ -95,6 +96,7 @@ const PantallaCocina = () => {
               </h2>
               {pedidos
                 .filter((p) => p.estado === estado.id)
+                .filter((pedido) => pedido.detalle_pedido && pedido.detalle_pedido.length > 0)
                 .map((pedido) => (
                   <div key={pedido.id} className={`pedido-card ${estado.color}`}>
                     <div className={`pedido-header ${estado.color}`}>
@@ -115,7 +117,7 @@ const PantallaCocina = () => {
                         pedido.detalle_pedido.map((item, index) => (
                           <div key={index} className="item-pedido">
                             <p className="item-principal">
-                              {item.cantidad}x {item.items_menu?.nombre || "Platillo desconocido"}
+                              {item.cantidad}x {item.items_menu?.nombre || "(Platillo eliminado)"}
                             </p>
                             {item.notas_item && (
                               <p className="item-nota">

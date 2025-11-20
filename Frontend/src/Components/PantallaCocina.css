@@ -72,6 +72,9 @@ body {
   border-radius: 10px;
   margin-bottom: 15px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
 }
 
 .pedido-header {
@@ -89,6 +92,9 @@ body {
 
 .pedido-body {
   padding: 10px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 60px;
 }
 
 .item-pedido {
@@ -111,6 +117,8 @@ body {
 .pedido-footer {
   padding: 10px;
   text-align: center;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(19, 236, 19, 0.2);
 }
 
 .pedido-footer button {

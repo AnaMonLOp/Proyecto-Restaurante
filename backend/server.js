@@ -59,7 +59,10 @@ const verificarRol = (...rolesPermitidos) => {
 // obtener todos los platillos
 app.get("/api/platillos", verificarToken, async (req, res) => {
   try {
-    const { data, error } = await supabase.from("items_menu").select("*");
+    const { data, error } = await supabase
+      .from("items_menu")
+      .select("*")
+      .eq("disponible", true);
     if (error) throw error;
     res.status(200).json(data);
   } catch (error) {
@@ -109,17 +112,17 @@ app.put("/api/platillos/:id", verificarToken, async (req, res) => {
   }
 });
 
-// eliminar platillo
 app.delete("/api/platillos/:id", verificarToken, async (req, res) => {
   const idPlatillo = req.params.id;
   try {
     const { data, error } = await supabase
       .from("items_menu")
-      .delete()
-      .eq("id", idPlatillo);
+      .update({ disponible: false })
+      .eq("id", idPlatillo)
+      .select();
 
     if (error) throw error;
-    res.status(200).json({ mensaje: "Platillo eliminado" });
+    res.status(200).json({ mensaje: "Platillo desactivado", data });
   } catch (error) {
     res.status(500).json({ mensaje: error.message });
   }
@@ -137,7 +140,6 @@ app.get("/api/categorias", verificarToken, async (req, res) => {
     if (error) throw error;
     res.status(200).json(data);
   } catch (error) {
-    console.error("Error al consultar categorías:", error.message);
     res.status(500).json({ mensaje: error.message });
   }
 });
@@ -163,7 +165,6 @@ app.post("/api/categorias", verificarToken, async (req, res) => {
   }
 });
 
-// editar categoria ::: ya tiene estado activo o inactivo
 app.put("/api/categorias/:id", verificarToken, async (req, res) => {
   const { id } = req.params;
   const { nombre, descripcion, orden, activa } = req.body;
@@ -210,16 +211,24 @@ app.put("/api/categorias/:id", verificarToken, async (req, res) => {
 // obtener pedidos
 app.get("/api/pedidos", verificarToken, async (req, res) => {
   try {
-    const { data, error } = await supabase
+    const { incluir_cancelados } = req.query;
+    
+    let query = supabase
       .from("pedidos")
       .select(`
         *,
         detalle_pedido (
           *,
-          items_menu (*)
+          items_menu!inner (*)
         )
-      `)
-      .neq("estado", "cancelado")
+      `);
+    
+    if (incluir_cancelados !== "true") {
+      query = query.neq("estado", "cancelado");
+    }
+    
+    const { data, error } = await query
+      .eq("detalle_pedido.items_menu.disponible", true)
       .order("fecha_pedido", { ascending: true });
 
     if (error) throw error;
@@ -253,13 +262,14 @@ app.post("/api/pedidos", verificarToken, async (req, res) => {
       cantidad: item.cantidad,
       precio_unitario: item.precio_unitario,
       subtotal: item.cantidad * item.precio_unitario,
+      notas_item: item.notas_item || null,
     }));
 
     const { error: detalleError } = await supabase
       .from("detalle_pedido")
       .insert(itemsParaInsertar);
 
-    req.io.emit("nuevo_pedido", pedidoData[0]);
+    // req.io.emit("nuevo_pedido", pedidoData[0]);
 
     if (detalleError) throw detalleError;
 
@@ -773,6 +783,7 @@ app.post("/api/cuentas", verificarToken, async (req, res) => {
           propina: propinaFinal,
           total,
           estado: "pendiente",
+          fecha_pago: new Date().toISOString(),
         },
       ])
       .select();
@@ -984,11 +995,10 @@ app.get("/api/reportes", verificarToken, async (req, res) => {
   }
 
   try {
-    // Obtener cuentas pagadas del día
+    // Obtener cuentas del día
     const { data: cuentas, error } = await supabase
       .from("cuentas")
       .select("id, total")
-      .eq("estado", "pagada")
       .gte("fecha_pago", `${fecha} 00:00:00`)
       .lte("fecha_pago", `${fecha} 23:59:59`);
 

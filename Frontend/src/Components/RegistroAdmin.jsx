@@ -52,10 +52,12 @@ function RegistroAdmin() {
             setForm({ nombre: "", identificador: "", password: "" });
             setTouched({});
         } catch (err) {
-            if (err?.response?.status === 409 || err?.response?.status === 400) {
-                setErrorServidor("El identificador ya está registrado");
+            if (err?.response?.status === 409) {
+                setErrorServidor("Este identificador ya existe");
+            } else if (err?.response?.status === 400) {
+                setErrorServidor("Verifica que todos los campos sean correctos");
             } else {
-                setErrorServidor("No se pudo registrar. Intenta de nuevo");
+                setErrorServidor("Hubo un problema al registrar. Intenta nuevamente");
             }
         } finally {
             setEnviando(false);

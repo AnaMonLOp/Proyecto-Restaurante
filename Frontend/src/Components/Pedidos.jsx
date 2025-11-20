@@ -16,7 +16,7 @@ const PedidosActivos = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const pedidosRes = await api.get("/pedidos");
+        const pedidosRes = await api.get("/pedidos?incluir_cancelados=true");
         const meserosRes = await api.get("/usuarios/meseros");
         const mesasRes = await api.get("/mesas");
         const menuRes = await api.get("/platillos");

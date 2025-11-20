@@ -51,19 +51,17 @@ function RegistroUsuario() {
             nombre: form.nombre,
             rol: form.rol,
         };
-        console.log("Intentando registrar:", payload);
-        const response = await api.post("/auth/registro", payload);
-        console.log("Respuesta del servidor:", response.data);
+        await api.post("/auth/registro", payload);
         setExito(true);
         setForm({ nombre: "", identificador: "", password: "", rol: "" });
         setTouched({});
         } catch (err) {
-        console.error("Error completo:", err);
-        console.error("Response data:", err?.response?.data);
-        if (err?.response?.status === 409 || err?.response?.status === 400) {
-            setErrorServidor("El identificador ya está registrado");
+        if (err?.response?.status === 409) {
+            setErrorServidor("Este identificador ya existe");
+        } else if (err?.response?.status === 400) {
+            setErrorServidor("Verifica que todos los campos sean correctos");
         } else {
-            setErrorServidor("No se pudo registrar. Intenta de nuevo");
+            setErrorServidor("Hubo un problema al registrar. Intenta nuevamente");
         }
         } finally {
         setEnviando(false);

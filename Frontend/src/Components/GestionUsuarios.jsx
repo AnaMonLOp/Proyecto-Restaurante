@@ -20,11 +20,8 @@ function GestionUsuarios() {
         setError("");
         try {
             const { data } = await api.get("/usuarios");
-            console.log("Usuarios cargados desde backend:", data);
-            console.log("¿Existe mesero06?", data.find(u => u.identificador === "mesero06"));
             setUsuarios(data || []);
         } catch (err) {
-            console.error("Error al cargar usuarios:", err);
             setError("No se pudieron cargar los usuarios");
         } finally {
             setCargando(false);
@@ -44,8 +41,7 @@ function GestionUsuarios() {
                 prev.map(u => u.id === id ? { ...u, rol: nuevoRol } : u)
             );
         } catch (err) {
-            console.error("Error al cambiar rol:", err);
-            alert("No se pudo cambiar el rol. Intenta de nuevo");
+            alert("Hubo un problema al cambiar el rol");
         } finally {
             setEditandoId(null);
         }
@@ -62,8 +58,7 @@ function GestionUsuarios() {
             
             setUsuarios(prev => prev.filter(u => u.id !== id));
         } catch (err) {
-            console.error("Error al eliminar usuario:", err);
-            alert("No se pudo eliminar el usuario. Intenta de nuevo");
+            alert("Hubo un problema al eliminar el usuario");
         } finally {
             setEliminandoId(null);
         }
@@ -80,8 +75,7 @@ function GestionUsuarios() {
                 prev.map(u => u.id === id ? { ...u, activo: !activoActual } : u)
             );
         } catch (err) {
-            console.error("Error al cambiar estado:", err);
-            alert("No se pudo cambiar el estado. Intenta de nuevo");
+            alert("Hubo un problema al cambiar el estado");
         } finally {
             setEditandoId(null);
         }

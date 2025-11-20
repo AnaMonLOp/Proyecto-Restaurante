@@ -99,7 +99,7 @@ const PaginaAlimentos = () => {
     const meseroId = "2fa2c8bb-7386-49cf-bdfc-7833443a97ff"; 
 
       const platillos = Object.values(pedidoActual).map((item) => ({
-        platillo_id: item.id,
+        item_menu_id: item.id,
         cantidad: item.cantidad,
         precio_unitario: Number(item.precio),
         notas_item: item.comentarios?.trim() !== "" ? item.comentarios : null
