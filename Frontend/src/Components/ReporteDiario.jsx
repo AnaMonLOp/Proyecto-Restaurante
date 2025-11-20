@@ -27,42 +27,12 @@ const ReporteDiario = () => {
     setCargando(true);
 
     try {
-      // Obtener todos los pedidos
-      const res = await api.get("/pedidos");
-      const pedidos = res.data || [];
-
-      // Filtrar pedidos por fecha exacta (YYYY-MM-DD)
-      const pedidosDelDia = pedidos.filter(
-        (p) => p.fecha && p.fecha.startsWith(fecha)
-      );
-
-      if (pedidosDelDia.length === 0) {
-        setReporte({
-          total_pedidos: 0,
-          monto_total_vendido: 0,
-        });
-        setCargando(false);
-        return;
-      }
-
-      // Total de pedidos
-      const totalPedidos = pedidosDelDia.length;
-
-      // Total vendido (sumar subtotales de detalle_pedido)
-      const montoTotal = pedidosDelDia.reduce((acc, pedido) => {
-        if (!pedido.detalle_pedido) return acc;
-
-        const subtotalPedido = pedido.detalle_pedido.reduce(
-          (sub, item) => sub + Number(item.subtotal || 0),
-          0
-        );
-
-        return acc + subtotalPedido;
-      }, 0);
+      const res = await api.get(`/reportes?fecha=${fecha}`);
+      const dataReporte = res.data;
 
       setReporte({
-        total_pedidos: totalPedidos,
-        monto_total_vendido: montoTotal,
+        total_pedidos: dataReporte.total_pedidos,
+        monto_total_vendido: dataReporte.monto_total_vendido,
       });
     } catch (error) {
       console.error("Error obteniendo reporte diario:", error);
@@ -71,8 +41,6 @@ const ReporteDiario = () => {
         total_pedidos: 0,
         monto_total_vendido: 0,
       });
-
-      alert("Error al generar el reporte");
     } finally {
       setCargando(false);
     }
@@ -127,7 +95,7 @@ const ReporteDiario = () => {
         <div className="bg-gray-800 p-4 rounded shadow text-center">
           <p className="text-lg">💰 Ventas totales</p>
           <p className="text-3xl font-bold">
-            ${reporte?.monto_total_vendido ?? 0}
+            ${reporte?.monto_total_vendido ? reporte.monto_total_vendido.toFixed(2) : 0}
           </p>
         </div>
       </div>
