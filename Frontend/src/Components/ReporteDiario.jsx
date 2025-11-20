@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -15,6 +16,7 @@ const ReporteDiario = () => {
   const [fecha, setFecha] = useState("");
   const [reporte, setReporte] = useState(null);
   const [cargando, setCargando] = useState(false);
+  const navigate = useNavigate();
 
   const handleGenerarReporte = async () => {
     if (!fecha) {
@@ -90,7 +92,13 @@ const ReporteDiario = () => {
 
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">📊 Reporte Diario de Ventas</h2>
+      <header className="crud-header">
+        <h3>📊 Reporte Diario de Ventas</h3>
+        <nav className="nav-menu">
+            <span onClick={() => navigate("/filtroReportes")} className="nav-link">Filtrar Reportes</span>
+            <span onClick={() => navigate("/CRUDPlatillos")} className="nav-link">CRUD</span>
+        </nav>
+      </header>
 
       {/* Filtro de fecha */}
       <div className="flex items-center gap-3 mb-6">

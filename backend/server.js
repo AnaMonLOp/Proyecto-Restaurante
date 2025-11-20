@@ -51,33 +51,6 @@ const verificarRol = (...rolesPermitidos) => {
   };
 };
 
-// Creamos el servidor HTTP y lo conectamos con express
-const httpServer = createServer(app);
-
-// Configuración socket.io sobre el servidor HTTP
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
-});
-
-// Socket.io base (Parte en tiempo real)
-io.on("connection", (socket) => {
-  console.log(`Usuario conectado: ${socket.id}`);
-
-  // Evento de ejemplo, por lo mientras
-  socket.on("mensaje", (data) => {
-    console.log("Mensaje recibido:", data);
-    // Reenviamos a todos los clientes conectados
-    io.emit("mensaje", data);
-  });
-
-  // Cuando un cliente se desconecta
-  socket.on("disconnect", () => {
-    console.log(`Usuario desconectado: ${socket.id}`);
-  });
-});
 
 //-----------------------------------
 //-------- Platillos APIs
@@ -329,64 +302,6 @@ app.post(
     }
   }
 );
-/*
-// actualizar pedido (solo estado y notas)
-app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
-  const { id } = req.params;
-  const { estado, notas } = req.body;
-
-  if (estado === undefined && notas === undefined) {
-    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
-  }
-
-  const estadosValidos = [
-    "pendiente",
-    "en_preparacion",
-    "listo",
-    "entregado",
-    "cancelado",
-  ];
-  if (estado && !estadosValidos.includes(estado)) {
-    return res.status(400).json({
-      mensaje:
-        "Estado inválido. Debe ser: pendiente, en_preparacion, listo, entregado o cancelado",
-    });
-  }
-
-  try {
-    const updateData = {};
-    if (estado !== undefined) updateData.estado = estado;
-    if (notas !== undefined) updateData.notas = notas;
-
-    if (estado === "listo") {
-      updateData.fecha_listo = new Date().toISOString();
-    }
-    if (estado === "entregado") {
-      updateData.fecha_entregado = new Date().toISOString();
-    }
-
-    const { data, error } = await supabase
-      .from("pedidos")
-      .update(updateData)
-      .eq("id", id)
-      .select();
-
-    if (error) throw error;
-
-    if (!data || data.length === 0) {
-      return res.status(404).json({ mensaje: "Pedido no encontrado" });
-    }
-
-    res.status(200).json({
-      mensaje: "Pedido actualizado",
-      pedido: data[0],
-    });
-  } catch (error) {
-    console.error("Error al actualizar pedido:", error.message);
-    res.status(500).json({ mensaje: error.message });
-  }
-});
-*/
 
 //-----------------------------------
 //-------- Detalles Pedidos APIs
@@ -1197,10 +1112,6 @@ app.get(
   }
 );
 
-/* const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
     console.log(`Servidor corriendo en puerto ${puerto}`);
-}); */
-httpServer.listen(puerto, () => {
-  console.log(`Servidor corriendo en puerto ${puerto}`);
-});
+}); 

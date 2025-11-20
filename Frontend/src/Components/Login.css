@@ -29,7 +29,6 @@
 
 body {
   background: var(--color-fondo);
-  overflow: hidden;
 }
 
 .login-container {

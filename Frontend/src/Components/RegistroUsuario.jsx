@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 import "./RegistroUsuario.css";
 
 function RegistroUsuario() {
@@ -13,6 +14,7 @@ function RegistroUsuario() {
     const [enviando, setEnviando] = useState(false);
     const [errorServidor, setErrorServidor] = useState("");
     const [exito, setExito] = useState(false);
+    const navigate = useNavigate();
 
     const errores = useMemo(() => {
         const e = {};
@@ -71,6 +73,12 @@ function RegistroUsuario() {
     return (
         <div className="registro-page">
         <div className="registro-card">
+            <header className="crud-header">
+                <nav className="nav-menu">
+                    <span onClick={() => navigate("/registro-admin")} className="nav-link">Registro Administrador</span>
+                    <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Volver</span>
+                </nav>
+            </header>
             <h2 className="registro-title">Registrar usuario</h2>
             <p className="registro-subtitle">Crea una cuenta para el sistema</p>
 

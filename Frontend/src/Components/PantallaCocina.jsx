@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios.js";
+import { useNavigate } from "react-router-dom";
 import "./PantallaCocina.css";
 
 const PantallaCocina = () => {
   const [pedidos, setPedidos] = useState([]);
   const [mesaIndexMap, setMesaIndexMap] = useState({});
+  const navigate = useNavigate();
 
   // Cargar pedidos al iniciar
   useEffect(() => {
@@ -80,9 +82,7 @@ const PantallaCocina = () => {
           <h1>Órdenes de Cocina</h1>
         </div>
         <nav>
-          <button className="btn-menu activo">Todos</button>
-          <button className="btn-menu">Para llevar</button>
-          <button className="btn-menu">Salón</button>
+          <span onClick={() => navigate("/logout")} style={{ cursor: "pointer" }}>Cerrar sesión</span>
         </nav>
       </header>
 

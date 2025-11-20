@@ -68,6 +68,7 @@ const SelectorMesa = () => {
           <span className="pedidos" onClick={() => navigate("/pedidos")} style={{ cursor: "pointer" }}>
             Pedidos Activos
           </span>
+          <span onClick={() => navigate("/logout")} style={{ cursor: "pointer" }}>Cerrar sesión</span>
           <div className="usuario">
             <span className="nombre">{usuario.nombre}</span>
             <span className="rol">{usuario.rol}</span>

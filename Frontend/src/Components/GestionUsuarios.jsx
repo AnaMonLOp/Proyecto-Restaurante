@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./GestionUsuarios.css";
 
 function GestionUsuarios() {
+    const navigate = useNavigate();
     const [usuarios, setUsuarios] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -95,8 +97,14 @@ function GestionUsuarios() {
 
     return (
         <div className="gestion-container">
+            <header className="crud-header">
+                <h3> 👤 Gestión de usuarios</h3>
+                <nav className="nav-menu">
+                    <span onClick={() => navigate("/registro")} className="nav-link">Registro</span>
+                    <span onClick={() => navigate("/CRUDPlatillos")} className="nav-link">CRUD</span>
+                </nav>
+            </header>
             <div className="gestion-header">
-                <h1>Gestión de Usuarios</h1>
                 <p className="subtitulo">Administra los roles del personal</p>
             </div>
 
