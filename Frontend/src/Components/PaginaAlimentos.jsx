@@ -129,14 +129,13 @@ const PaginaAlimentos = () => {
 
   return (
     <div className="pagina-alimentos">
-      {/* --- MENSAJE DE CONFIRMACIÓN --- */}
       {confirmacion && (
         <div className="confirmacion-modal">
           <h2>✅ ¡Pedido enviado correctamente!</h2>
         </div>
       )}
 
-      {/* --- CABECERA --- */}
+
       <header className="alimentos-header">
         <h1>Menú de la Mesa {mesaIndexMap[id] || id}</h1>
         <button onClick={() => navigate("/")} className="btn-volver">

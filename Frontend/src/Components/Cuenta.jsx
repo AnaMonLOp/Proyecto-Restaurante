@@ -1,135 +1,193 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import api from "../api/axios";
+//import "./Cuenta.css";
 
 function Cuentas() {
-  const [mesas, setMesas] = useState([]); // 🔹 Lista de mesas
-  const [mesaSeleccionada, setMesaSeleccionada] = useState(null); // 🔹 Mesa activa
-  const [pedidos, setPedidos] = useState([]); // 🔹 Pedidos de la mesa seleccionada
+  const [mesas, setMesas] = useState([]);
+  const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
+  const [pedidosMesa, setPedidosMesa] = useState([]);
   const [propina, setPropina] = useState(0);
   const [total, setTotal] = useState(0);
   const [totalFinal, setTotalFinal] = useState(0);
+  const [mesaIndexMap, setMesaIndexMap] = useState({});
+  const [cargando, setCargando] = useState(false);
 
-  // 🔹 Cargar lista de mesas (simulación o desde API)
+  // Obtener mesas activas
   useEffect(() => {
-    api.get("/mesas")
-      .then((res) => setMesas(res.data))
-      .catch((err) => {
-        console.warn("No hay endpoint /mesas, usando datos simulados");
-        setMesas([
-          { id: 1, nombre: "Mesa 1" },
-          { id: 2, nombre: "Mesa 2" },
-          { id: 3, nombre: "Mesa 3" },
-        ]);
-      });
+    api
+      .get("/mesas")
+      .then((res) => {
+        const mesasOrdenadas = (res.data || []).slice().sort((a, b) => a.id - b.id);
+        setMesas(mesasOrdenadas);
+      })
+      .catch(() => setMesas([]));
   }, []);
 
-  // 🔹 Cargar pedidos al seleccionar una mesa
-  const seleccionarMesa = (mesa) => {
+  useEffect(() => {
+    if(mesas.length > 0) {
+      const map = {};
+      mesas.forEach((mesa, index) => {
+        map[mesa.id] = index + 1;
+    });
+    setMesaIndexMap(map);
+    }
+  }, [mesas]);
+
+  // Obtener pedidos de la mesa seleccionada
+  const cargarPedidosMesa = async (mesa) => {
+    setCargando(true);
     setMesaSeleccionada(mesa);
-    api.get(`/pedidos?mesa_id=${mesa.id}`)
-      .then((res) => {
-        setPedidos(res.data);
-        calcularTotal(res.data);
-      })
-      .catch((err) => console.error("Error al cargar pedidos:", err));
+
+    try {
+      console.log("Cargando pedidos para mesa:", mesa);
+      const res = await api.get("/pedidos");
+      console.log("Respuesta de pedidos:", res.data);
+      
+      // Obtener todas las cuentas para saber qué pedidos ya fueron cobrados
+      const cuentasRes = await api.get("/cuentas");
+      const pedidosConCuenta = new Set(cuentasRes.data.map(c => c.pedido_id));
+      
+      const pedidosFiltrados = res.data.filter(
+        (p) => p.mesa_id === mesa.id && p.estado === "entregado" && !pedidosConCuenta.has(p.id)
+      );
+
+      setPedidosMesa(pedidosFiltrados);
+
+      const totalCalc = pedidosFiltrados.reduce((acc, pedido) => {
+        if (!pedido.detalle_pedido) return acc;
+
+        const subtotalPedido = pedido.detalle_pedido.reduce(
+          (sub, item) => sub + Number(item.subtotal || 0),
+          0
+        );
+
+        return acc + subtotalPedido;
+      }, 0);
+
+      setTotal(totalCalc);
+      setTotalFinal(totalCalc + propina);
+    } catch (error) {
+      console.error("Error cargando pedidos:", error);
+      console.error("Detalles del error:", error.response?.data || error.message);
+      setPedidosMesa([]);
+      alert("Error al cargar pedidos: " + (error.response?.data?.message || error.message));
+    } finally {
+      setCargando(false);
+    }
   };
 
-  // 🔹 Calcular totales
-  const calcularTotal = (lista) => {
-    const suma = lista.reduce(
-      (acc, p) => acc + parseFloat(p.precio || 0) * parseInt(p.cantidad || 1),
-      0
-    );
-    setTotal(suma);
-    setTotalFinal(suma + parseFloat(propina || 0));
-  };
-
+  // Calcular propina
   const handlePropinaChange = (e) => {
-    const valor = parseFloat(e.target.value) || 0;
+    const valor = Number(e.target.value) || 0;
     setPropina(valor);
     setTotalFinal(total + valor);
   };
 
-  const marcarPagada = () => {
-  alert(`✅ La cuenta de ${mesaSeleccionada.nombre} fue marcada como pagada`);
+  // Marcar como pagada → crea cuenta en backend
+  const marcarPagada = async () => {
+    if (!pedidosMesa.length) {
+      alert("No hay pedidos para esta mesa.");
+      return;
+    }
 
-  // 🔹 Elimina la mesa del listado (simulado como "pagada")
-  setMesas((prev) => prev.filter((m) => m.id !== mesaSeleccionada.id));
+    if (!mesaSeleccionada) {
+      alert("No hay mesa seleccionada.");
+      return;
+    }
 
-  // 🔹 Reinicia todo
-  setMesaSeleccionada(null);
-  setPedidos([]);
-  setPropina(0);
-  setTotal(0);
-  setTotalFinal(0);
-};
+    const pedido = pedidosMesa[0]; // Tomamos el pedido principal
 
+    try {
+      // Crear la cuenta
+      await api.post("/cuentas", {
+        pedido_id: pedido.id,
+        mesa_id: mesaSeleccionada.id,
+        mesero_id: pedido.mesero_id,
+        subtotal: total,
+        propina: propina,
+      });
+
+      alert("Cuenta marcada como pagada.");
+
+      // Recargar pantalla
+      setMesaSeleccionada(null);
+      setPedidosMesa([]);
+      setPropina(0);
+      setTotal(0);
+      setTotalFinal(0);
+    } catch (error) {
+      console.error("Error al marcar pagada:", error);
+      console.error("Detalles:", error.response?.data);
+      alert("Error al marcar la cuenta como pagada: " + (error.response?.data?.mensaje || error.message));
+    }
+  };
+
+  // --- UI ---
+
+  if (cargando) {
+    return (
+      <div className="cuentas-container">
+        <div className="cuentas-header">
+          <h1>Cargando...</h1>
+          <p className="cuentas-subtitle">Obteniendo información de la mesa</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!mesaSeleccionada) {
-  return (
-    <div className="cuentas-container">
-      <h1>🪑 Selecciona una Mesa</h1>
+    return (
+      <div className="cuentas-container">
+        <div className="cuentas-header">
+          <h1>Gestión de Cuentas</h1>
+          <p className="cuentas-subtitle">Selecciona una mesa para ver su cuenta</p>
+        </div>
 
-      {/* 🔹 Botón para agregar nueva mesa */}
-      <button
-  className="btn-agregar-mesa"
-  onClick={() => {
-    const nuevaMesa = {
-      id: mesas.length + 1,
-      nombre: `Mesa ${mesas.length + 1}`,
-    };
-
-    // 🔹 Agregar la mesa a la lista
-    setMesas([...mesas, nuevaMesa]);
-
-    // 🔹 Abrir automáticamente la nueva mesa
-    setMesaSeleccionada(nuevaMesa);
-
-    // 🔹 (Opcional) Si tienes API, podrías guardar la mesa en el backend:
-    // api.post("/mesas", nuevaMesa).then(() => setMesaSeleccionada(nuevaMesa));
-  }}
->
-  ➕ Agregar Mesa
-</button>
-
-      <div className="mesas-lista">
-        {mesas.map((m) => (
-          <button key={m.id} className="mesa-btn" onClick={() => seleccionarMesa(m)}>
-            {m.nombre || `Mesa ${m.id}`}
-          </button>
-        ))}
+        <div className="mesas-lista">
+          {mesas.length > 0 ? (
+            mesas.map((m) => (
+              <button key={m.id} className="mesa-btn" onClick={() => cargarPedidosMesa(m)}>
+                Mesa {mesaIndexMap[m.id] || m.id}
+              </button>
+            ))
+          ) : (
+            <p className="sin-datos">No hay mesas activas.</p>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-  // 🔹 Si hay mesa seleccionada, mostrar su cuenta
   return (
     <div className="cuentas-container">
-      <button className="volver" onClick={() => setMesaSeleccionada(null)}>
-        🔙 Volver a Mesas
-      </button>
-      <h1>💰 Cuenta de {mesaSeleccionada.nombre}</h1>
+      <div className="cuentas-header">
+        <h1>Cuenta de Mesa {mesaIndexMap[mesaSeleccionada.id] || mesaSeleccionada.id}</h1>
+        <button className="btn-volver" onClick={() => setMesaSeleccionada(null)}>
+          ← Volver
+        </button>
+      </div>
 
       <table>
         <thead>
           <tr>
             <th>Platillo</th>
-            <th>Cantidad</th>
-            <th>Precio ($)</th>
-            <th>Subtotal ($)</th>
+            <th>Cant.</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
           </tr>
         </thead>
         <tbody>
-          {pedidos.length > 0 ? (
-            pedidos.map((p) => (
-              <tr key={p.id}>
-                <td>{p.nombre}</td>
-                <td>{p.cantidad || 1}</td>
-                <td>{parseFloat(p.precio).toFixed(2)}</td>
-                <td>{(parseFloat(p.precio || 0) * parseInt(p.cantidad || 1)).toFixed(2)}</td>
-              </tr>
-            ))
+          {pedidosMesa.length ? (
+            pedidosMesa.flatMap((pedido) =>
+              (pedido.detalle_pedido || []).map((item) => (
+                <tr key={item.id}>
+                  <td>{item.items_menu?.nombre || "Sin nombre"}</td>
+                  <td>{item.cantidad}</td>
+                  <td>${item.precio_unitario}</td>
+                  <td>${item.subtotal}</td>
+                </tr>
+              ))
+            )
           ) : (
             <tr>
               <td colSpan="4" style={{ textAlign: "center" }}>
@@ -141,23 +199,27 @@ function Cuentas() {
       </table>
 
       <div className="totales">
-        <p><strong>Total:</strong> ${total.toFixed(2)}</p>
-        <label>
-          Propina: $
-          <input
-            type="number"
-            min="0"
-            step="1"
-            value={propina}
-            onChange={handlePropinaChange}
-          />
-        </label>
-        <p><strong>Total Final:</strong> ${totalFinal.toFixed(2)}</p>
+        <div className="total-item">
+          <span className="total-label">Subtotal:</span>
+          <span className="total-valor">${total.toFixed(2)}</span>
+        </div>
+
+        <div className="total-item propina-input">
+          <label className="total-label">Propina:</label>
+          <input type="number" value={propina} onChange={handlePropinaChange} min="0" placeholder="0.00" />
+        </div>
+
+        <div className="total-item total-final">
+          <span className="total-label">Total Final:</span>
+          <span className="total-valor">${totalFinal.toFixed(2)}</span>
+        </div>
       </div>
 
-      <button onClick={marcarPagada} className="btn-pagada">
-        Marcar como Pagada ✅
-      </button>
+      <div className="acciones-cuenta">
+        <button className="btn-pagada" onClick={marcarPagada}>
+          ✓ Marcar como Pagada
+        </button>
+      </div>
     </div>
   );
 }

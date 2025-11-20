@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -15,46 +16,89 @@ const ReporteDiario = () => {
   const [fecha, setFecha] = useState("");
   const [reporte, setReporte] = useState(null);
   const [cargando, setCargando] = useState(false);
-
-  // Datos demo si no hay reporte aún
-  const datosDemo = {
-    total_pedidos: 12,
-    monto_total_vendido: 2450,
-  };
+  const navigate = useNavigate();
 
   const handleGenerarReporte = async () => {
-    if (!fecha) return alert("Selecciona una fecha primero.");
+    if (!fecha) {
+      alert("Selecciona una fecha primero.");
+      return;
+    }
+
     setCargando(true);
 
     try {
-      const response = await axios.get(
-        `http://localhost:5000/reporte-diario?fecha=${fecha}`
+      // Obtener todos los pedidos
+      const res = await api.get("/pedidos");
+      const pedidos = res.data || [];
+
+      // Filtrar pedidos por fecha exacta (YYYY-MM-DD)
+      const pedidosDelDia = pedidos.filter(
+        (p) => p.fecha && p.fecha.startsWith(fecha)
       );
-      setReporte(response.data);
+
+      if (pedidosDelDia.length === 0) {
+        setReporte({
+          total_pedidos: 0,
+          monto_total_vendido: 0,
+        });
+        setCargando(false);
+        return;
+      }
+
+      // Total de pedidos
+      const totalPedidos = pedidosDelDia.length;
+
+      // Total vendido (sumar subtotales de detalle_pedido)
+      const montoTotal = pedidosDelDia.reduce((acc, pedido) => {
+        if (!pedido.detalle_pedido) return acc;
+
+        const subtotalPedido = pedido.detalle_pedido.reduce(
+          (sub, item) => sub + Number(item.subtotal || 0),
+          0
+        );
+
+        return acc + subtotalPedido;
+      }, 0);
+
+      setReporte({
+        total_pedidos: totalPedidos,
+        monto_total_vendido: montoTotal,
+      });
     } catch (error) {
-      console.error("Error al obtener reporte", error);
-      alert("No se pudo obtener el reporte. Usando datos de ejemplo.");
-      setReporte(datosDemo);
+      console.error("Error obteniendo reporte diario:", error);
+
+      setReporte({
+        total_pedidos: 0,
+        monto_total_vendido: 0,
+      });
+
+      alert("Error al generar el reporte");
     } finally {
       setCargando(false);
     }
   };
 
-  // Usa reporte real si existe, si no usa demo
+  // Datos para la gráfica
   const data = [
     {
       name: "Pedidos",
-      value: reporte?.total_pedidos ?? datosDemo.total_pedidos,
+      value: reporte?.total_pedidos ?? 0,
     },
     {
       name: "Ventas $",
-      value: reporte?.monto_total_vendido ?? datosDemo.monto_total_vendido,
+      value: reporte?.monto_total_vendido ?? 0,
     },
   ];
 
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
-      <h2 className="text-2xl font-bold mb-4">📊 Reporte Diario de Ventas</h2>
+      <header className="crud-header">
+        <h3>📊 Reporte Diario de Ventas</h3>
+        <nav className="nav-menu">
+            <span onClick={() => navigate("/filtroReportes")} className="nav-link">Filtrar Reportes</span>
+            <span onClick={() => navigate("/CRUDPlatillos")} className="nav-link">CRUD</span>
+        </nav>
+      </header>
 
       {/* Filtro de fecha */}
       <div className="flex items-center gap-3 mb-6">
@@ -76,13 +120,14 @@ const ReporteDiario = () => {
         <div className="bg-gray-800 p-4 rounded shadow text-center">
           <p className="text-lg">📦 Pedidos</p>
           <p className="text-3xl font-bold">
-            {reporte?.total_pedidos ?? datosDemo.total_pedidos}
+            {reporte?.total_pedidos ?? 0}
           </p>
         </div>
+
         <div className="bg-gray-800 p-4 rounded shadow text-center">
           <p className="text-lg">💰 Ventas totales</p>
           <p className="text-3xl font-bold">
-            ${reporte?.monto_total_vendido ?? datosDemo.monto_total_vendido}
+            ${reporte?.monto_total_vendido ?? 0}
           </p>
         </div>
       </div>

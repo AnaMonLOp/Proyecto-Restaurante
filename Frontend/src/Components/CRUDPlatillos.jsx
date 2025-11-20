@@ -86,16 +86,15 @@ function CRUDPlatillos() {
 
   return (
     <div className="crud-platillos-container">
-      <div className="Navbar-crud">
-        <span className="NavMenu" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-          Mesero
-        </span>
-        <span className="NavMenu" onClick={() => navigate("/PantallaCocina")} style={{ cursor: "pointer" }}>
-          Cocina
-        </span>
-      </div>
-
-      <h1>🍽️ Gestión de Platillos</h1>
+        <header className="crud-header">
+          <h3 className="logo">🍽️ Gestión de Platillos</h3>
+          <nav className="nav-menu">
+            <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Gestion</span>
+            <span onClick={() => navigate("/reporteDiario")} className="nav-link">Reportes</span>
+            <span onClick={() => navigate("/cuenta")} className="nav-link">Cuenta</span>
+            <span onClick={() => navigate("/logout")} className="nav-link logout">Cerrar sesión</span>
+          </nav>
+        </header>
 
       <div className="form-container">
         <input
@@ -154,7 +153,7 @@ function CRUDPlatillos() {
           ))}
           {platillos.length === 0 && (
             <tr>
-              <td colSpan={4} style={{ textAlign: "center" }}>
+              <td colSpan={4} className="no-data">
                 No hay platillos registrados.
               </td>
             </tr>

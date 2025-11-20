@@ -64,18 +64,11 @@ const SelectorMesa = () => {
     <div className="selector-page">
       <header className="selector-header">
         <h1 className="logo">🍴 Restaurante</h1>
-        <div className="Navbar">
-          <span className="NavMenu" onClick={() => navigate("/pantallaCocina")} style={{ cursor: "pointer" }}>
-            Cocina
-          </span>
-          <span className="NavMenu" onClick={() => navigate("/CRUDPlatillos")} style={{ cursor: "pointer" }}>
-            CRUD menu
-          </span>
-        </div>
         <div className="header-right">
           <span className="pedidos" onClick={() => navigate("/pedidos")} style={{ cursor: "pointer" }}>
             Pedidos Activos
           </span>
+          <span onClick={() => navigate("/logout")} style={{ cursor: "pointer" }}>Cerrar sesión</span>
           <div className="usuario">
             <span className="nombre">{usuario.nombre}</span>
             <span className="rol">{usuario.rol}</span>

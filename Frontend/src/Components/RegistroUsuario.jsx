@@ -1,16 +1,12 @@
 import { useMemo, useState } from "react";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
 import "./RegistroUsuario.css";
-
-function validarEmail(valor) {
-    const re = /^(?:[a-zA-Z0-9_'^&\/+-])+(?:\.(?:[a-zA-Z0-9_'^&\/+-])+)*@(?:(?:[a-zA-Z0-9-])+\.)+[a-zA-Z]{2,}$/;
-    return re.test(String(valor).toLowerCase());
-}
 
 function RegistroUsuario() {
     const [form, setForm] = useState({
         nombre: "",
-        correo: "",
+        identificador: "",
         password: "",
         rol: "",
     });
@@ -18,14 +14,15 @@ function RegistroUsuario() {
     const [enviando, setEnviando] = useState(false);
     const [errorServidor, setErrorServidor] = useState("");
     const [exito, setExito] = useState(false);
+    const navigate = useNavigate();
 
     const errores = useMemo(() => {
         const e = {};
         if (!form.nombre.trim()) e.nombre = "El nombre es obligatorio";
         else if (form.nombre.trim().length < 2) e.nombre = "Mínimo 2 caracteres";
 
-        if (!form.correo.trim()) e.correo = "El correo es obligatorio";
-        else if (!validarEmail(form.correo)) e.correo = "Formato de correo inválido";
+        if (!form.identificador.trim()) e.identificador = "El identificador es obligatorio";
+        else if (form.identificador.trim().length < 3) e.identificador = "Mínimo 3 caracteres";
 
         if (!form.password) e.password = "La contraseña es obligatoria";
         else if (form.password.length < 6) e.password = "Mínimo 6 caracteres";
@@ -42,25 +39,29 @@ function RegistroUsuario() {
 
     async function onSubmit(e) {
         e.preventDefault();
-        setTouched({ nombre: true, correo: true, password: true, rol: true });
+        setTouched({ nombre: true, identificador: true, password: true, rol: true });
         setErrorServidor("");
         setExito(false);
         if (!esValido) return;
         setEnviando(true);
         try {
         const payload = {
+            identificador: form.identificador,
+            password: form.password,
             nombre: form.nombre,
-            correo: form.correo,
-            contrasena: form.password,
             rol: form.rol,
         };
-        await api.post("/usuarios", payload);
+        console.log("Intentando registrar:", payload);
+        const response = await api.post("/auth/registro", payload);
+        console.log("Respuesta del servidor:", response.data);
         setExito(true);
-        setForm({ nombre: "", correo: "", password: "", rol: "" });
+        setForm({ nombre: "", identificador: "", password: "", rol: "" });
         setTouched({});
         } catch (err) {
-        if (err?.response?.status === 409) {
-            setErrorServidor("El correo ya está registrado");
+        console.error("Error completo:", err);
+        console.error("Response data:", err?.response?.data);
+        if (err?.response?.status === 409 || err?.response?.status === 400) {
+            setErrorServidor("El identificador ya está registrado");
         } else {
             setErrorServidor("No se pudo registrar. Intenta de nuevo");
         }
@@ -72,6 +73,12 @@ function RegistroUsuario() {
     return (
         <div className="registro-page">
         <div className="registro-card">
+            <header className="crud-header">
+                <nav className="nav-menu">
+                    <span onClick={() => navigate("/registro-admin")} className="nav-link">Registro Administrador</span>
+                    <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Volver</span>
+                </nav>
+            </header>
             <h2 className="registro-title">Registrar usuario</h2>
             <p className="registro-subtitle">Crea una cuenta para el sistema</p>
 
@@ -95,19 +102,19 @@ function RegistroUsuario() {
                 </div>
 
                 <div className="field">
-                <label className="label" htmlFor="correo">Correo</label>
+                <label className="label" htmlFor="identificador">Identificador</label>
                 <input
-                    id="correo"
+                    id="identificador"
                     className="input"
-                    type="email"
-                    placeholder="usuario@ejemplo.com"
-                    value={form.correo}
-                    onChange={(e) => actualizar("correo", e.target.value)}
-                    onBlur={() => setTouched((t) => ({ ...t, correo: true }))}
-                    autoComplete="email"
+                    type="text"
+                    placeholder="mesero01, admin01, cocina01"
+                    value={form.identificador}
+                    onChange={(e) => actualizar("identificador", e.target.value)}
+                    onBlur={() => setTouched((t) => ({ ...t, identificador: true }))}
+                    autoComplete="username"
                 />
-                {touched.correo && errores.correo && (
-                    <span className="error-text">{errores.correo}</span>
+                {touched.identificador && errores.identificador && (
+                    <span className="error-text">{errores.identificador}</span>
                 )}
                 </div>
 
@@ -140,8 +147,8 @@ function RegistroUsuario() {
                     <option value="" disabled>
                     Selecciona un rol
                     </option>
-                    <option value="Mesero">Mesero</option>
-                    <option value="Cocinero">Cocinero</option>
+                    <option value="mesero">Mesero</option>
+                    <option value="cocina">Cocinero</option>
                 </select>
                 {touched.rol && errores.rol && (
                     <span className="error-text">{errores.rol}</span>
@@ -164,7 +171,7 @@ function RegistroUsuario() {
                     className="btn-secondary"
                     type="button"
                     onClick={() => {
-                    setForm({ nombre: "", correo: "", password: "", rol: "" });
+                    setForm({ nombre: "", identificador: "", password: "", rol: "" });
                     setTouched({});
                     setErrorServidor("");
                     setExito(false);

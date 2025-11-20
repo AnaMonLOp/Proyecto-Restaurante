@@ -2,15 +2,10 @@ import { useMemo, useState } from "react";
 import api from "../api/axios";
 import "./RegistroUsuario.css";
 
-function validarEmail(valor) {
-    const re = /^(?:[a-zA-Z0-9_'^&\/+-])+(?:\.(?:[a-zA-Z0-9_'^&\/+-])+)*@(?:(?:[a-zA-Z0-9-])+\.)+[a-zA-Z]{2,}$/;
-    return re.test(String(valor).toLowerCase());
-}
-
 function RegistroAdmin() {
     const [form, setForm] = useState({
         nombre: "",
-        correo: "",
+        identificador: "",
         password: "",
     });
     const [touched, setTouched] = useState({});
@@ -23,8 +18,8 @@ function RegistroAdmin() {
         if (!form.nombre.trim()) e.nombre = "El nombre es obligatorio";
         else if (form.nombre.trim().length < 2) e.nombre = "Mínimo 2 caracteres";
 
-        if (!form.correo.trim()) e.correo = "El correo es obligatorio";
-        else if (!validarEmail(form.correo)) e.correo = "Formato de correo inválido";
+        if (!form.identificador.trim()) e.identificador = "El identificador es obligatorio";
+        else if (form.identificador.trim().length < 3) e.identificador = "Mínimo 3 caracteres";
 
         if (!form.password) e.password = "La contraseña es obligatoria";
         else if (form.password.length < 6) e.password = "Mínimo 6 caracteres";
@@ -40,25 +35,25 @@ function RegistroAdmin() {
 
     async function onSubmit(e) {
         e.preventDefault();
-        setTouched({ nombre: true, correo: true, password: true });
+        setTouched({ nombre: true, identificador: true, password: true });
         setErrorServidor("");
         setExito(false);
         if (!esValido) return;
         setEnviando(true);
         try {
             const payload = {
+                identificador: form.identificador,
+                password: form.password,
                 nombre: form.nombre,
-                correo: form.correo,
-                contrasena: form.password,
-                rol: "Administrador",
+                rol: "administrador",
             };
-            await api.post("/usuarios", payload);
+            await api.post("/auth/registro", payload);
             setExito(true);
-            setForm({ nombre: "", correo: "", password: "" });
+            setForm({ nombre: "", identificador: "", password: "" });
             setTouched({});
         } catch (err) {
-            if (err?.response?.status === 409) {
-                setErrorServidor("El correo ya está registrado");
+            if (err?.response?.status === 409 || err?.response?.status === 400) {
+                setErrorServidor("El identificador ya está registrado");
             } else {
                 setErrorServidor("No se pudo registrar. Intenta de nuevo");
             }
@@ -93,19 +88,19 @@ function RegistroAdmin() {
                         </div>
 
                         <div className="field">
-                            <label className="label" htmlFor="correo">Correo</label>
+                            <label className="label" htmlFor="identificador">Identificador</label>
                             <input
-                                id="correo"
+                                id="identificador"
                                 className="input"
-                                type="email"
-                                placeholder="usuario@ejemplo.com"
-                                value={form.correo}
-                                onChange={(e) => actualizar("correo", e.target.value)}
-                                onBlur={() => setTouched((t) => ({ ...t, correo: true }))}
-                                autoComplete="email"
+                                type="text"
+                                placeholder="admin01, admin02"
+                                value={form.identificador}
+                                onChange={(e) => actualizar("identificador", e.target.value)}
+                                onBlur={() => setTouched((t) => ({ ...t, identificador: true }))}
+                                autoComplete="username"
                             />
-                            {touched.correo && errores.correo && (
-                                <span className="error-text">{errores.correo}</span>
+                            {touched.identificador && errores.identificador && (
+                                <span className="error-text">{errores.identificador}</span>
                             )}
                         </div>
 
@@ -142,7 +137,7 @@ function RegistroAdmin() {
                                 className="btn-secondary"
                                 type="button"
                                 onClick={() => {
-                                    setForm({ nombre: "", correo: "", password: "" });
+                                    setForm({ nombre: "", identificador: "", password: "" });
                                     setTouched({});
                                     setErrorServidor("");
                                     setExito(false);
