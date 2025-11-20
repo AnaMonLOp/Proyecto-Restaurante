@@ -95,77 +95,62 @@ app.get("/api/platillos", verificarToken, async (req, res) => {
 });
 
 // crear platillo
-app.post(
-  "/api/platillos",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { nombre, descripcion, precio, categoria_id } = req.body;
-    if (!nombre || !precio) {
-      return res
-        .status(400)
-        .json({ mensaje: "Nombre y precio son obligatorios" });
-    }
-    try {
-      const { data, error } = await supabase
-        .from("items_menu")
-        .insert([{ nombre, descripcion, precio, categoria_id }])
-        .select();
-
-      if (error) throw error;
-      res.status(201).json({ mensaje: "Platillo creado", platillo: data[0] });
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+app.post("/api/platillos", verificarToken, async (req, res) => {
+  const { nombre, descripcion, precio, categoria_id } = req.body;
+  if (!nombre || !precio) {
+    return res
+      .status(400)
+      .json({ mensaje: "Nombre y precio son obligatorios" });
   }
-);
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .insert([{ nombre, descripcion, precio, categoria_id }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json({ mensaje: "Platillo creado", platillo: data[0] });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // actualizar platillo
-app.put(
-  "/api/platillos/:id",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const idPlatillo = req.params.id;
-    const { nombre, descripcion, precio, categoria_id } = req.body;
+app.put("/api/platillos/:id", verificarToken, async (req, res) => {
+  const idPlatillo = req.params.id;
+  const { nombre, descripcion, precio, categoria_id } = req.body;
 
-    if (!nombre || !precio) {
-      return res.status(400).json({ mensaje: "Faltan datos" });
-    }
-    try {
-      const { data, error } = await supabase
-        .from("items_menu")
-        .update({ nombre, descripcion, precio, categoria_id })
-        .eq("id", idPlatillo);
-
-      if (error) throw error;
-      res.status(200).json({ mensaje: "Platillo actualizado" });
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (!nombre || !precio) {
+    return res.status(400).json({ mensaje: "Faltan datos" });
   }
-);
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .update({ nombre, descripcion, precio, categoria_id })
+      .eq("id", idPlatillo);
+
+    if (error) throw error;
+    res.status(200).json({ mensaje: "Platillo actualizado" });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // eliminar platillo
-app.delete(
-  "/api/platillos/:id",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const idPlatillo = req.params.id;
-    try {
-      const { data, error } = await supabase
-        .from("items_menu")
-        .delete()
-        .eq("id", idPlatillo);
+app.delete("/api/platillos/:id", verificarToken, async (req, res) => {
+  const idPlatillo = req.params.id;
+  try {
+    const { data, error } = await supabase
+      .from("items_menu")
+      .delete()
+      .eq("id", idPlatillo);
 
-      if (error) throw error;
-      res.status(200).json({ mensaje: "Platillo eliminado" });
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json({ mensaje: "Platillo eliminado" });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 //-----------------------------------
 //-------- Categorías APIs
@@ -185,77 +170,65 @@ app.get("/api/categorias", verificarToken, async (req, res) => {
 });
 
 // crear categoria
-app.post(
-  "/api/categorias",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { nombre, descripcion } = req.body;
+app.post("/api/categorias", verificarToken, async (req, res) => {
+  const { nombre, descripcion } = req.body;
 
-    if (!nombre) {
-      return res.status(400).json({ mensaje: "El nombre es obligatorio" });
-    }
-    try {
-      const { data, error } = await supabase
-        .from("categorias_menu")
-        .insert([{ nombre, descripcion }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      res.status(201).json({ mensaje: "Categoría creada", categoria: data });
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (!nombre) {
+    return res.status(400).json({ mensaje: "El nombre es obligatorio" });
   }
-);
+  try {
+    const { data, error } = await supabase
+      .from("categorias_menu")
+      .insert([{ nombre, descripcion }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ mensaje: "Categoría creada", categoria: data });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // editar categoria ::: ya tiene estado activo o inactivo
-app.put(
-  "/api/categorias/:id",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { id } = req.params;
-    const { nombre, descripcion, orden, activa } = req.body;
+app.put("/api/categorias/:id", verificarToken, async (req, res) => {
+  const { id } = req.params;
+  const { nombre, descripcion, orden, activa } = req.body;
 
-    if (
-      !nombre &&
-      descripcion === undefined &&
-      orden === undefined &&
-      activa === undefined
-    ) {
-      return res.status(400).json({ mensaje: "No hay datos para actualizar" });
-    }
-
-    try {
-      const updateData = {};
-      if (nombre !== undefined) updateData.nombre = nombre;
-      if (descripcion !== undefined) updateData.descripcion = descripcion;
-      if (orden !== undefined) updateData.orden = orden;
-      if (activa !== undefined) updateData.activa = activa;
-
-      const { data, error } = await supabase
-        .from("categorias_menu")
-        .update(nombre, descripcion, orden, activa)
-        .eq("id", id)
-        .select();
-
-      if (error) throw error;
-
-      if (!data) {
-        return res.status(404).json({ mensaje: "Categoría no encontrada" });
-      }
-
-      res
-        .status(200)
-        .json({ mensaje: "Categoría actualizada", categoria: data });
-    } catch (error) {
-      console.error("Error al actualizar categoría:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (
+    !nombre &&
+    descripcion === undefined &&
+    orden === undefined &&
+    activa === undefined
+  ) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
   }
-);
+
+  try {
+    const updateData = {};
+    if (nombre !== undefined) updateData.nombre = nombre;
+    if (descripcion !== undefined) updateData.descripcion = descripcion;
+    if (orden !== undefined) updateData.orden = orden;
+    if (activa !== undefined) updateData.activa = activa;
+
+    const { data, error } = await supabase
+      .from("categorias_menu")
+      .update(nombre, descripcion, orden, activa)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.status(404).json({ mensaje: "Categoría no encontrada" });
+    }
+
+    res.status(200).json({ mensaje: "Categoría actualizada", categoria: data });
+  } catch (error) {
+    console.error("Error al actualizar categoría:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- Pedidos APIs
@@ -277,51 +250,44 @@ app.get("/api/pedidos", verificarToken, async (req, res) => {
 });
 
 // crear pedido
-app.post(
-  "/api/pedidos",
-  verificarToken,
-  verificarRol("mesero", "administrador"),
-  async (req, res) => {
-    const { mesa_id, mesero_id, platillos } = req.body;
+app.post("/api/pedidos", verificarToken, async (req, res) => {
+  const { mesa_id, mesero_id, platillos } = req.body;
 
-    if (!mesa_id || !platillos || platillos.length === 0) {
-      return res.status(400).json({ mensaje: "Faltan mesa_id o platillos" });
-    }
-
-    try {
-      const { data: pedidoData, error: pedidoError } = await supabase
-        .from("pedidos")
-        .insert([
-          { mesa_id: mesa_id, mesero_id: mesero_id, estado: "pendiente" },
-        ])
-        .select()
-        .single();
-
-      if (pedidoError) throw pedidoError;
-      const nuevoPedidoId = pedidoData.id;
-
-      const itemsParaInsertar = platillos.map((item) => ({
-        pedido_id: nuevoPedidoId,
-        item_menu_id: item.item_menu_id,
-        cantidad: item.cantidad,
-        precio_unitario: item.precio_unitario,
-        subtotal: item.cantidad * item.precio_unitario,
-      }));
-
-      const { error: detalleError } = await supabase
-        .from("detalle_pedido")
-        .insert(itemsParaInsertar);
-
-      req.io.emit("nuevo_pedido", pedidoData[0]);
-
-      if (detalleError) throw detalleError;
-
-      res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (!mesa_id || !platillos || platillos.length === 0) {
+    return res.status(400).json({ mensaje: "Faltan mesa_id o platillos" });
   }
-);
+
+  try {
+    const { data: pedidoData, error: pedidoError } = await supabase
+      .from("pedidos")
+      .insert([{ mesa_id: mesa_id, mesero_id: mesero_id, estado: "pendiente" }])
+      .select()
+      .single();
+
+    if (pedidoError) throw pedidoError;
+    const nuevoPedidoId = pedidoData.id;
+
+    const itemsParaInsertar = platillos.map((item) => ({
+      pedido_id: nuevoPedidoId,
+      item_menu_id: item.item_menu_id,
+      cantidad: item.cantidad,
+      precio_unitario: item.precio_unitario,
+      subtotal: item.cantidad * item.precio_unitario,
+    }));
+
+    const { error: detalleError } = await supabase
+      .from("detalle_pedido")
+      .insert(itemsParaInsertar);
+
+    req.io.emit("nuevo_pedido", pedidoData[0]);
+
+    if (detalleError) throw detalleError;
+
+    res.status(201).json({ mensaje: "Pedido creado", pedido: pedidoData });
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // actualizar pedido (solo estado y notas)
 app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
@@ -497,217 +463,176 @@ app.put("/api/pedidos/:id", verificarToken, async (req, res) => {
 //-----------------------------------
 
 //Obtener mesas
-app.get(
-  "/api/mesas",
-  verificarToken,
-  verificarRol("mesero", "administrador"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("mesas")
-        .select("*")
-        .eq("activa", true);
+app.get("/api/mesas", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("mesas")
+      .select("*")
+      .eq("activa", true);
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // crear mesa
-app.post(
-  "/api/mesas",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { numero, capacidad, estado } = req.body;
+app.post("/api/mesas", verificarToken, async (req, res) => {
+  const { numero, capacidad, estado } = req.body;
 
-    if (!numero || !capacidad) {
-      return res
-        .status(400)
-        .json({ mensaje: "Número y capacidad son obligatorios" });
-    }
-
-    const estadosValidos = ["disponible", "ocupada", "reservada"];
-    if (estado && !estadosValidos.includes(estado)) {
-      return res.status(400).json({
-        mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
-      });
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("mesas")
-        .insert([
-          {
-            numero,
-            capacidad,
-            estado: estado || "disponible", // Por defecto disponible
-          },
-        ])
-        .select();
-
-      if (error) throw error;
-
-      res.status(201).json({
-        mensaje: "Mesa creada",
-        mesa: data[0],
-      });
-    } catch (error) {
-      if (error.code === "23505") {
-        return res.status(400).json({
-          mensaje: "Ya existe una mesa con ese número",
-        });
-      }
-      console.error("Error al crear mesa:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (!numero || !capacidad) {
+    return res
+      .status(400)
+      .json({ mensaje: "Número y capacidad son obligatorios" });
   }
-);
+
+  const estadosValidos = ["disponible", "ocupada", "reservada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
+    });
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("mesas")
+      .insert([
+        {
+          numero,
+          capacidad,
+          estado: estado || "disponible", // Por defecto disponible
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Mesa creada",
+      mesa: data[0],
+    });
+  } catch (error) {
+    if (error.code === "23505") {
+      return res.status(400).json({
+        mensaje: "Ya existe una mesa con ese número",
+      });
+    }
+    console.error("Error al crear mesa:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // editar mesa (capacidad, estado y activa)
-app.put(
-  "/api/mesas/:id",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { id } = req.params;
-    const { capacidad, estado, activa } = req.body;
+app.put("/api/mesas/:id", verificarToken, async (req, res) => {
+  const { id } = req.params;
+  const { capacidad, estado, activa } = req.body;
 
-    if (
-      capacidad === undefined &&
-      estado === undefined &&
-      activa === undefined
-    ) {
-      return res.status(400).json({ mensaje: "No hay datos para actualizar" });
-    }
-
-    const estadosValidos = ["disponible", "ocupada", "reservada"];
-    if (estado && !estadosValidos.includes(estado)) {
-      return res.status(400).json({
-        mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
-      });
-    }
-
-    try {
-      const updateData = {};
-      if (capacidad !== undefined) updateData.capacidad = capacidad;
-      if (estado !== undefined) updateData.estado = estado;
-      if (activa !== undefined) updateData.activa = activa;
-
-      const { data, error } = await supabase
-        .from("mesas")
-        .update(updateData)
-        .eq("id", id)
-        .select();
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        return res.status(404).json({ mensaje: "Mesa no encontrada" });
-      }
-
-      res.status(200).json({
-        mensaje: "Mesa actualizada",
-        mesa: data[0],
-      });
-    } catch (error) {
-      console.error("Error al actualizar mesa:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (capacidad === undefined && estado === undefined && activa === undefined) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
   }
-);
+
+  const estadosValidos = ["disponible", "ocupada", "reservada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: disponible, ocupada o reservada",
+    });
+  }
+
+  try {
+    const updateData = {};
+    if (capacidad !== undefined) updateData.capacidad = capacidad;
+    if (estado !== undefined) updateData.estado = estado;
+    if (activa !== undefined) updateData.activa = activa;
+
+    const { data, error } = await supabase
+      .from("mesas")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Mesa no encontrada" });
+    }
+
+    res.status(200).json({
+      mensaje: "Mesa actualizada",
+      mesa: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar mesa:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- Usuarios APIs
 //-----------------------------------
 
 // Obtener TODOS los usuarios
-app.get(
-  "/api/usuarios",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select(
-          "id, identificador, nombre, rol, activo, created_at, updated_at"
-        );
+app.get("/api/usuarios", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, identificador, nombre, rol, activo, created_at, updated_at");
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      console.error("Error al consultar usuarios:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error al consultar usuarios:", error.message);
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // Obtener solo meseros
-app.get(
-  "/api/usuarios/meseros",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("id, nombre")
-        .eq("rol", "mesero");
-      //.eq("activo", true);
+app.get("/api/usuarios/meseros", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "mesero");
+    //.eq("activo", true);
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // Obtener solo cocina
-app.get(
-  "/api/usuarios/cocina",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("id, nombre")
-        .eq("rol", "cocina");
-      //.eq("activo", true);
+app.get("/api/usuarios/cocina", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "cocina");
+    //.eq("activo", true);
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // Obtener solo administradores
-app.get(
-  "/api/usuarios/administradores",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("id, nombre")
-        .eq("rol", "administrador");
-      //.eq("activo", true);
+app.get("/api/usuarios/administradores", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("usuarios")
+      .select("id, nombre")
+      .eq("rol", "administrador");
+    //.eq("activo", true);
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // Crear usuario
 app.post(
@@ -860,186 +785,166 @@ app.delete(
 //-----------------------------------
 
 //Obtener todas las cuentas
-app.get(
-  "/api/cuentas",
-  verificarToken,
-  verificarRol("administrador", "mesero"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("cuentas")
-        .select("*")
-        .order("created_at", { ascending: false });
+app.get("/api/cuentas", verificarToken, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("cuentas")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      res.status(200).json(data);
-    } catch (error) {
-      console.error("Error al consultar cuentas:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+    if (error) throw error;
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error al consultar cuentas:", error.message);
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 //Obtener cuenta por pedido_id
-app.get(
-  "/api/cuentas/pedido/:pedido_id",
-  verificarToken,
-  verificarRol("administrador", "mesero"),
-  async (req, res) => {
-    const { pedido_id } = req.params;
+app.get("/api/cuentas/pedido/:pedido_id", verificarToken, async (req, res) => {
+  const { pedido_id } = req.params;
 
-    try {
-      const { data, error } = await supabase
-        .from("cuentas")
-        .select("*")
-        .eq("pedido_id", pedido_id);
+  try {
+    const { data, error } = await supabase
+      .from("cuentas")
+      .select("*")
+      .eq("pedido_id", pedido_id);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      if (!data || data.length === 0) {
-        return res
-          .status(404)
-          .json({ mensaje: "No hay cuenta para este pedido" });
-      }
-
-      res.status(200).json(data[0]);
-    } catch (error) {
-      console.error("Error al consultar cuenta:", error.message);
-      res.status(500).json({ mensaje: error.message });
+    if (!data || data.length === 0) {
+      return res
+        .status(404)
+        .json({ mensaje: "No hay cuenta para este pedido" });
     }
+
+    res.status(200).json(data[0]);
+  } catch (error) {
+    console.error("Error al consultar cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
   }
-);
+});
 
 // Crear cuenta
-app.post(
-  "/api/cuentas",
-  verificarToken,
-  verificarRol("administrador", "mesero"),
-  async (req, res) => {
-    const { pedido_id, mesa_id, mesero_id, subtotal, propina } = req.body;
+app.post("/api/cuentas", verificarToken, async (req, res) => {
+  const { pedido_id, mesa_id, mesero_id, subtotal, propina } = req.body;
 
-    if (!pedido_id || !mesa_id || !mesero_id || subtotal === undefined) {
-      return res.status(400).json({
-        mensaje: "pedido_id, mesa_id, mesero_id y subtotal son obligatorios",
-      });
-    }
-
-    try {
-      const propinaFinal = propina || 0;
-      const total = parseFloat(subtotal) + parseFloat(propinaFinal);
-
-      const { data, error } = await supabase
-        .from("cuentas")
-        .insert([
-          {
-            pedido_id,
-            mesa_id,
-            mesero_id,
-            subtotal,
-            propina: propinaFinal,
-            total,
-            estado: "pendiente",
-          },
-        ])
-        .select();
-
-      if (error) throw error;
-
-      res.status(201).json({
-        mensaje: "Cuenta creada",
-        cuenta: data[0],
-      });
-    } catch (error) {
-      console.error("Error al crear cuenta:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (!pedido_id || !mesa_id || !mesero_id || subtotal === undefined) {
+    return res.status(400).json({
+      mensaje: "pedido_id, mesa_id, mesero_id y subtotal son obligatorios",
+    });
   }
-);
+
+  try {
+    const propinaFinal = propina || 0;
+    const total = parseFloat(subtotal) + parseFloat(propinaFinal);
+
+    const { data, error } = await supabase
+      .from("cuentas")
+      .insert([
+        {
+          pedido_id,
+          mesa_id,
+          mesero_id,
+          subtotal,
+          propina: propinaFinal,
+          total,
+          estado: "pendiente",
+        },
+      ])
+      .select();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      mensaje: "Cuenta creada",
+      cuenta: data[0],
+    });
+  } catch (error) {
+    console.error("Error al crear cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 // Editar cuenta (propina, método de pago, estado)
-app.put(
-  "/api/cuentas/:id",
-  verificarToken,
-  verificarRol("administrador", "mesero"),
-  async (req, res) => {
-    const { id } = req.params;
-    const { propina, metodo_pago, estado } = req.body;
+app.put("/api/cuentas/:id", verificarToken, async (req, res) => {
+  const { id } = req.params;
+  const { propina, metodo_pago, estado } = req.body;
 
-    if (
-      propina === undefined &&
-      metodo_pago === undefined &&
-      estado === undefined
-    ) {
-      return res.status(400).json({ mensaje: "No hay datos para actualizar" });
-    }
-
-    const metodosValidos = ["efectivo", "tarjeta", "transferencia", "mixto"];
-    if (metodo_pago && !metodosValidos.includes(metodo_pago)) {
-      return res.status(400).json({
-        mensaje:
-          "Método de pago inválido. Debe ser: efectivo, tarjeta, transferencia o mixto",
-      });
-    }
-
-    const estadosValidos = ["pendiente", "pagada", "cancelada"];
-    if (estado && !estadosValidos.includes(estado)) {
-      return res.status(400).json({
-        mensaje: "Estado inválido. Debe ser: pendiente, pagada o cancelada",
-      });
-    }
-
-    try {
-      const { data: cuentaActual, error: errorConsulta } = await supabase
-        .from("cuentas")
-        .select("subtotal, propina")
-        .eq("id", id);
-
-      if (errorConsulta) throw errorConsulta;
-
-      if (!cuentaActual || cuentaActual.length === 0) {
-        return res.status(404).json({ mensaje: "Cuenta no encontrada" });
-      }
-
-      const updateData = {};
-
-      if (propina !== undefined) {
-        updateData.propina = propina;
-        updateData.total =
-          parseFloat(cuentaActual[0].subtotal) + parseFloat(propina);
-      }
-
-      if (metodo_pago !== undefined) updateData.metodo_pago = metodo_pago;
-
-      if (estado !== undefined) {
-        updateData.estado = estado;
-
-        if (estado === "pagada") {
-          updateData.fecha_pago = new Date().toISOString();
-        }
-      }
-
-      const { data, error } = await supabase
-        .from("cuentas")
-        .update(updateData)
-        .eq("id", id)
-        .select();
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        return res.status(404).json({ mensaje: "Cuenta no encontrada" });
-      }
-
-      res.status(200).json({
-        mensaje: "Cuenta actualizada",
-        cuenta: data[0],
-      });
-    } catch (error) {
-      console.error("Error al actualizar cuenta:", error.message);
-      res.status(500).json({ mensaje: error.message });
-    }
+  if (
+    propina === undefined &&
+    metodo_pago === undefined &&
+    estado === undefined
+  ) {
+    return res.status(400).json({ mensaje: "No hay datos para actualizar" });
   }
-);
+
+  const metodosValidos = ["efectivo", "tarjeta", "transferencia", "mixto"];
+  if (metodo_pago && !metodosValidos.includes(metodo_pago)) {
+    return res.status(400).json({
+      mensaje:
+        "Método de pago inválido. Debe ser: efectivo, tarjeta, transferencia o mixto",
+    });
+  }
+
+  const estadosValidos = ["pendiente", "pagada", "cancelada"];
+  if (estado && !estadosValidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: "Estado inválido. Debe ser: pendiente, pagada o cancelada",
+    });
+  }
+
+  try {
+    const { data: cuentaActual, error: errorConsulta } = await supabase
+      .from("cuentas")
+      .select("subtotal, propina")
+      .eq("id", id);
+
+    if (errorConsulta) throw errorConsulta;
+
+    if (!cuentaActual || cuentaActual.length === 0) {
+      return res.status(404).json({ mensaje: "Cuenta no encontrada" });
+    }
+
+    const updateData = {};
+
+    if (propina !== undefined) {
+      updateData.propina = propina;
+      updateData.total =
+        parseFloat(cuentaActual[0].subtotal) + parseFloat(propina);
+    }
+
+    if (metodo_pago !== undefined) updateData.metodo_pago = metodo_pago;
+
+    if (estado !== undefined) {
+      updateData.estado = estado;
+
+      if (estado === "pagada") {
+        updateData.fecha_pago = new Date().toISOString();
+      }
+    }
+
+    const { data, error } = await supabase
+      .from("cuentas")
+      .update(updateData)
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      return res.status(404).json({ mensaje: "Cuenta no encontrada" });
+    }
+
+    res.status(200).json({
+      mensaje: "Cuenta actualizada",
+      cuenta: data[0],
+    });
+  } catch (error) {
+    console.error("Error al actualizar cuenta:", error.message);
+    res.status(500).json({ mensaje: error.message });
+  }
+});
 
 //-----------------------------------
 //-------- LOGIN & REGISTRO
@@ -1146,48 +1051,43 @@ app.post("/api/auth/registro", async (req, res) => {
 //-----------------------------------
 //-------- REPORTES APIs
 //-----------------------------------
-app.get(
-  "/api/reportes",
-  verificarToken,
-  verificarRol("administrador"),
-  async (req, res) => {
-    const { fecha } = req.query;
+app.get("/api/reportes", verificarToken, async (req, res) => {
+  const { fecha } = req.query;
 
-    if (!fecha) {
-      return res
-        .status(400)
-        .json({ mensaje: "La fecha es obligatoria (YYYY-MM-DD)" });
-    }
-
-    try {
-      // Obtener cuentas pagadas del día
-      const { data: cuentas, error } = await supabase
-        .from("cuentas")
-        .select("id, total")
-        .eq("estado", "pagada")
-        .gte("fecha_pago", `${fecha} 00:00:00`)
-        .lte("fecha_pago", `${fecha} 23:59:59`);
-
-      if (error) throw error;
-
-      const total_pedidos = cuentas.length;
-      const monto_total = cuentas.reduce(
-        (acumulador, dato) => acumulador + Number(dato.total),
-        0
-      );
-      const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
-
-      res.status(200).json({
-        fecha,
-        total_pedidos,
-        monto_total_vendido: Number(monto_total.toFixed(2)),
-        promedio_por_pedido: Number(promedio.toFixed(2)),
-      });
-    } catch (err) {
-      res.status(500).json({ mensaje: err.message });
-    }
+  if (!fecha) {
+    return res
+      .status(400)
+      .json({ mensaje: "La fecha es obligatoria (YYYY-MM-DD)" });
   }
-);
+
+  try {
+    // Obtener cuentas pagadas del día
+    const { data: cuentas, error } = await supabase
+      .from("cuentas")
+      .select("id, total")
+      .eq("estado", "pagada")
+      .gte("fecha_pago", `${fecha} 00:00:00`)
+      .lte("fecha_pago", `${fecha} 23:59:59`);
+
+    if (error) throw error;
+
+    const total_pedidos = cuentas.length;
+    const monto_total = cuentas.reduce(
+      (acumulador, dato) => acumulador + Number(dato.total),
+      0
+    );
+    const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
+
+    res.status(200).json({
+      fecha,
+      total_pedidos,
+      monto_total_vendido: Number(monto_total.toFixed(2)),
+      promedio_por_pedido: Number(promedio.toFixed(2)),
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: err.message });
+  }
+});
 
 /* const puerto = process.env.PORT || 3001;
 app.listen(puerto, () => {
