@@ -995,14 +995,16 @@ app.get("/api/reportes", verificarToken, async (req, res) => {
   }
 
   try {
-    // Obtener cuentas del día
-    const { data: cuentas, error } = await supabase
+    const inicioDia = `${fecha} 00:00:00`;
+    const finDia = `${fecha} 23:59:59`;
+    
+    const { data: cuentas, error: errorCuentas } = await supabase
       .from("cuentas")
       .select("id, total")
-      .gte("fecha_pago", `${fecha} 00:00:00`)
-      .lte("fecha_pago", `${fecha} 23:59:59`);
+      .gte("fecha_pago", inicioDia)
+      .lte("fecha_pago", finDia);
 
-    if (error) throw error;
+    if (errorCuentas) throw errorCuentas;
 
     const total_pedidos = cuentas.length;
     const monto_total = cuentas.reduce(
@@ -1011,15 +1013,126 @@ app.get("/api/reportes", verificarToken, async (req, res) => {
     );
     const promedio = total_pedidos > 0 ? monto_total / total_pedidos : 0;
 
+    const { data: cancelados, error: errorCancelados } = await supabase
+      .from("pedidos")
+      .select("id") 
+      .eq("estado", "cancelado")
+      .gte("updated_at", inicioDia)
+      .lte("updated_at", finDia);
+    
+    if (errorCancelados) throw errorCancelados;
+      const total_cancelados = cancelados.length;
+
     res.status(200).json({
       fecha,
       total_pedidos,
       monto_total_vendido: Number(monto_total.toFixed(2)),
       promedio_por_pedido: Number(promedio.toFixed(2)),
+      total_cancelados,
     });
   } catch (err) {
+    console.error("Error al generar reporte:", err.message);
     res.status(500).json({ mensaje: err.message });
   }
+});
+
+//-----------------------------------
+//-------- Pedidos agrupados por mesas APIs
+//-----------------------------------
+
+app.get("/api/pedidos/mesa/:numero", verificarToken, async (req, res) => {
+  const { numero } = req.params;
+
+  try{
+    //verificar si mesa existe
+    const {data: mesa } = await supabase
+      .from("mesas")
+      .select("id, numero")
+      .eq("numero", numero)
+      .eq("activa", true)
+      .single();
+    
+    if(!mesa) {
+      return res.status(404).json({
+        mensaje: `La mesa con número ${numero} no existe o está activa`,
+      });
+    }
+    const { data: pedidos, error:errorPedidos } = await supabase
+      .from("pedidos")
+      .select(`*,
+        detalle_pedido(
+          *,
+          items_menu!inner (*)
+        )`)
+      .eq("mesa_id", mesa.id)
+      .in("estado", ["pendiente", "en_preparacion"])
+      .order("fecha_pedido", {ascending:true});
+    
+      if(errorPedidos) throw errorPedidos;
+
+      if (pedidos.length === 0) {
+        return res.status(200).json({
+            mensaje: `Mesa ${mesa.numero} encontrada, pero no tiene pedidos pendientes o en preparación.`,
+            mesa: mesa.numero,
+            pedidos: [],
+        });
+    }
+
+      res.status(200).json({
+        mesa: mesa.numero,
+        pedidos,
+      });
+   } catch (error) {
+      res.status(500).json({mensaje: error.mensaje});
+   }
+});
+
+app.put("/api/pedidos/mesa/:numero/estado", verificarToken, async (req, res) => {
+  const { numero } = req.params;
+  const { estado } = req.body;
+
+  const estadosPermitidos = ["listo"];
+  if(!estado || !estadosPermitidos.includes(estado)){
+    return res.status(400).json({
+      mensaje: `Estado inválido. Solo se permite: ${estadosPermitidos.join(", ")}`,
+    });
+  }
+  try{
+    //verificar si mesa existe
+    const {data: mesa, error: errorMesa } = await supabase
+      .from("mesas")
+      .select("id, numero")
+      .eq("numero", numero)
+      .eq("activa", true)
+      .single();
+    
+    if(!mesa) {
+      return res.status(404).json({
+        mensaje: `La mesa con número ${numero} no existe o está activa`,
+      });
+    }
+
+    const { data, errorUpdate } = await supabase
+      .from("pedidos")
+      .update({
+        estado,
+        fecha_listo: estado === "listo" ? new Date().toISOString() : null,
+      })
+      .eq("mesa_id", mesa.id)
+      .in("estado", ["pendiente", "en_preparacion"])
+      .select();
+    
+      if(errorUpdate) throw errorUpdate;
+
+      res.status(200).json({
+        mensaje: "Estado de pedidos actualizado correctamente",
+        mesa: mesa.numero,
+        pedidos_actualizados: data.length,
+        pedidos: data,
+      });
+   } catch (error) {
+      res.status(500).json({mensaje: error.mensaje});
+   }
 });
 
 app.listen(puerto, () => {
