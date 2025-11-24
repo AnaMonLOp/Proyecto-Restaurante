@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+
+// COMPONENTES
 import CRUDPlatillos from "./Components/CRUDPlatillos";
 import SelectorMesa from "./Components/SelectorMesa";
 import PaginaAlimentos from "./Components/PaginaAlimentos";
@@ -10,6 +12,9 @@ import RegistroUsuario from "./Components/RegistroUsuario";
 import RegistroAdmin from "./Components/RegistroAdmin";
 import GestionUsuarios from "./Components/GestionUsuarios";
 import FiltroReporte from "./Components/FiltroReporte";
+import ReporteDiario from "./Components/ReporteDiario";
+import Navbar from "./Components/Navbar";
+
 import "./App.css";
 
 // 🔐 RUTA PROTEGIDA
@@ -21,7 +26,17 @@ const RutaProtegida = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return (
+    <>
+      {/* NAVBAR SOLO PARA ADMIN */}
+      {usuario.rol === "administrador" && <Navbar />}
+
+      {/* CONTENIDO DE LA RUTA */}
+      <div style={{ marginTop: usuario.rol === "administrador" ? "70px" : "0" }}>
+        {children}
+      </div>
+    </>
+  );
 };
 
 // 🔓 CERRAR SESIÓN
@@ -114,6 +129,15 @@ function App() {
         element={
           <RutaProtegida>
             <FiltroReporte />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/reporte-diario"
+        element={
+          <RutaProtegida>
+            <ReporteDiario />
           </RutaProtegida>
         }
       />
