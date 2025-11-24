@@ -1,0 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+:root {
+  --color-fondo: #0d1b12;
+  --color-fondo-card: #14291b;
+  --color-fondo-usuario: #16351f;
+  --color-texto: #ffffff;
+  --color-texto-claro: #b9ffc1; 
+  --color-texto-secundario: #9fb3a2;
+  --color-borde: rgba(255, 255, 255, 0.1);
+  --color-sombra: rgba(0, 255, 80, 0.1);
+  --color-sombra-hover: rgba(0, 255, 80, 0.25);
+
+ 
+  --color-verde: #00d46a;
+  --color-verde-hover: #00ff80;
+  --color-azul: #4da6ff;
+  --color-azul-hover: #1a90ff;
+  --color-naranja: #ff9f40;
+  --color-rojo: #ff4d4d;
+  --color-rojo-hover: #ff1a1a;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+.selector-page {
+  min-height: 100vh;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: "Inter", sans-serif;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--color-borde);
+  background-color: var(--color-fondo);
+}
+
+.logo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-texto-claro);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.pedidos {
+  font-size: 1rem;
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.Navbar{
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.NavMenu{
+  color: #ffffff;
+}
+
+.usuario {
+  background-color: var(--color-fondo-usuario);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.nombre {
+  font-weight: 600;
+  color: var(--color-texto-claro);
+}
+
+.rol {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-texto-secundario);
+}
+
+.selector-mesa-container {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.selector-titulo {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: var(--color-texto);
+}
+
+.mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  justify-items: center;
+}
+
+.mesa-card {
+  background-color: var(--color-fondo-card);
+  padding: 0;
+  border-radius: 14px;
+  width: 100%;
+  box-shadow: 0 0 8px var(--color-sombra);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.mesa-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 12px var(--color-sombra-hover);
+}
+
+¿
+.mesa-imagen-container {
+  display: flex;
+  padding: 0;
+}
+
+.mesa-imagen {
+  width: 100%; 
+  height: 120px; 
+  object-fit: cover; 
+}
+
+.mesa-info {
+  text-align: center;
+  padding: 1rem;
+}
+
+.mesa-nombre {
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.3rem;
+}
+
+.estado {
+  font-size: 0.9rem;
+}
+
+.estado.verde {
+  color: var(--color-verde);
+}
+.estado.azul {
+  color: var(--color-azul);
+}
+.estado.naranja {
+  color: var(--color-naranja);
+}
+
+.mesa-botones {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: auto; 
+  padding: 0 1rem 1rem 1rem;
+}
+
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn.verde {
+  background-color: var(--color-verde);
+  color: var(--color-fondo);
+}
+.btn.verde:hover {
+  background-color: var(--color-verde-hover);
+}
+
+.btn.azul {
+  background-color: var(--color-azul);
+  color: white;
+}
+.btn.azul:hover {
+  background-color: var(--color-azul-hover);
+}
+
+.btn.rojo {
+  background-color: var(--color-rojo);
+  color: white;
+}
+.btn.rojo:hover {
+  background-color: var(--color-rojo-hover);
+}
