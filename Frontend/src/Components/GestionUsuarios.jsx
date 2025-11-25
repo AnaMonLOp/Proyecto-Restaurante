@@ -91,13 +91,7 @@ function GestionUsuarios() {
 
     return (
         <div className="gestion-container">
-            <header className="crud-header">
-                <h3> 👤 Gestión de usuarios</h3>
-                <nav className="nav-menu">
-                    <span onClick={() => navigate("/registro")} className="nav-link">Registro</span>
-                    <span onClick={() => navigate("/CRUDPlatillos")} className="nav-link">CRUD</span>
-                </nav>
-            </header>
+            <h3> 👤 Gestión de usuarios</h3>
             <div className="gestion-header">
                 <p className="subtitulo">Administra los roles del personal</p>
             </div>

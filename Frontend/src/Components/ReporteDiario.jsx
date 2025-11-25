@@ -98,13 +98,7 @@ export default function ReporteDiario() {
 
   return (
     <div className="p-6 bg-gray-900 text-white min-h-screen">
-      <header className="crud-header">
-        <h3>📊 Reporte Diario de Ventas</h3>
-        <nav className="nav-menu">
-          <span onClick={() => navigate("/filtroReportes")} className="nav-link">Filtrar Reportes</span>
-          <span onClick={() => navigate("/CRUDPlatillos")} className="nav-link">CRUD</span>
-        </nav>
-      </header>
+      <h3>📊 Reporte Diario de Ventas</h3>
 
       <div className="reporte-filtros">
         <div className="filtro-line">

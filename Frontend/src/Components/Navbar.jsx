@@ -27,7 +27,7 @@ function Navbar() {
         <Link to="/CRUDPlatillos" className="nav-btn">Platillos</Link>
         <Link to="/filtroReportes" className="nav-btn">Reportes</Link>
         <Link to="/gestion-usuarios" className="nav-btn">Usuarios</Link>
-        <Link to="/registro-admin" className="nav-btn">Cuentas</Link>
+        <Link to="/cuenta" className="nav-btn">Cuentas</Link>
       </div>
 
       <div className="nav-right">

@@ -1,0 +1,170 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+:root {
+  --color-fondo: #0d1b12;
+  --color-fondo-card: #14291b;
+  --color-texto: #ffffff;
+  --color-texto-claro: #b9ffc1;
+  --color-acento: #00d46a;
+  --color-sec: #9fb3a2;
+  --card-radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+.cuentas-container {
+  min-height: 100vh;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: "Inter", system-ui, Arial, sans-serif;
+  padding: 2rem;
+}
+
+.cuentas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.cuentas-header h1 { margin: 0; font-size: 1.4rem; }
+.cuentas-subtitle { margin: 0.2rem 0 0; color: var(--color-sec); font-size: 0.9rem; }
+
+.header-actions { display:flex; align-items:center; gap:0.6rem; }
+.btn-volver {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--color-texto);
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.02);
+  color: var(--color-texto);
+  font-size: 0.95rem;
+}
+
+tbody td {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  font-size: 0.95rem;
+}
+
+tbody tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+
+.totales {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.total-item { background: var(--color-fondo-card); padding: 0.6rem 0.9rem; border-radius: 8px; display:flex; gap:0.6rem; align-items:center; }
+.total-label { color: var(--color-sec); font-weight:600; }
+.total-valor { color: var(--color-texto-claro); font-weight:700; }
+.propina-input input { width: 100px; padding: 0.3rem 0.45rem; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:var(--color-texto); }
+
+.acciones-cuenta { display:flex; justify-content:flex-end; margin-top:1rem; }
+.btn-pagada { background: var(--color-acento); color: #07220f; padding: 0.6rem 0.9rem; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+
+.mesas-lista { display:flex; gap:0.8rem; flex-wrap:wrap; margin-top:1rem; }
+.mesa-btn { background: var(--color-fondo-card); color:var(--color-texto); border:1px solid rgba(255,255,255,0.04); padding:0.8rem 1rem; border-radius:10px; cursor:pointer; min-width:140px; }
+.mesa-btn-inner { display:flex; flex-direction:column; align-items:flex-start; }
+.mesa-num { font-weight:700; }
+.mesa-info-tiny { color:var(--color-sec); font-size:0.8rem; }
+
+/* Grid of mesa cards for Cuenta */
+
+.cuentas-grid { display:flex; gap:1rem; align-items:flex-start; }
+
+.cuentas-list-left { width: 380px; }
+.cuenta-mesas-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding-right: 0.6rem;
+}
+
+.cuenta-mesa-card {
+  background: linear-gradient(180deg, rgba(14,34,20,0.6), rgba(20,41,27,0.45));
+  border-radius: 12px;
+  padding: 1.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-left: 6px solid transparent;
+  min-height: 96px;
+  transition: transform 140ms ease, box-shadow 180ms ease, border-color 140ms ease;
+}
+
+.card-row { display:flex; align-items:center; gap:0.85rem; }
+.avatar { width:56px; height:56px; border-radius:50%; background: linear-gradient(180deg, rgba(0,212,106,0.08), rgba(0,212,106,0.04)); display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--color-texto-claro); flex:0 0 56px; border: 2px solid rgba(255,255,255,0.03); }
+.card-content { display:flex; flex-direction:column; gap:0.18rem; }
+.mesa-numero { font-weight:800; font-size:1.12rem; color: var(--color-texto-claro); }
+.badges { display:flex; flex-direction:column; gap:0.28rem; align-items:flex-end; margin-left:auto; }
+.badge { padding: 0.2rem 0.6rem; border-radius: 999px; font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; gap:0.4rem; }
+
+.badge.estado.toma { background: rgba(0,212,106,0.06); color: #bfe8ff; border: 1px solid rgba(77,160,255,0.06); }
+.badge.estado.con_pedidos { background: rgba(0,212,106,0.08); color: var(--color-texto-claro); border:1px solid rgba(0,212,106,0.06); }
+.badge.estado.libre { background: rgba(255,255,255,0.02); color: var(--color-sec); border:1px solid rgba(255,255,255,0.02); }
+.badge.pendiente { background: linear-gradient(90deg, rgba(255,159,64,0.14), rgba(255,159,64,0.08)); color: #fff4e6; padding: 0.22rem 0.5rem; font-size:0.78rem; display:inline-flex; gap:0.35rem; align-items:center; }
+.badge-icon { font-size:0.95rem; display:inline-block; }
+
+
+.card-body { color: var(--color-sec); font-size:0.98rem; display:flex; flex-direction:column; gap:0.3rem; }
+.info-row strong { color: var(--color-texto); font-weight:600; margin-right:0.3rem; }
+
+.mesero-nombre { display:inline-block; max-width: calc(380px - 120px); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--color-texto-claro); }
+.cuenta-detail-right { padding: 1rem 1.2rem; }
+.detail-top h2 { margin:0; font-size:1.25rem; }
+.detail-top .cuentas-subtitle { margin: 0.2rem 0 0; color:var(--color-sec); font-size:0.95rem; }
+
+.card-actions { display:flex; justify-content:flex-end; }
+.btn-ver-cuenta { background: transparent; border:1px solid rgba(255,255,255,0.06); color:var(--color-texto); padding:0.45rem 0.7rem; border-radius:8px; cursor:pointer; }
+
+/* Estado modifier for cards */
+
+.cuenta-mesa-card.toma { border-left-color: #4da6ff; box-shadow: 0 8px 22px rgba(77,160,255,0.06); }
+.cuenta-mesa-card.con_pedidos { border-left-color: var(--color-acento); box-shadow: 0 8px 22px rgba(0,212,106,0.04); }
+.cuenta-mesa-card.libre { border-left-color: transparent; box-shadow: none; }
+.cuenta-mesa-card.selected { box-shadow: 0 12px 36px rgba(0,0,0,0.55); transform: translateX(3px); }
+
+.cuenta-mesa-card:hover { transform: translateX(2px); }
+
+
+.badge.pendiente { background: rgba(255,159,64,0.14); color: #fff4e6; padding: 0.22rem 0.5rem; font-size:0.78rem; }
+
+/* Spinner for detail loading */
+.loading-detail { display:flex; align-items:center; gap:12px; padding:1.2rem; }
+.spinner { width:36px; height:36px; border-radius:50%; border:4px solid rgba(255,255,255,0.06); border-top-color: var(--color-acento); animation: spin 1s linear infinite; }
+.loading-text { color: var(--color-sec); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.cuenta-detail-right { flex:1; }
+.hint { color: var(--color-sec); }
+
+.sin-datos { color: var(--color-sec); }
+
+@media (max-width: 800px) {
+  .mesas-grid, .mesas-lista { grid-template-columns: repeat(2,1fr); }
+  table { font-size: 0.9rem; }
+}
