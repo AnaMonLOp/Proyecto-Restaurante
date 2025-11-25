@@ -1,13 +1,7 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
-<<<<<<< HEAD
 import Login from "./Components/Login";
-
-// Administrador
-=======
-// COMPONENTES
->>>>>>> S3
 import CRUDPlatillos from "./Components/CRUDPlatillos";
 import Cuentas from "./Components/Cuenta";
 import FiltroReporte from "./Components/FiltroReporte";
@@ -16,23 +10,15 @@ import ReporteDiario from "./Components/ReporteDiario";
 import RegistroUsuario from "./Components/RegistroUsuario";
 import RegistroAdmin from "./Components/RegistroAdmin";
 
-//Mesero
 import SelectorMesa from "./Components/SelectorMesa";
 import PaginaAlimentos from "./Components/PaginaAlimentos";
 import PedidosActivos from "./Components/Pedidos";
 
-//Cocinero
 import PantallaCocina from "./Components/PantallaCocina";
-<<<<<<< HEAD
-=======
-import Login from "./Components/Login";
-import RegistroUsuario from "./Components/RegistroUsuario";
-import RegistroAdmin from "./Components/RegistroAdmin";
-import GestionUsuarios from "./Components/GestionUsuarios";
-import FiltroReporte from "./Components/FiltroReporte";
-import ReporteDiario from "./Components/ReporteDiario";
 import Navbar from "./Components/Navbar";
->>>>>>> S3
+
+// ⭐ IMPORTAMOS TU NUEVA PANTALLA
+import Usuarios from "./pages/Usuarios/Usuarios";
 
 import "./App.css";
 
@@ -45,25 +31,14 @@ const RutaProtegida = ({ children, roles }) => {
     return <Navigate to="/login" replace />;
   }
 
-<<<<<<< HEAD
-  if (roles && !roles.includes(usuario.rol)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-=======
   return (
     <>
-      {/* NAVBAR SOLO PARA ADMIN */}
       {usuario.rol === "administrador" && <Navbar />}
-
-      {/* CONTENIDO DE LA RUTA */}
       <div style={{ marginTop: usuario.rol === "administrador" ? "70px" : "0" }}>
         {children}
       </div>
     </>
   );
->>>>>>> S3
 };
 
 // 🔓 CERRAR SESIÓN
@@ -86,11 +61,11 @@ const CerrarSesion = () => {
 function App() {
   return (
     <Routes>
-      {/* (PÚBLICOS) */}
+      {/* PUBLICAS */}
       <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<CerrarSesion />} />
 
-      {/* ADMINISTRADOR */}
+      {/* ADMIN */}
       <Route
         path="/registro"
         element={
@@ -105,6 +80,61 @@ function App() {
         element={
           <RutaProtegida roles={["administrador"]}>
             <RegistroAdmin />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/CRUDPlatillos"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <CRUDPlatillos />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/gestion-usuarios"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <GestionUsuarios />
+          </RutaProtegida>
+        }
+      />
+
+      {/* ⭐ NUEVA RUTA AGREGADA */}
+      <Route
+        path="/usuarios"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <Usuarios />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/filtroReportes"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <FiltroReporte />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/reporteDiario"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <ReporteDiario />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/cuenta"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <Cuentas />
           </RutaProtegida>
         }
       />
@@ -147,61 +177,7 @@ function App() {
         }
       />
 
-      {/* ADMIN */}
-      <Route
-        path="/CRUDPlatillos"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <CRUDPlatillos />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-        path="/gestion-usuarios"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <GestionUsuarios />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-        path="/filtroReportes"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <FiltroReporte />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-<<<<<<< HEAD
-        path="/reporteDiario"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-=======
-        path="/reporte-diario"
-        element={
-          <RutaProtegida>
->>>>>>> S3
-            <ReporteDiario />
-          </RutaProtegida>
-        }
-      />
-
-<<<<<<< HEAD
-      <Route
-        path="/cuenta"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <Cuentas />
-          </RutaProtegida>
-        }
-      />
-
-=======
->>>>>>> S3
+      {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
