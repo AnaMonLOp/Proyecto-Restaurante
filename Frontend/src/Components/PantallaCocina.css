@@ -6,143 +6,128 @@ body {
   padding: 0;
 }
 
-/* Header */
-.top-bar {
+.pantalla-cocina {
+  width: 100%;
+}
+
+/* HEADER */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(16, 34, 16, 0.9);
-  padding: 10px 20px;
+  padding: 15px 25px;
   border-bottom: 1px solid #13ec13;
-  backdrop-filter: blur(4px);
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.header h1 {
+  margin: 0;
+  font-size: 28px;
 }
 
-.btn-menu {
-  background: transparent;
-  color: #b5b5b5;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.btn-menu.activo {
-  background: rgba(19, 236, 19, 0.2);
+.logout {
   color: #13ec13;
-  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-/* Main grid */
+/* CONTENEDOR PRINCIPAL */
+.main-container {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* COLUMNAS DE ESTADOS */
 .columns-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  padding: 20px;
+  flex: 1;
 }
 
 .estado-columna {
-  background-color: #0f1f0f;
-  padding: 10px;
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .titulo-estado {
   text-align: center;
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 10px;
+  font-size: 1.3rem;
+  margin-bottom: 5px;
 }
 
 .titulo-estado.gray { color: #bdbdbd; }
 .titulo-estado.yellow { color: #ffd54f; }
 .titulo-estado.green { color: #13ec13; }
-.titulo-estado.blue { color: #4fc3f7; }
-.titulo-estado.rojo { color: #ef5350; }
 
-/* Tarjetas */
+/* TARJETAS */
 .pedido-card {
   background-color: #1c2d1c;
   border: 1px solid #13ec13;
   border-radius: 10px;
-  margin-bottom: 15px;
-  overflow: hidden;
+  padding: 12px;
+  min-height: 230px;
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  justify-content: space-between;
 }
 
 .pedido-header {
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  background-color: rgba(19, 236, 19, 0.15);
-  border-bottom: 1px solid rgba(19, 236, 19, 0.3);
+  font-weight: bold;
 }
 
-.pedido-header.yellow { background-color: rgba(255, 214, 79, 0.1); border-color: #ffd54f; }
-.pedido-header.green { background-color: rgba(19, 236, 19, 0.15); border-color: #13ec13; }
-.pedido-header.blue { background-color: rgba(79, 195, 247, 0.15); border-color: #4fc3f7; }
-.pedido-header.rojo { background-color: rgba(239, 83, 80, 0.15); border-color: #ef5350; }
-
-.pedido-body {
-  padding: 10px;
-  flex: 1;
-  overflow-y: auto;
-  min-height: 60px;
+.mesa-texto {
+  margin: 5px 0;
+  font-weight: bold;
 }
 
 .item-pedido {
-  margin-bottom: 8px;
-}
-
-.item-principal {
-  margin: 0;
-  font-weight: 500;
-  color: #f6f8f6;
+  margin-bottom: 6px;
 }
 
 .item-nota {
-  margin: 2px 0 0 12px;
-  font-size: 0.85em;
-  color: #b5b5b5;
   font-style: italic;
+  color: #b5b5b5;
 }
 
-.pedido-footer {
-  padding: 10px;
-  text-align: center;
-  flex-shrink: 0;
-  border-top: 1px solid rgba(19, 236, 19, 0.2);
-}
-
+/* BOTONES FINALES */
 .pedido-footer button {
+  padding: 8px;
   background-color: #13ec13;
-  color: #102210;
-  font-weight: 600;
   border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
+  color: #102210;
+  font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-/* Cancelados */
-.cancelados {
-  padding: 20px;
+/* PANEL DERECHA */
+.mesas-panel {
+  width: 200px;
 }
 
-.cancelados-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.sin-cancelados {
-  color: #888;
+.titulo-mesas {
   text-align: center;
+  margin-bottom: 10px;
+}
+
+.botones-mesas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.boton-mesa {
+  width: 55px;
+  height: 55px;
+  background-color: #13ec13;
+  color: #102210;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 18px;
+  cursor: pointer;
 }
