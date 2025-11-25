@@ -12,7 +12,8 @@ const PaginaAlimentos = () => {
   const [confirmacion, setConfirmacion] = useState(false);
   const [mesaIndexMap, setMesaIndexMap] = useState({});
 
-  // Cargar platillos desde backend
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
   useEffect(() => {
     const fetchPlatillos = async () => {
       try {
@@ -40,8 +41,6 @@ const PaginaAlimentos = () => {
     };
     fetchMesas();
   }, []);
-
-
 
   const agregarAlPedido = (platillo) => {
     setPedidoActual((prev) => {
@@ -94,9 +93,11 @@ const PaginaAlimentos = () => {
     );
   };
 
-
   const handleEnviarPedido = async () => {
-    const meseroId = "2fa2c8bb-7386-49cf-bdfc-7833443a97ff"; 
+    if (!usuario || !usuario.id) {
+      alert("Error: No se identifica al mesero. Inicia sesión de nuevo.");
+      return;
+    }
 
       const platillos = Object.values(pedidoActual).map((item) => ({
         item_menu_id: item.id,
@@ -107,7 +108,7 @@ const PaginaAlimentos = () => {
 
     const nuevoPedido = {
       mesa_id: Number(id),
-      mesero_id: meseroId,
+      mesero_id: usuario.id,
       platillos,
     };
 
@@ -116,6 +117,11 @@ const PaginaAlimentos = () => {
       console.log("Pedido enviado:", res.data);
       setConfirmacion(true);
       setPedidoActual({});
+      
+      const ocupacion = JSON.parse(localStorage.getItem("ocupacionMesas")) || {};
+      ocupacion[id] = { estado: "ocupada", mesero: usuario.nombre };
+      localStorage.setItem("ocupacionMesas", JSON.stringify(ocupacion));
+
       setTimeout(() => navigate("/"), 2000);
     } catch (error){
       console.error("Error al enviar el pedido:", error);
@@ -135,7 +141,6 @@ const PaginaAlimentos = () => {
         </div>
       )}
 
-
       <header className="alimentos-header">
         <h1>Menú de la Mesa {mesaIndexMap[id] || id}</h1>
         <button onClick={() => navigate("/")} className="btn-volver">
@@ -144,7 +149,6 @@ const PaginaAlimentos = () => {
       </header>
 
       <div className="menu-pedido-container">
-        
         <div className="menu-columna">
           <h2 className="columna-titulo">Platillos</h2>
           <div className="menu-grid">
