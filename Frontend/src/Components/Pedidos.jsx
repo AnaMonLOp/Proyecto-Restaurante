@@ -10,9 +10,11 @@ const PedidosActivos = () => {
   const [loading, setLoading] = useState(true);
   const [notificacion, setNotificacion] = useState(null);
   const [filtroEstado, setFiltroEstado] = useState("todos");
-
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
+  // ===============================
+  // 🚀 PRIMERA CARGA INICIAL
+  // ===============================
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -61,6 +63,56 @@ const PedidosActivos = () => {
     fetchData();
   }, []);
 
+  // ===============================
+  // 🔄 POLLING — refrescar cada 5 segundos
+  // ===============================
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const pedidosRes = await api.get("/pedidos?incluir_cancelados=true");
+        const meserosRes = await api.get("/usuarios/meseros");
+        const mesasRes = await api.get("/mesas");
+
+        const pedidosData = pedidosRes.data;
+        const meserosData = meserosRes.data;
+        const mesasData = mesasRes.data;
+
+        const pedidosActivos = pedidosData.filter(
+          (p) => p.estado.toLowerCase() !== "entregado"
+        );
+
+        const pedidosConDatos = pedidosActivos.map((p) => {
+          const mesero = meserosData.find((m) => m.id === p.mesero_id);
+          const mesa = mesasData.find((m) => m.id === p.mesa_id);
+
+          const fecha = new Date(p.fecha_pedido);
+          const hora = fecha.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          return {
+            ...p,
+            meseroNombre: mesero ? mesero.nombre : "Desconocido",
+            mesaNumero: mesa ? mesa.numero : p.mesa_id,
+            horaPedido: hora,
+          };
+        });
+
+        pedidosConDatos.sort((a, b) => a.mesaNumero - b.mesaNumero);
+        setPedidos(pedidosConDatos);
+      } catch (error) {
+        console.error("Error en polling:", error);
+      }
+    }, 5000); // cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // ===============================
+  // FUNCIONES EXTRA
+  // ===============================
+
   const mostrarNotificacion = (mensaje) => {
     setNotificacion(mensaje);
     setTimeout(() => setNotificacion(null), 4000);
@@ -77,7 +129,7 @@ const PedidosActivos = () => {
         mostrarNotificacion("Pedido cancelado correctamente");
       }
     } catch (error) {
-      console.error("Error al cancelar pedido:", error);
+      console.error("Error:", error);
       mostrarNotificacion("Error al cancelar el pedido");
     }
   };
@@ -124,6 +176,10 @@ const PedidosActivos = () => {
         );
 
   if (loading) return <p className="cargando">Cargando pedidos...</p>;
+
+  // ===============================
+  // RENDER
+  // ===============================
 
   return (
     <div className="pedidos-page">
