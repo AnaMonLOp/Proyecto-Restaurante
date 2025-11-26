@@ -10,11 +10,9 @@ const PedidosActivos = () => {
   const [loading, setLoading] = useState(true);
   const [notificacion, setNotificacion] = useState(null);
   const [filtroEstado, setFiltroEstado] = useState("todos");
+
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
-  // ===============================
-  // 🚀 PRIMERA CARGA INICIAL
-  // ===============================
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,9 +28,7 @@ const PedidosActivos = () => {
         const mesasData = mesasRes.data;
 
         const pedidosActivos = pedidosData.filter(
-          (p) => 
-            p.estado.toLowerCase() !== "entregado" && 
-            p.estado.toLowerCase() !== "cancelado"
+          (p) => p.estado.toLowerCase() !== "entregado"
         );
 
         const pedidosConDatos = pedidosActivos.map((p) => {
@@ -65,73 +61,9 @@ const PedidosActivos = () => {
     fetchData();
   }, []);
 
-  // ===============================
-  // 🔄 POLLING — refrescar cada 5 segundos
-  // ===============================
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const pedidosRes = await api.get("/pedidos?incluir_cancelados=true");
-        const meserosRes = await api.get("/usuarios/meseros");
-        const mesasRes = await api.get("/mesas");
-
-        const pedidosData = pedidosRes.data;
-        const meserosData = meserosRes.data;
-        const mesasData = mesasRes.data;
-
-        const pedidosActivos = pedidosData.filter(
-          (p) => p.estado.toLowerCase() !== "entregado"
-        );
-
-        const pedidosConDatos = pedidosActivos.map((p) => {
-          const mesero = meserosData.find((m) => m.id === p.mesero_id);
-          const mesa = mesasData.find((m) => m.id === p.mesa_id);
-
-          const fecha = new Date(p.fecha_pedido);
-          const hora = fecha.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
-
-          return {
-            ...p,
-            meseroNombre: mesero ? mesero.nombre : "Desconocido",
-            mesaNumero: mesa ? mesa.numero : p.mesa_id,
-            horaPedido: hora,
-          };
-        });
-
-        pedidosConDatos.sort((a, b) => a.mesaNumero - b.mesaNumero);
-        setPedidos(pedidosConDatos);
-      } catch (error) {
-        console.error("Error en polling:", error);
-      }
-    }, 5000); // cada 5 segundos
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // ===============================
-  // FUNCIONES EXTRA
-  // ===============================
-
   const mostrarNotificacion = (mensaje) => {
     setNotificacion(mensaje);
     setTimeout(() => setNotificacion(null), 4000);
-  };
-
-  const entregarPedido = async (id) => {
-    try {
-      const res = await api.put(`/pedidos/${id}`, { estado: "entregado" });
-
-      if (res.status === 200) {
-        setPedidos((prev) => prev.filter((p) => p.id !== id));
-        mostrarNotificacion("Pedido entregado correctamente ✅");
-      }
-    } catch (error) {
-      console.error("Error al entregar pedido:", error);
-      mostrarNotificacion("Error al entregar el pedido");
-    }
   };
 
   const cancelarPedido = async (id) => {
@@ -139,11 +71,13 @@ const PedidosActivos = () => {
       const res = await api.put(`/pedidos/${id}`, { estado: "cancelado" });
 
       if (res.status === 200) {
-        setPedidos((prev) => prev.filter((p) => p.id !== id));
+        setPedidos((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, estado: "cancelado" } : p))
+        );
         mostrarNotificacion("Pedido cancelado correctamente");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al cancelar pedido:", error);
       mostrarNotificacion("Error al cancelar el pedido");
     }
   };
@@ -175,6 +109,8 @@ const PedidosActivos = () => {
         return { clase: "azul", icono: "⏳", animacion: "" };
       case "en_preparacion":
         return { clase: "azul", icono: "🔥", animacion: "latido" };
+      case "cancelado":
+        return { clase: "naranja", icono: "🚫", animacion: "" };
       default:
         return { clase: "azul", icono: "📝", animacion: "" };
     }
@@ -188,10 +124,6 @@ const PedidosActivos = () => {
         );
 
   if (loading) return <p className="cargando">Cargando pedidos...</p>;
-
-  // ===============================
-  // RENDER
-  // ===============================
 
   return (
     <div className="pedidos-page">
@@ -210,16 +142,17 @@ const PedidosActivos = () => {
           value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value)}
         >
-          <option value="todos">Todos los activos</option>
+          <option value="todos">Todos</option>
           <option value="pendiente">Pendientes</option>
           <option value="en_preparacion">En Preparación</option>
-          <option value="listo">Listos para entregar</option>
+          <option value="listo">Listos</option>
+          <option value="cancelado">Cancelados</option>
         </select>
       </div>
 
       <div className="pedidos-container">
         {pedidosFiltrados.length === 0 ? (
-          <p className="sin-pedidos">No hay pedidos activos.</p>
+          <p className="sin-pedidos">No hay pedidos para este filtro.</p>
         ) : (
           <div className="pedidos-grid">
             {pedidosFiltrados.map((p) => {
@@ -245,23 +178,15 @@ const PedidosActivos = () => {
                       Ver Detalle
                     </button>
 
-                    {p.estado.toLowerCase() === "listo" && (
-                      <button
-                        className="btn-entregar" 
-                        style={{ backgroundColor: "#28a745", color: "white", marginLeft: "5px" }}
-                        onClick={() => entregarPedido(p.id)}
-                      >
-                        Entregar
-                      </button>
-                    )}
-
-                    <button
-                      className="btn-simular cancelar"
-                      onClick={() => cancelarPedido(p.id)}
-                    >
-                      Cancelar
-                    </button>
-                    
+                    {p.estado.toLowerCase() !== "cancelado" &&
+                      p.estado.toLowerCase() !== "entregado" && (
+                        <button
+                          className="btn-simular cancelar"
+                          onClick={() => cancelarPedido(p.id)}
+                        >
+                          Cancelar
+                        </button>
+                      )}
                   </div>
                 </div>
               );
@@ -288,7 +213,9 @@ const PedidosActivos = () => {
             ) : (
               <ul>
                 {pedidoSeleccionado.items.map((item) => {
+                  // ← AQUI ESTA LA CORRECCIÓN REAL
                   const productoInfo = menuItems.find(m => m.id === item.platillo_id);
+
                   const nombreMostrar = productoInfo ? productoInfo.nombre : "Platillo desconocido";
 
                   return (

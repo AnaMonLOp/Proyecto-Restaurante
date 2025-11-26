@@ -38,7 +38,6 @@ function CRUDPlatillos() {
   const handleSubmit = async () => {
     if (!platillo.nombre || !platillo.precio || !platillo.categoria) return;
 
-    // Mapear el nombre seleccionado a categoria_id para que se guarde correctamente
     const categoriaSeleccionada = categorias.find((c) => c.nombre === platillo.categoria);
     const payload = {
       nombre: platillo.nombre,
@@ -86,6 +85,16 @@ function CRUDPlatillos() {
 
   return (
     <div className="crud-platillos-container">
+      {/* Navegación rápida sin duplicar Navbar */}
+      <header className="crud-header">
+        <h3 className="logo">🍽️ Gestión de Platillos</h3>
+        <nav className="nav-menu">
+          <span onClick={() => navigate("/reportes")} className="nav-link">Reportes</span>
+          <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Usuarios</span>
+          <span onClick={() => navigate("/registro-admin")} className="nav-link">Cuentas</span>
+          <span onClick={() => navigate("/logout")} className="nav-link logout">Cerrar sesión</span>
+        </nav>
+      </header>
 
       <div className="form-container">
         <input
@@ -133,20 +142,14 @@ function CRUDPlatillos() {
               <td>{p.precio}</td>
               <td>{p.categoria || catMap[p.categoria_id] || ""}</td>
               <td>
-                <button className="edit" onClick={() => handleEdit(index)}>
-                  Editar
-                </button>
-                <button className="delete" onClick={() => handleDelete(index)}>
-                  Eliminar
-                </button>
+                <button className="edit" onClick={() => handleEdit(index)}>Editar</button>
+                <button className="delete" onClick={() => handleDelete(index)}>Eliminar</button>
               </td>
             </tr>
           ))}
           {platillos.length === 0 && (
             <tr>
-              <td colSpan={4} className="no-data">
-                No hay platillos registrados.
-              </td>
+              <td colSpan={4} className="no-data">No hay platillos registrados.</td>
             </tr>
           )}
         </tbody>

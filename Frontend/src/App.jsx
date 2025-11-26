@@ -1,19 +1,23 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
+// COMPONENTES
 import Login from "./Components/Login";
 import CRUDPlatillos from "./Components/CRUDPlatillos";
 import Cuentas from "./Components/Cuenta";
-import FiltroReporte from "./Components/FiltroReporte";
 import GestionUsuarios from "./Components/GestionUsuarios";
-import ReporteDiario from "./Components/ReporteDiario";
 import RegistroUsuario from "./Components/RegistroUsuario";
 import RegistroAdmin from "./Components/RegistroAdmin";
+import Navbar from "./Components/Navbar";
+import Reportes from "./Components/Reportes";
+
+// Mesero
 import SelectorMesa from "./Components/SelectorMesa";
 import PaginaAlimentos from "./Components/PaginaAlimentos";
 import PedidosActivos from "./Components/Pedidos";
+
+// Cocinero
 import PantallaCocina from "./Components/PantallaCocina";
-import Navbar from "./Components/Navbar";
 
 import "./App.css";
 
@@ -26,16 +30,10 @@ const RutaProtegida = ({ children, roles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles && !roles.includes(usuario.rol)) {
-    return <Navigate to="/" replace />;
-  }
-
+  // Mostrar Navbar solo para admins
   return (
     <>
-      {/* NAVBAR SOLO PARA ADMIN */}
       {usuario.rol === "administrador" && <Navbar />}
-
-      {/* CONTENIDO DE LA RUTA */}
       <div style={{ marginTop: usuario.rol === "administrador" ? "70px" : "0" }}>
         {children}
       </div>
@@ -63,7 +61,7 @@ const CerrarSesion = () => {
 function App() {
   return (
     <Routes>
-      {/* (PÚBLICOS) */}
+      {/* PÚBLICOS */}
       <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<CerrarSesion />} />
 
@@ -76,7 +74,6 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
         path="/registro-admin"
         element={
@@ -85,7 +82,6 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
         path="/CRUDPlatillos"
         element={
@@ -94,7 +90,6 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
         path="/gestion-usuarios"
         element={
@@ -103,25 +98,14 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
-        path="/filtroReportes"
+        path="/reportes"
         element={
           <RutaProtegida roles={["administrador"]}>
-            <FiltroReporte />
+            <Reportes />
           </RutaProtegida>
         }
       />
-
-      <Route
-        path="/reporte-diario"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <ReporteDiario />
-          </RutaProtegida>
-        }
-      />
-
       <Route
         path="/cuenta"
         element={
@@ -140,7 +124,6 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
         path="/alimentos/:id"
         element={
@@ -149,7 +132,6 @@ function App() {
           </RutaProtegida>
         }
       />
-
       <Route
         path="/pedidos"
         element={
@@ -169,6 +151,7 @@ function App() {
         }
       />
 
+      {/* RUTA POR DEFECTO */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

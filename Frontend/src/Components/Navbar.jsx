@@ -24,11 +24,11 @@ function Navbar() {
       </div>
 
       <div className="nav-links">
-        <Link to="/CRUDPlatillos" className="nav-btn">Platillos</Link>
-        <Link to="/filtroReportes" className="nav-btn">Reportes</Link>
-        <Link to="/gestion-usuarios" className="nav-btn">Usuarios</Link>
-        <Link to="/cuenta" className="nav-btn">Cuentas</Link>
-      </div>
+  <Link to="/CRUDPlatillos" className="nav-btn">Platillos</Link>
+  <Link to="/reportes" className="nav-btn">Reportes</Link>  {/* <-- aquí */}
+  <Link to="/gestion-usuarios" className="nav-btn">Usuarios</Link>
+  <Link to="/registro-admin" className="nav-btn">Cuentas</Link>
+</div>
 
       <div className="nav-right">
         <button className="btn-logout" onClick={cerrarSesion}>Salir</button>
