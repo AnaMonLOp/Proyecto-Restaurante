@@ -86,15 +86,6 @@ function CRUDPlatillos() {
 
   return (
     <div className="crud-platillos-container">
-        <header className="crud-header">
-          <h3 className="logo">🍽️ Gestión de Platillos</h3>
-          <nav className="nav-menu">
-            <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Gestion</span>
-            <span onClick={() => navigate("/reporteDiario")} className="nav-link">Reportes</span>
-            <span onClick={() => navigate("/cuenta")} className="nav-link">Cuenta</span>
-            <span onClick={() => navigate("/logout")} className="nav-link logout">Cerrar sesión</span>
-          </nav>
-        </header>
 
       <div className="form-container">
         <input
