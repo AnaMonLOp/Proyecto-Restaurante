@@ -12,7 +12,6 @@ const PedidosActivos = () => {
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
-  // Estados válidos mostrables (normalizados)
   const ESTADOS_VALIDOS = ["pendiente", "en_preparacion", "listo"];
 
   const normalizarEstado = (estado) =>
@@ -32,7 +31,6 @@ const PedidosActivos = () => {
         const meserosData = Array.isArray(meserosRes.data) ? meserosRes.data : [];
         const mesasData = Array.isArray(mesasRes.data) ? mesasRes.data : [];
 
-        // Filtrado: solo estados válidos (normalizados)
         const pedidosActivos = pedidosData.filter((p) => {
           const estadoNorm = normalizarEstado(p.estado);
           return ESTADOS_VALIDOS.includes(estadoNorm);
@@ -74,7 +72,6 @@ const PedidosActivos = () => {
     fetchData();
   }, []);
 
-  // Polling cada 5 segundos (misma normalización)
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -133,7 +130,6 @@ const PedidosActivos = () => {
   const entregarPedido = async (id) => {
     try {
       const res = await api.put(`/pedidos/${id}`, { estado: "entregado" });
-
       if (res.status === 200) {
         setPedidos((prev) => prev.filter((p) => p.id !== id));
         mostrarNotificacion("Pedido entregado correctamente ✅");
@@ -147,7 +143,6 @@ const PedidosActivos = () => {
   const cancelarPedido = async (id) => {
     try {
       const res = await api.put(`/pedidos/${id}`, { estado: "cancelado" });
-
       if (res.status === 200) {
         setPedidos((prev) => prev.filter((p) => p.id !== id));
         mostrarNotificacion("Pedido cancelado correctamente");
@@ -162,17 +157,10 @@ const PedidosActivos = () => {
     try {
       const res = await api.get(`/pedidos/detallespedido/${pedido.id}`);
       const items = Array.isArray(res.data) ? res.data : [];
-
-      setPedidoSeleccionado({
-        ...pedido,
-        items: items,
-      });
+      setPedidoSeleccionado({ ...pedido, items: items });
     } catch (error) {
       console.error("Error cargando detalles:", error);
-      setPedidoSeleccionado({
-        ...pedido,
-        items: [],
-      });
+      setPedidoSeleccionado({ ...pedido, items: [] });
     }
   };
 
@@ -197,22 +185,23 @@ const PedidosActivos = () => {
           (p) => normalizarEstado(p.estado) === filtroEstado.toLowerCase().trim()
         );
 
-  if (loading) return <p className="cargando">Cargando pedidos...</p>;
+  if (loading) return <p className="pedidos-active-empty">Cargando pedidos...</p>;
 
   return (
-    <div className="pedidos-page">
-      {notificacion && <div className="notificacion-toast">{notificacion}</div>}
+    <div className="pedidos-active-page">
+      {notificacion && <div className="pedidos-toast">{notificacion}</div>}
 
-      <header className="pedidos-header">
-        <h1 className="logo">🍽️ Pedidos Activos</h1>
-        <button className="btn btn-volver" onClick={() => navigate("/")}>
+      <header className="pedidos-active-header">
+        <h1 className="pedidos-active-logo">🍽️ Pedidos Activos</h1>
+        {/* CORREGIDO: Clase única para este botón para que no se estire */}
+        <button className="pedidos-header-btn-volver" onClick={() => navigate("/")}>
           ← Volver a Mesas
         </button>
       </header>
 
-      <div className="filtro-contenedor">
+      <div className="pedidos-active-filter-container">
         <select
-          className="filtro-select"
+          className="pedidos-active-select"
           value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value)}
         >
@@ -223,46 +212,57 @@ const PedidosActivos = () => {
         </select>
       </div>
 
-      <div className="pedidos-container">
+      <div className="pedidos-active-container">
         {pedidosFiltrados.length === 0 ? (
-          <p className="sin-pedidos">No hay pedidos activos.</p>
+          <p className="pedidos-active-empty">No hay pedidos activos.</p>
         ) : (
-          <div className="pedidos-grid">
+          <div className="pedidos-active-grid">
             {pedidosFiltrados.map((p) => {
               const { clase, icono, animacion } = getEstadoVisuals(p.estado);
 
               return (
-                <div key={p.id} className={`pedido-card ${clase} ${animacion}`}>
-                  <div className="pedido-card-content">
+                <div key={p.id} className={`pedidos-active-card ${clase} ${animacion}`}>
+                  <div className="pedidos-active-content">
                     <h2>Mesa {p.mesaNumero}</h2>
-                    <p>Mesero: {p.meseroNombre}</p>
-                    <p>Hora: {p.horaPedido}</p>
-                    <p className="estado-texto">
-                      Estado: <b>{icono} {String(p.estado).replace("_", " ")}</b>
-                    </p>
-                    <p>Total: ${Number(p.total || 0).toFixed(2)}</p>
+                    
+                    {/* CORREGIDO: Divs separados para evitar que el texto se junte */}
+                    <div className="pedidos-info-row">
+                      <span className="pedidos-label">Mesero:</span>
+                      <span className="pedidos-value">{p.meseroNombre}</span>
+                    </div>
+                    
+                    <div className="pedidos-info-row">
+                      <span className="pedidos-label">Hora:</span>
+                      <span className="pedidos-value">{p.horaPedido}</span>
+                    </div>
+
+                    <div className="pedidos-active-status-text">
+                      <b>{icono} {String(p.estado).replace("_", " ")}</b>
+                    </div>
+                    
+                    <p className="pedidos-total">Total: ${Number(p.total || 0).toFixed(2)}</p>
                   </div>
 
-                  <div className="pedido-card-actions">
+                  <div className="pedidos-active-actions">
                     <button
-                      className="btn btn-detalle"
+                      className="pedidos-card-btn pedidos-btn-detail"
                       onClick={() => verDetalles(p)}
                     >
-                      Ver Detalle
+                      Detalle
                     </button>
 
                     {normalizarEstado(p.estado) === "listo" && (
                       <button
-                        className="btn-entregar"
-                        style={{ backgroundColor: "#28a745", color: "white", marginLeft: "5px" }}
+                        className="pedidos-card-btn pedidos-btn-deliver"
                         onClick={() => entregarPedido(p.id)}
                       >
                         Entregar
                       </button>
                     )}
 
+                    {/* El botón cancelar ocupa todo el ancho si está abajo */}
                     <button
-                      className="btn-simular cancelar"
+                      className="pedidos-card-btn pedidos-btn-cancel"
                       onClick={() => cancelarPedido(p.id)}
                     >
                       Cancelar
@@ -276,8 +276,8 @@ const PedidosActivos = () => {
       </div>
 
       {pedidoSeleccionado && (
-        <div className="modal-overlay" onClick={() => setPedidoSeleccionado(null)}>
-          <div className="modal-detalle" onClick={(e) => e.stopPropagation()}>
+        <div className="pedidos-overlay" onClick={() => setPedidoSeleccionado(null)}>
+          <div className="pedidos-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Pedido Mesa {pedidoSeleccionado.mesaNumero}</h2>
             <p><b>Mesero:</b> {pedidoSeleccionado.meseroNombre}</p>
             <p><b>Hora:</b> {pedidoSeleccionado.horaPedido}</p>
@@ -286,9 +286,8 @@ const PedidosActivos = () => {
             <h3>Platillos</h3>
 
             {(!pedidoSeleccionado.items || pedidoSeleccionado.items.length === 0) ? (
-              <div className="error-vacio">
+              <div style={{ textAlign: "center", padding: "20px" }}>
                 <p>⚠️ <b>No se encontraron platillos.</b></p>
-                <small style={{ color: "#888" }}>Es posible que hubo un error al guardar el pedido.</small>
               </div>
             ) : (
               <ul>
@@ -300,7 +299,7 @@ const PedidosActivos = () => {
                     <li key={item.id}>
                       {nombreMostrar} – x{item.cantidad} – ${Number(item.precio_unitario || 0).toFixed(2)}
                       {item.notas_item && (
-                        <p className="comentario-item">📝 {item.notas_item}</p>
+                        <p className="pedidos-modal-note">📝 {item.notas_item}</p>
                       )}
                     </li>
                   );
@@ -308,11 +307,11 @@ const PedidosActivos = () => {
               </ul>
             )}
 
-            <h3>Total: ${Number(pedidoSeleccionado.total || 0).toFixed(2)}</h3>
+            <h3 style={{ textAlign: "right", marginTop: "20px" }}>Total: ${Number(pedidoSeleccionado.total || 0).toFixed(2)}</h3>
 
-            <div className="modal-actions">
+            <div className="pedidos-modal-actions">
               <button
-                className="btn-cerrar"
+                className="pedidos-btn-close"
                 onClick={() => setPedidoSeleccionado(null)}
               >
                 Cerrar

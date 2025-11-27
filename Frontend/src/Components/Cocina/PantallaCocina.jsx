@@ -35,7 +35,6 @@ const PantallaCocina = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Mapear ID de mesa → número real
   const obtenerNumeroMesa = (idMesa) => {
     const mesa = mesas.find((m) => m.id === idMesa);
     return mesa ? mesa.numero : idMesa;
@@ -60,70 +59,78 @@ const PantallaCocina = () => {
   };
 
   const estados = [
-    { id: "pendiente", titulo: "Pendientes", color: "gray" },
-    { id: "en_preparacion", titulo: "En preparación", color: "yellow" },
-    { id: "listo", titulo: "Listos", color: "green" },
+    { id: "pendiente", titulo: "Pendientes", colorClass: "cocina-status-gray" },
+    { id: "en_preparacion", titulo: "En preparación", colorClass: "cocina-status-yellow" },
+    { id: "listo", titulo: "Listos para Servir", colorClass: "cocina-status-green" },
   ];
 
   return (
-    <div className="pantalla-cocina">
+    <div className="cocina-page">
       {/* HEADER */}
-      <header className="header">
-        <h1>Órdenes de Cocina</h1>
-        <span className="logout" onClick={() => navigate("/logout")}>
+      <header className="cocina-header">
+        <h1 className="cocina-logo">👨‍🍳 Cocina</h1>
+        <span className="cocina-logout" onClick={() => navigate("/logout")}>
           Cerrar sesión
         </span>
       </header>
 
-      <main className="main-container">
-        {/* COLUMNA DE ESTADOS */}
-        <div className="columns-container">
+      <main className="cocina-main">
+        {/* COLUMNAS KANBAN */}
+        <div className="cocina-columns-container">
           {estados.map((estado) => (
-            <div key={estado.id} className="estado-columna">
-              <h2 className={`titulo-estado ${estado.color}`}>
+            <div key={estado.id} className="cocina-lane">
+              <h2 className={`cocina-lane-title ${estado.colorClass}`}>
                 {estado.titulo}
               </h2>
 
               {pedidos
                 .filter((p) => p.estado === estado.id)
                 .map((pedido) => (
-                  <div key={pedido.id} className="pedido-card">
-                    <div className="pedido-header">
-                      <h3>Orden #{pedido.id}</h3>
-                      <p className="hora">
+                  <div key={pedido.id} className="cocina-card">
+                    <div className="cocina-card-header">
+                      <h3>#{pedido.id}</h3>
+                      <span className="cocina-time">
                         {new Date(pedido.fecha_pedido).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
-                      </p>
+                      </span>
                     </div>
 
-                    <p className="mesa-texto">
-                      Mesa {obtenerNumeroMesa(pedido.mesa_id)}
-                    </p>
+                    <div style={{ textAlign: "center" }}>
+                        <span className="cocina-table-badge">
+                        Mesa {obtenerNumeroMesa(pedido.mesa_id)}
+                        </span>
+                    </div>
 
-                    <div className="pedido-body">
+                    <div className="cocina-items-list">
                       {pedido.detalle_pedido?.map((item, idx) => (
-                        <div key={idx} className="item-pedido">
-                          <p>
-                            {item.cantidad}x {item.items_menu?.nombre}
-                          </p>
+                        <div key={idx} className="cocina-item">
+                          <span>
+                            <strong>{item.cantidad}x</strong> {item.items_menu?.nombre}
+                          </span>
                           {item.notas_item && (
-                            <p className="item-nota">→ {item.notas_item}</p>
+                            <span className="cocina-note">{item.notas_item}</span>
                           )}
                         </div>
                       ))}
                     </div>
 
-                    <div className="pedido-footer">
+                    <div className="cocina-card-footer">
                       {estado.id === "pendiente" && (
-                        <button onClick={() => cambiarEstado(pedido.id, "en_preparacion")}>
-                          Marcar como En preparación
+                        <button 
+                            className="cocina-btn-advance"
+                            onClick={() => cambiarEstado(pedido.id, "en_preparacion")}
+                        >
+                          Empezar Preparación
                         </button>
                       )}
                       {estado.id === "en_preparacion" && (
-                        <button onClick={() => cambiarEstado(pedido.id, "listo")}>
-                          Marcar como Listo
+                        <button 
+                            className="cocina-btn-finish"
+                            onClick={() => cambiarEstado(pedido.id, "listo")}
+                        >
+                          Marcar Listo ✅
                         </button>
                       )}
                     </div>
@@ -133,21 +140,22 @@ const PantallaCocina = () => {
           ))}
         </div>
 
-        {/* PANEL DERECHA */}
-        <div className="mesas-panel">
-          <h3 className="titulo-mesas">Marcar mesas como listas</h3>
-          <div className="botones-mesas">
+        {/* PANEL DERECHA (Atajo Mesas) */}
+        <aside className="cocina-side-panel">
+          <h3 className="cocina-side-title">Mesa Lista (Atajo)</h3>
+          <div className="cocina-mesas-grid">
             {mesas.map((mesa) => (
               <button
                 key={mesa.id}
-                className="boton-mesa"
+                className="cocina-btn-mesa"
                 onClick={() => marcarMesaComoLista(mesa.numero)}
+                title={`Marcar todos los pedidos de la Mesa ${mesa.numero} como LISTOS`}
               >
                 {mesa.numero}
               </button>
             ))}
           </div>
-        </div>
+        </aside>
       </main>
     </div>
   );

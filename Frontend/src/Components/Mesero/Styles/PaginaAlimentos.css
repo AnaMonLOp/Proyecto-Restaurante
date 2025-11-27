@@ -1,66 +1,60 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 :root {
-  --color-fondo: #0a0f0a;
-  --color-fondo-secundario: #1a1f1a;
-  --color-fondo-terciario: #2a2f2a;
-  --color-texto: #ffffff;
-  --color-texto-secundario: #d1d5db;
-  --color-texto-terciario: #9ca3af;
-  --color-primario: #16a34a;
-  --color-primario-hover: #15803d;
-  --color-destaque: #4ade80;
-  --color-gris: #374151;
-  --color-gris-hover: #4b5563;
-  --color-rojo: #f87171;
-  --color-borde: #4b5563;
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-hover: #2980b9;
+  --b-accent-2: #1ABC9C;
+  --b-accent-2-hover: #16a085;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-text-inverted: #FFFFFF;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-shadow-hover: rgba(44, 62, 80, 0.15);
+  --b-danger: #E74C3C;
+  --b-danger-hover: #c0392b;
 }
 
-*, *::before, *::after {
+* {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background-color: var(--color-fondo);
-  color: var(--color-texto);
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-fondo-secundario);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-gris-hover);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-gris);
-}
-
-.pagina-alimentos {
+.alimentos-page {
   min-height: 100vh;
-  background-color: var(--color-fondo);
-  color: var(--color-texto);
-  padding: 32px;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  padding: 40px;
+  font-family: "Inter", sans-serif;
 }
 
-.confirmacion-modal {
+.alimentos-modal {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--color-primario);
-  padding: 32px;
-  border-radius: 12px;
-  z-index: 50;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  background-color: var(--b-accent-2);
+  color: var(--b-text-inverted);
+  padding: 30px 50px;
+  border-radius: 16px;
+  z-index: 100;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
 }
 
-.confirmacion-modal h2 {
-  font-size: 1.875rem;
+@keyframes slideUp {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.alimentos-modal h2 {
+  font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
   margin: 0;
@@ -70,261 +64,301 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--b-border);
 }
 
 .alimentos-header h1 {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
+  color: var(--b-header);
+  margin: 0;
+  letter-spacing: -0.5px;
 }
 
-.btn-volver {
-  padding: 12px 24px;
-  background-color: var(--color-primario);
-  border: none;
-  color: var(--color-texto);
+.alimentos-btn-back {
+  padding: 10px 20px;
+  background-color: var(--b-surface);
+  color: var(--b-text);
+  border: 1px solid var(--b-border);
   border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s ease-out;
-  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
-.btn-volver:hover {
-  background-color: var(--color-primario-hover);
+.alimentos-btn-back:hover {
+  background-color: var(--b-background);
+  border-color: var(--b-header);
+  transform: translateX(-3px);
 }
 
-.btn-volver:active {
-  transform: scale(0.98);
-}
-
-.menu-pedido-container {
+.alimentos-container {
   display: flex;
   flex-direction: row;
-  gap: 32px;
+  gap: 40px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.menu-columna {
+.alimentos-menu-col {
   flex: 2;
 }
 
-.columna-titulo {
-  font-size: 1.875rem;
-  font-weight: 600;
+.alimentos-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
   margin-top: 0;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-borde);
+  margin-bottom: 25px;
+  color: var(--b-header);
 }
 
-.menu-grid {
+.alimentos-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
-.menu-card {
-  background-color: var(--color-fondo-secundario);
-  padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+.alimentos-card {
+  background-color: var(--b-surface);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px var(--b-shadow);
+  border: 1px solid var(--b-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition: all 0.2s ease;
 }
 
-.menu-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+.alimentos-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px var(--b-shadow-hover);
+  border-color: transparent;
 }
 
-.menu-card h3 {
+.alimentos-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--b-header);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.alimentos-desc {
+  color: var(--b-text-secondary);
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.alimentos-price {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-destaque);
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
-.menu-card .descripcion {
-  color: var(--color-texto-secundario);
-  font-size: 0.875rem;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.menu-card .precio {
-  font-size: 1.125rem;
-  font-weight: 600;
+  color: var(--b-accent);
   margin: 0;
 }
 
-.btn-agregar {
-  margin-top: 16px;
+.alimentos-btn-add {
+  margin-top: 20px;
   width: 100%;
-  padding: 10px 16px;
-  background-color: var(--color-primario);
-  border: none;
-  color: var(--color-texto);
+  padding: 12px;
+  background-color: var(--b-surface);
+  border: 1px solid var(--b-accent);
+  color: var(--b-accent);
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s ease-out;
+  transition: all 0.2s;
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
-.btn-agregar:hover {
-  background-color: var(--color-primario-hover);
+.alimentos-btn-add:hover {
+  background-color: var(--b-accent);
+  color: white;
 }
 
-.btn-agregar:active {
+.alimentos-btn-add:active {
   transform: scale(0.98);
 }
 
-.pedido-columna {
+.alimentos-order-col {
   flex: 1;
-  background-color: var(--color-fondo-secundario);
-  padding: 24px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  align-self: flex-start;
+  min-width: 380px;
+}
+
+.alimentos-order-card {
+  background-color: var(--b-surface);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px var(--b-shadow);
+  border: 1px solid var(--b-border);
   position: sticky;
-  top: 32px;
+  top: 30px;
 }
 
-.pedido-vacio {
-  color: var(--color-texto-terciario);
+.alimentos-empty {
+  color: var(--b-text-secondary);
+  text-align: center;
+  padding: 40px 0;
+  font-style: italic;
 }
 
-.pedido-lista {
+.alimentos-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-height: 400px;
+  gap: 20px;
+  max-height: 50vh;
   overflow-y: auto;
-  padding-right: 8px;
+  padding-right: 10px;
+  margin-bottom: 20px;
 }
 
-.pedido-item {
-  background-color: var(--color-fondo-terciario);
-  padding: 12px;
-  border-radius: 4px;
+.alimentos-item {
+  background-color: var(--b-background);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--b-border);
 }
 
-.item-header {
+.alimentos-item-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
+  align-items: flex-start;
+  margin-bottom: 8px;
 }
 
-.btn-eliminar {
+.alimentos-item-name {
+  font-weight: 600;
+  color: var(--b-header);
+  font-size: 1rem;
+}
+
+.alimentos-btn-remove {
   background: none;
   border: none;
-  color: var(--color-rojo);
+  color: var(--b-danger);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0;
+  margin-left: 10px;
 }
 
-.btn-eliminar:hover {
+.alimentos-btn-remove:hover {
   text-decoration: underline;
+  color: var(--b-danger-hover);
 }
 
-.item-precio {
-  font-size: 0.875rem;
-  margin: 4px 0 0 0;
+.alimentos-item-price {
+  font-size: 0.9rem;
+  color: var(--b-accent);
+  font-weight: 600;
 }
 
-.cantidad-controles {
+.alimentos-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
-.cantidad-controles label {
-  font-size: 0.875rem;
+.alimentos-label {
+  font-size: 0.85rem;
+  color: var(--b-text-secondary);
 }
 
-.btn-cantidad {
-  background-color: var(--color-gris);
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: none;
-  color: var(--color-texto);
+.alimentos-btn-qty {
+  background-color: var(--b-surface);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--b-border);
+  color: var(--b-header);
   font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
-.btn-cantidad:hover {
-    background-color: var(--color-gris-hover);
+.alimentos-btn-qty:hover {
+  border-color: var(--b-accent);
+  color: var(--b-accent);
 }
 
-.cantidad-numero {
-  width: 32px;
+.alimentos-qty-num {
+  width: 25px;
   text-align: center;
+  font-weight: 600;
+  color: var(--b-header);
 }
 
-.input-comentarios {
-  margin-top: 8px;
+.alimentos-input-note {
+  margin-top: 12px;
   width: 100%;
-  background-color: #3a3f3a;
-  border: 1px solid var(--color-borde);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 0.875rem;
-  color: var(--color-texto);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--b-surface);
+  border: 1px solid var(--b-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--b-text);
+  font-family: inherit;
+  transition: all 0.2s;
 }
 
-.input-comentarios::placeholder {
-  color: var(--color-texto-terciario);
+.alimentos-input-note::placeholder {
+  color: #bdc3c7;
 }
 
-.input-comentarios:focus {
+.alimentos-input-note:focus {
   outline: none;
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 2px var(--color-destaque_transparente, rgba(74, 222, 128, 0.3));
+  border-color: var(--b-accent);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.pedido-total-seccion {
-  margin-top: 24px;
-  border-top: 1px solid var(--color-borde);
-  padding-top: 16px;
+.alimentos-summary {
+  margin-top: 20px;
+  border-top: 2px solid var(--b-border);
+  padding-top: 20px;
 }
 
-.total-precio {
+.alimentos-total {
   font-size: 1.5rem;
   font-weight: 700;
   display: flex;
   justify-content: space-between;
-  margin: 0;
+  margin: 0 0 20px 0;
+  color: var(--b-header);
 }
 
-.btn-enviar-pedido {
-  margin-top: 16px;
+.alimentos-btn-submit {
   width: 100%;
-  padding: 12px 24px;
-  background-color: var(--color-primario);
+  padding: 16px;
+  background-color: var(--b-accent-2);
   border: none;
-  color: var(--color-texto);
-  border-radius: 8px;
+  color: var(--b-text-inverted);
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s ease-out;
-  font-size: 1.125rem;
+  transition: all 0.2s;
+  font-size: 1.1rem;
   font-weight: 600;
+  box-shadow: 0 4px 10px rgba(26, 188, 156, 0.3);
 }
 
-.btn-enviar-pedido:hover {
-  background-color: var(--color-primario-hover);
+.alimentos-btn-submit:hover {
+  background-color: var(--b-accent-2-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(26, 188, 156, 0.4);
 }
 
-.btn-enviar-pedido:active {
-  transform: scale(0.98);
-}
-
-.btn-enviar-pedido:disabled {
-  background-color: var(--color-gris-hover);
+.alimentos-btn-submit:disabled {
+  background-color: #bdc3c7;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }

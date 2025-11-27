@@ -1,82 +1,126 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
-import "./styles/Login.css"; 
+import "./styles/Login.css";
 
 const Login = () => {
+  const [credenciales, setCredenciales] = useState({
+    nombre_usuario: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
-  const [identificador, setIdentificador] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const handleChange = (e) => {
+    setCredenciales({
+      ...credenciales,
+      [e.target.name]: e.target.value,
+    });
+    // Limpiar error al escribir
+    if (error) setError("");
+  };
 
-  const manejarSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg("");
-    setLoading(true);
+    setCargando(true);
+
+    // Validación simple
+    if (!credenciales.nombre_usuario || !credenciales.password) {
+      setError("Por favor completa todos los campos");
+      setCargando(false);
+      return;
+    }
 
     try {
-      const res = await api.post("/auth/login", {
-        identificador,
-        password,
-      });
+      const response = await api.post("/usuarios/login", credenciales);
+      const { usuario, token } = response.data;
 
-      const { usuario, token } = res.data;
-
-      // Guardar datos en localStorage
+      // Guardar en localStorage
       localStorage.setItem("usuario", JSON.stringify(usuario));
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token); // Si usas tokens
 
       // Redirección según rol
-      if (usuario.rol === "mesero") {
+      if (usuario.rol === "cocina") {
+        navigate("/cocina");
+      } else if (usuario.rol === "mesero") {
         navigate("/");
-      } else if (usuario.rol === "cocina") {
-        navigate("/pantallaCocina");
-      } else if (usuario.rol === "administrador") {
-        navigate("/CRUDPlatillos");
+      } else if (usuario.rol === "admin" || usuario.rol === "caja") {
+        navigate("/admin"); // O la ruta que corresponda
+      } else {
+        navigate("/");
       }
-    } catch (error) {
-      console.log(error);
-      setErrorMsg(
-        error.response?.data?.mensaje || "Error al iniciar sesión"
-      );
+    } catch (err) {
+      console.error(err);
+      if (err.response && err.response.status === 401) {
+        setError("Usuario o contraseña incorrectos");
+      } else {
+        setError("Error al conectar con el servidor");
+      }
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <form className="login-card" onSubmit={manejarSubmit}>
-        <h2>Iniciar Sesión</h2>
+    <div className="login-page">
+      {/* Lado Izquierdo - Visual/Branding */}
+      <div className="login-hero-section">
+        <div className="login-hero-content">
+          <h1 className="login-hero-title">Bienvenido</h1>
+          <p className="login-hero-text">
+            Sistema de Gestión de Restaurante. <br />
+            Optimiza tus pedidos y mejora el servicio.
+          </p>
+        </div>
+      </div>
 
-        {errorMsg && <p className="login-error">{errorMsg}</p>}
-
-        <div className="login-input-group">
-          <label>Identificador</label>
-          <input
-            type="text"
-            value={identificador}
-            onChange={(e) => setIdentificador(e.target.value)}
-            required
-          />
+      {/* Lado Derecho - Formulario */}
+      <div className="login-form-section">
+        <div className="login-header">
+          <h2 className="login-title">Iniciar Sesión</h2>
+          <p className="login-subtitle">Ingresa tus credenciales para acceder</p>
         </div>
 
-        <div className="login-input-group">
-          <label>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        {error && <div className="login-error">⚠️ {error}</div>}
 
-        <button className="login-btn" type="submit" disabled={loading}>
-          {loading ? "Cargando..." : "Entrar"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="login-group">
+            <label htmlFor="nombre_usuario" className="login-label">
+              Usuario
+            </label>
+            <input
+              type="text"
+              id="nombre_usuario"
+              name="nombre_usuario"
+              className="login-input"
+              placeholder="Ej. JuanPerez"
+              value={credenciales.nombre_usuario}
+              onChange={handleChange}
+              autoFocus
+            />
+          </div>
+
+          <div className="login-group">
+            <label htmlFor="password" className="login-label">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="login-input"
+              placeholder="••••••••"
+              value={credenciales.password}
+              onChange={handleChange}
+            />
+          </div>
+
+          <button type="submit" className="login-btn" disabled={cargando}>
+            {cargando ? "Accediendo..." : "Ingresar"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

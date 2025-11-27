@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./styles/PaginaAlimentos.css"; // <- Importamos el CSS
+import "./styles/PaginaAlimentos.css"; 
 import api from "../../api/axios.js"
 
 const PaginaAlimentos = () => {
-  const { id } = useParams(); // ID de la mesa
+  const { id } = useParams(); 
   const navigate = useNavigate();
 
   const [menuData, setMenuData] = useState([]);
@@ -26,7 +26,6 @@ const PaginaAlimentos = () => {
     fetchPlatillos();
   }, []);
 
-  // Cargar mesas y crear mapeo
   useEffect(() => {
     const fetchMesas = async () => {
       try {
@@ -134,34 +133,34 @@ const PaginaAlimentos = () => {
   const itemsEnPedido = Object.values(pedidoActual);
 
   return (
-    <div className="pagina-alimentos">
+    <div className="alimentos-page">
       {confirmacion && (
-        <div className="confirmacion-modal">
+        <div className="alimentos-modal">
           <h2>✅ ¡Pedido enviado correctamente!</h2>
         </div>
       )}
 
       <header className="alimentos-header">
         <h1>Menú de la Mesa {mesaIndexMap[id] || id}</h1>
-        <button onClick={() => navigate("/")} className="btn-volver">
+        <button onClick={() => navigate("/")} className="alimentos-btn-back">
           ← Volver a mesas
         </button>
       </header>
 
-      <div className="menu-pedido-container">
-        <div className="menu-columna">
-          <h2 className="columna-titulo">Platillos</h2>
-          <div className="menu-grid">
+      <div className="alimentos-container">
+        <div className="alimentos-menu-col">
+          <h2 className="alimentos-section-title">Platillos Disponibles</h2>
+          <div className="alimentos-grid">
             {menuData.map((platillo) => (
-              <div key={platillo.id} className="menu-card">
+              <div key={platillo.id} className="alimentos-card">
                 <div>
                   <h3>{platillo.nombre}</h3>
-                  <p className="descripcion">{platillo.descripcion}</p>
-                  <p className="precio">${Number(platillo.precio).toFixed(2)}</p>
+                  <p className="alimentos-desc">{platillo.descripcion}</p>
+                  <p className="alimentos-price">${Number(platillo.precio).toFixed(2)}</p>
                 </div>
                 <button
                   onClick={() => agregarAlPedido(platillo)}
-                  className="btn-agregar"
+                  className="alimentos-btn-add"
                 >
                   Agregar al pedido
                 </button>
@@ -170,76 +169,78 @@ const PaginaAlimentos = () => {
           </div>
         </div>
 
-        <aside className="pedido-columna">
-          <h2 className="columna-titulo">Tu Pedido</h2>
-          
-          {itemsEnPedido.length === 0 ? (
-            <p className="pedido-vacio">Aún no has agregado platillos.</p>
-          ) : (
-            <div className="pedido-lista">
-              {itemsEnPedido.map((item) => (
-                <div key={item.id} className="pedido-item">
-                  <div className="item-header">
-                    <span>{item.nombre}</span>
-                    <button
-                      onClick={() => eliminarDelPedido(item.id)}
-                      className="btn-eliminar"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                  <p className="item-precio">${Number(item.precio).toFixed(2)} c/u</p>
-                  
-                  <div className="cantidad-controles">
-                    <label>Cant:</label>
-                    <button
-                      onClick={() =>
-                        actualizarCantidad(item.id, item.cantidad - 1)
+        <aside className="alimentos-order-col">
+          <div className="alimentos-order-card">
+            <h2 className="alimentos-section-title">Tu Pedido</h2>
+            
+            {itemsEnPedido.length === 0 ? (
+              <p className="alimentos-empty">Selecciona platillos para comenzar.</p>
+            ) : (
+              <div className="alimentos-list">
+                {itemsEnPedido.map((item) => (
+                  <div key={item.id} className="alimentos-item">
+                    <div className="alimentos-item-header">
+                      <span className="alimentos-item-name">{item.nombre}</span>
+                      <button
+                        onClick={() => eliminarDelPedido(item.id)}
+                        className="alimentos-btn-remove"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                    <p className="alimentos-item-price">${Number(item.precio).toFixed(2)} c/u</p>
+                    
+                    <div className="alimentos-controls">
+                      <span className="alimentos-label">Cant:</span>
+                      <button
+                        onClick={() =>
+                          actualizarCantidad(item.id, item.cantidad - 1)
+                        }
+                        className="alimentos-btn-qty"
+                      >
+                        -
+                      </button>
+                      <span className="alimentos-qty-num">{item.cantidad}</span>
+                      <button
+                        onClick={() =>
+                          actualizarCantidad(item.id, item.cantidad + 1)
+                        }
+                        className="alimentos-btn-qty"
+                      >
+                        +
+                      </button>
+                    </div>
+                    
+                    <input
+                      type="text"
+                      placeholder="Notas (ej. sin cebolla)"
+                      value={item.comentarios}
+                      onChange={(e) =>
+                        actualizarComentarios(item.id, e.target.value)
                       }
-                      className="btn-cantidad"
-                    >
-                      -
-                    </button>
-                    <span className="cantidad-numero">{item.cantidad}</span>
-                    <button
-                      onClick={() =>
-                        actualizarCantidad(item.id, item.cantidad + 1)
-                      }
-                      className="btn-cantidad"
-                    >
-                      +
-                    </button>
+                      className="alimentos-input-note"
+                    />
                   </div>
-                  
-                  <input
-                    type="text"
-                    placeholder="Comentarios (ej. sin cebolla)"
-                    value={item.comentarios}
-                    onChange={(e) =>
-                      actualizarComentarios(item.id, e.target.value)
-                    }
-                    className="input-comentarios"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          {itemsEnPedido.length > 0 && (
-            <div className="pedido-total-seccion">
-              <h3 className="total-precio">
-                <span>Total:</span>
-                <span>${calcularTotal().toFixed(2)}</span>
-              </h3>
-              <button
-                onClick={handleEnviarPedido}
-                disabled={itemsEnPedido.length === 0}
-                className="btn-enviar-pedido"
-              >
-                Enviar Pedido a Cocina
-              </button>
-            </div>
-          )}
+            {itemsEnPedido.length > 0 && (
+              <div className="alimentos-summary">
+                <h3 className="alimentos-total">
+                  <span>Total:</span>
+                  <span>${calcularTotal().toFixed(2)}</span>
+                </h3>
+                <button
+                  onClick={handleEnviarPedido}
+                  disabled={itemsEnPedido.length === 0}
+                  className="alimentos-btn-submit"
+                >
+                  Enviar Pedido a Cocina
+                </button>
+              </div>
+            )}
+          </div>
         </aside>
       </div>
     </div>

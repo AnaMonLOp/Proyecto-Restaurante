@@ -21,12 +21,10 @@ const SelectorMesa = () => {
     return guardado ? JSON.parse(guardado) : {};
   });
 
-  // Cargar mesas activas desde backend
   useEffect(() => {
     const cargarMesas = async () => {
       try {
         const res = await api.get("/mesas");
-        // Ordenamos por id para tener orden estable
         const lista = (res.data || []).slice().sort((a, b) => a.id - b.id);
         setMesas(lista);
       } catch (err) {
@@ -36,7 +34,6 @@ const SelectorMesa = () => {
     cargarMesas();
   }, []);
 
-  
   useEffect(() => {
     localStorage.setItem("ocupacionMesas", JSON.stringify(ocupacion));
   }, [ocupacion]);
@@ -63,46 +60,57 @@ const SelectorMesa = () => {
   return (
     <div className="selector-page">
       <header className="selector-header">
-        <h1 className="logo">🍴 Restaurante</h1>
-        <div className="header-right">
-          <span className="pedidos" onClick={() => navigate("/pedidos")} style={{ cursor: "pointer" }}>
+        <h1 className="selector-logo">🍴 Restaurante</h1>
+        <div className="selector-header-right">
+          <span 
+            className="selector-link" 
+            onClick={() => navigate("/pedidos")} 
+          >
             Pedidos Activos
           </span>
-          <span onClick={() => navigate("/logout")} style={{ cursor: "pointer" }}>Cerrar sesión</span>
-          <div className="usuario">
-            <span className="nombre">{usuario.nombre}</span>
-            <span className="rol">{usuario.rol}</span>
+          <span 
+            className="selector-link"
+            onClick={() => navigate("/logout")} 
+          >
+            Cerrar sesión
+          </span>
+          <div className="selector-user-card">
+            <span className="selector-user-name">{usuario.nombre}</span>
+            <span className="selector-user-role">{usuario.rol}</span>
           </div>
         </div>
       </header>
 
-      <div className="selector-mesa-container">
-        <h2 className="selector-titulo">Selección de Mesa</h2>
-        <div className="mesas-grid">
+      <div className="selector-main-container">
+        <h2 className="selector-title">Selección de Mesa</h2>
+        <div className="selector-grid">
           {mesas.map((mesa, idx) => {
             const estadoMesa = ocupacion[mesa.id]?.estado || "disponible";
             const meseroMesa = ocupacion[mesa.id]?.mesero || null;
-            const estadoClase =
-              estadoMesa === "disponible"
-                ? "verde"
-                : meseroMesa === usuario.nombre
-                ? "azul"
-                : "naranja";
+            
+            let statusClass = "selector-status-available";
+            if (estadoMesa !== "disponible") {
+                if (meseroMesa === usuario.nombre) {
+                    statusClass = "selector-status-mine"; 
+                } else {
+                    statusClass = "selector-status-busy";
+                }
+            }
 
             return (
-              <div key={mesa.id} className="mesa-card">
+              <div key={mesa.id} className="selector-card">
                 
-                <div className="mesa-imagen-container">
+                <div className="selector-img-container">
                   <img
                     src="./public/images/mesa-icon.webp"
                     alt="Icono de mesa"
-                    className="mesa-imagen"
+                    className="selector-img"
                   />
                 </div>
 
-                <div className="mesa-info">
-                  <p className="mesa-nombre">Mesa {idx + 1}</p>
-                  <p className={`estado ${estadoClase}`}>
+                <div className="selector-info">
+                  <p className="selector-mesa-name">Mesa {idx + 1}</p>
+                  <p className={`selector-status ${statusClass}`}>
                     {estadoMesa === "disponible"
                       ? "Disponible"
                       : meseroMesa === usuario.nombre
@@ -113,10 +121,10 @@ const SelectorMesa = () => {
                   </p>
                 </div>
 
-                <div className="mesa-botones">
+                <div className="selector-actions">
                   {estadoMesa === "disponible" && (
                     <button
-                      className="btn verde"
+                      className="selector-btn selector-btn-take"
                       onClick={() => tomarMesa(mesa.id)}
                     >
                       Tomar mesa
@@ -126,13 +134,13 @@ const SelectorMesa = () => {
                     meseroMesa === usuario.nombre && (
                       <>
                         <button
-                          className="btn azul"
+                          className="selector-btn selector-btn-menu"
                           onClick={() => irAlMenu(mesa.id)}
                         >
                           Ir al menú
                         </button>
                         <button
-                          className="btn rojo"
+                          className="selector-btn selector-btn-release"
                           onClick={() => liberarMesa(mesa.id)}
                         >
                           Liberar

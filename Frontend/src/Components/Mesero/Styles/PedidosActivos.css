@@ -1,124 +1,97 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 
 :root {
-  --color-fondo: #0a0f0a;
-  --color-fondo-tarjeta: #121c12;
-  --color-texto-principal: #ffffff;
-  --color-texto-secundario: #bbbbbb;
-
-  --color-primario: #1b4d1b;
-  --color-primario-hover: #2a6a2a;
-
-  --color-acento-verde: #39ff14; /* Verde neón para acciones principales */
-  --color-acento-azul: #4caeff;
-  --color-acento-naranja: #ff9800;
-  --color-rojo-cancelar: #d32f2f;
-
-  --color-borde: #3a3a3a;
-  --font-principal: "Poppins", sans-serif;
-
-  --radio-borde-grande: 16px;
-  --radio-borde-pequeno: 8px;
-  --sombra-tarjeta: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-2: #1ABC9C;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-danger: #E74C3C;
+  --b-warning: #F39C12;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  overflow-x: hidden;
-  font-family: var(--font-principal);
-  background-color: var(--color-fondo);
-}
-
-/* --- PAGE LAYOUT --- */
-.pedidos-page {
-  background-color: var(--color-fondo);
-  color: var(--color-texto-principal);
+.pedidos-active-page {
+  background-color: var(--b-background);
+  color: var(--b-text);
   min-height: 100vh;
   padding: 40px;
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
 }
 
 /* --- HEADER --- */
-.pedidos-header {
+.pedidos-active-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  flex-wrap: wrap;
-  gap: 15px;
+  border-bottom: 1px solid var(--b-border);
+  padding-bottom: 15px;
 }
 
-.logo {
+.pedidos-active-logo {
   font-size: 2rem;
-  font-weight: 600;
-  color: var(--color-acento-verde);
-  letter-spacing: 1px;
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+  font-weight: 700;
+  color: var(--b-header);
+  letter-spacing: -0.5px;
 }
 
-/* --- FILTRO --- */
-.filtro-contenedor {
+/* Botón de volver (NO flex:1) */
+.pedidos-header-btn-volver {
+  padding: 10px 20px;
+  background-color: var(--b-surface);
+  color: var(--b-text);
+  border: 1px solid var(--b-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pedidos-header-btn-volver:hover {
+  background-color: var(--b-background);
+  border-color: var(--b-header);
+  transform: translateX(-3px);
+}
+
+/* --- FILTROS --- */
+.pedidos-active-filter-container {
   display: flex;
   justify-content: center;
   margin-bottom: 40px;
 }
 
-.filtro-select {
-  padding: 12px 20px;
-  background-color: #1e1e1e;
-  color: white;
-  border: 1px solid var(--color-borde);
-  border-radius: 50px; /* Estilo píldora */
+.pedidos-active-select {
+  padding: 12px 24px;
+  background-color: var(--b-surface);
+  color: var(--b-text);
+  border: 1px solid var(--b-border);
+  border-radius: 50px;
   font-size: 1rem;
   cursor: pointer;
   outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
-  min-width: 200px;
+  min-width: 250px;
   text-align: center;
+  box-shadow: 0 2px 8px var(--b-shadow);
 }
 
-.filtro-select:focus {
-  border-color: var(--color-acento-verde);
-  box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+.pedidos-active-select:focus {
+  border-color: var(--b-accent);
 }
 
-/* --- BOTONES GENERALES --- */
-button {
-  font-family: var(--font-principal);
-}
-
-.btn {
-  border: none;
-  border-radius: var(--radio-borde-pequeno);
-  cursor: pointer;
-  font-weight: 600;
-  padding: 10px 18px;
-  transition: all 0.25s ease;
-  font-size: 0.9rem;
-}
-
-.btn-volver {
-  background-color: #333;
-  color: white;
-  border: 1px solid #444;
-}
-.btn-volver:hover {
-  background-color: #444;
-  transform: translateX(-3px);
-}
-
-/* --- GRID DE PEDIDOS --- */
-.pedidos-container {
+/* --- GRID --- */
+.pedidos-active-container {
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
-.pedidos-grid {
+.pedidos-active-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 25px;
@@ -126,316 +99,251 @@ button {
   max-width: 1400px;
 }
 
-.sin-pedidos {
+.pedidos-active-empty {
   text-align: center;
   font-size: 1.2rem;
-  color: var(--color-texto-secundario);
+  color: var(--b-text-secondary);
   margin-top: 50px;
 }
 
-/* --- TARJETAS DE PEDIDO --- */
-.pedido-card {
-  background-color: var(--color-fondo-tarjeta);
-  border-radius: var(--radio-borde-grande);
-  border-left: 5px solid var(--color-borde);
+/* --- TARJETA --- */
+.pedidos-active-card {
+  background-color: var(--b-surface);
+  border-radius: 16px;
+  border: 1px solid var(--b-border);
+  border-left: 5px solid var(--b-text-secondary); 
   padding: 25px;
-  box-shadow: var(--sombra-tarjeta);
-
+  box-shadow: 0 4px 12px var(--b-shadow);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  /* IMPORTANTE: Altura automática para acomodar botones */
-  min-height: 280px; 
+  min-height: 300px;
   height: auto;
-  
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease;
   position: relative;
-  overflow: hidden;
 }
 
-.pedido-card:hover {
+.pedidos-active-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 24px rgba(44, 62, 80, 0.12);
 }
 
-/* Variaciones por estado (Borde izquierdo y fondo sutil) */
-.pedido-card.verde { 
-    border-left-color: var(--color-acento-verde); 
-    background: linear-gradient(145deg, #121c12 0%, #0d120d 100%);
-}
-.pedido-card.azul { 
-    border-left-color: var(--color-acento-azul); 
-}
-.pedido-card.naranja { 
-    border-left-color: var(--color-acento-naranja); 
-}
+.pedidos-active-card.verde { border-left-color: var(--b-accent-2); }
+.pedidos-active-card.azul { border-left-color: var(--b-accent); }
+.pedidos-active-card.naranja { border-left-color: var(--b-warning); }
 
 /* Contenido de la tarjeta */
-.pedido-card-content h2 {
-  font-size: 1.6rem;
-  color: var(--color-texto-principal);
+.pedidos-active-content h2 {
+  font-size: 1.5rem;
+  color: var(--b-header);
   margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  font-weight: 700;
 }
 
-.pedido-card-content p {
-  margin: 8px 0;
-  color: var(--color-texto-secundario);
+.pedidos-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
   font-size: 0.95rem;
-  line-height: 1.4;
 }
 
-.estado-texto {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 5px 10px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-top: 5px !important;
+.pedidos-label {
+  color: var(--b-text-secondary);
 }
 
-.estado-texto b {
-  color: white;
-  margin-left: 5px;
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
+.pedidos-value {
+  color: var(--b-text);
+  font-weight: 500;
 }
 
-/* --- ACCIONES DE LA TARJETA (BOTONES) --- */
-.pedido-card-actions {
-  display: flex;
-  flex-wrap: wrap; /* Permite que los botones se acomoden */
+.pedidos-active-status-text {
+  margin-top: 15px;
+  background: rgba(44, 62, 80, 0.05);
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 0.9rem;
+  color: var(--b-header);
+}
+
+.pedidos-total {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--b-header);
+  text-align: right;
+}
+
+/* --- BOTONES TARJETA (GRID) --- */
+.pedidos-active-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
   gap: 10px;
-  margin-top: 25px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
   padding-top: 15px;
+  border-top: 1px solid var(--b-border);
 }
 
-.pedido-card-actions button {
-    flex: 1; /* Los botones intentarán ocupar el mismo ancho */
-    white-space: nowrap;
-    min-width: 100px; /* Evita que se hagan demasiado pequeños */
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: filter 0.2s, transform 0.2s;
+.pedidos-card-btn {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.pedido-card-actions button:hover {
-    filter: brightness(1.15);
-}
-
-/* Botón Ver Detalle */
-.btn-detalle {
+.pedidos-btn-detail {
   background-color: transparent;
-  border: 1px solid var(--color-texto-secundario) !important;
-  color: var(--color-texto-secundario);
+  border: 1px solid var(--b-accent);
+  color: var(--b-accent);
 }
-.btn-detalle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.pedidos-btn-detail:hover {
+  background-color: var(--b-accent);
   color: white;
 }
 
-/* Botón Entregar (NUEVO) */
-.btn-entregar {
-    background-color: var(--color-acento-verde) !important;
-    color: #000 !important; /* Texto negro para contraste */
-    box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+.pedidos-btn-deliver {
+  background-color: var(--b-accent-2);
+  color: white;
+}
+.pedidos-btn-deliver:hover {
+  background-color: #16a085;
+  box-shadow: 0 4px 8px rgba(26, 188, 156, 0.2);
 }
 
-/* Botón Cancelar */
-.cancelar {
-  background-color: rgba(211, 47, 47, 0.2) !important;
-  color: #ff6b6b !important;
-  border: 1px solid #d32f2f !important;
+/* Cancelar ocupa las dos columnas */
+.pedidos-btn-cancel {
+  grid-column: span 2; 
+  background-color: transparent;
+  color: var(--b-danger);
+  border: 1px solid rgba(231, 76, 60, 0.3);
 }
-.cancelar:hover {
-  background-color: #d32f2f !important;
-  color: white !important;
+.pedidos-btn-cancel:hover {
+  background-color: var(--b-danger);
+  color: white;
+  border-color: var(--b-danger);
 }
 
 /* --- MODAL --- */
-.modal-overlay {
+.pedidos-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(5px);
+  background: rgba(44, 62, 80, 0.6); 
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease;
 }
 
-.modal-detalle {
-  background: #1a1f1a;
+.pedidos-modal {
+  background: var(--b-surface);
   padding: 35px;
   width: 90%;
   max-width: 550px;
   border-radius: 20px;
-  border: 1px solid var(--color-borde);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-  animation: popup 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   max-height: 85vh;
 }
 
-.modal-detalle h2 {
+.pedidos-modal h2 {
   margin-bottom: 20px;
-  color: var(--color-acento-verde);
-  border-bottom: 1px solid var(--color-borde);
+  color: var(--b-header);
+  border-bottom: 1px solid var(--b-border);
   padding-bottom: 15px;
   font-size: 1.8rem;
 }
 
-.modal-detalle p {
-  color: var(--color-texto-secundario);
+.pedidos-modal p {
+  color: var(--b-text-secondary);
   margin-bottom: 8px;
 }
 
-.modal-detalle h3 {
+.pedidos-modal h3 {
   margin-top: 25px;
   margin-bottom: 15px;
-  color: var(--color-acento-azul);
+  color: var(--b-accent);
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* --- LISTA DE PLATILLOS EN MODAL --- */
-.modal-detalle ul {
+.pedidos-modal ul {
   list-style: none;
-  padding: 0;
-  margin: 0;
   overflow-y: auto;
   padding-right: 10px;
-  /* Personalización Scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: #444 transparent;
 }
 
-/* Webkit Scrollbar */
-.modal-detalle ul::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-detalle ul::-webkit-scrollbar-track {
-  background: transparent;
-}
-.modal-detalle ul::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border-radius: 10px;
-}
-
-.modal-detalle li {
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+.pedidos-modal li {
+  background-color: var(--b-background);
+  border: 1px solid var(--b-border);
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 10px;
-  color: #eee;
+  color: var(--b-text);
   font-size: 0.95rem;
   display: flex;
   flex-direction: column;
-  transition: background 0.2s;
 }
 
-.modal-detalle li:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-}
-
-.comentario-item {
+.pedidos-modal-note {
   font-size: 0.85rem;
-  color: var(--color-acento-naranja);
+  color: var(--b-warning);
   margin-top: 8px;
-  padding-left: 10px;
-  border-left: 2px solid var(--color-acento-naranja);
   font-style: italic;
-  background: rgba(255, 152, 0, 0.05);
-  padding: 5px 10px;
-  border-radius: 0 4px 4px 0;
+  padding-left: 10px;
+  border-left: 2px solid var(--b-warning);
 }
 
-.error-vacio {
-    text-align: center;
-    padding: 20px;
-    background: rgba(255, 0, 0, 0.05);
-    border-radius: 8px;
-}
-
-/* Acciones del Modal */
-.modal-actions {
+.pedidos-modal-actions {
   margin-top: 25px;
   padding-top: 20px;
-  border-top: 1px solid var(--color-borde);
+  border-top: 1px solid var(--b-border);
 }
 
-.btn-cerrar {
+.pedidos-btn-close {
   width: 100%;
   padding: 14px;
-  background: #333;
+  background: var(--b-header);
   border: none;
   color: white;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s;
   font-size: 1rem;
 }
-
-.btn-cerrar:hover {
-  background: #555;
+.pedidos-btn-close:hover {
+  background: #1a252f;
 }
 
-/* --- TOAST NOTIFICATION --- */
-.notificacion-toast {
+.pedidos-toast {
   position: fixed;
   top: 30px;
   right: 30px;
-  background-color: var(--color-acento-verde);
-  color: #000;
+  background-color: var(--b-accent-2);
+  color: white;
   padding: 16px 24px;
   border-radius: 8px;
   font-weight: 600;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
   z-index: 10000;
-  animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* --- ANIMACIONES --- */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes popup {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes latido {
-  0% { transform: scale(1); border-left-color: var(--color-acento-verde);}
-  50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(57, 255, 20, 0.15); border-left-color: #8aff70;}
-  100% { transform: scale(1); border-left-color: var(--color-acento-verde);}
+  0% { transform: scale(1); border-left-color: var(--b-accent-2);}
+  50% { transform: scale(1.02); border-left-color: #58d68d;}
+  100% { transform: scale(1); border-left-color: var(--b-accent-2);}
 }
 
 .latido {
   animation: latido 2s infinite ease-in-out;
 }
-
