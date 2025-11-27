@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../api/axios.js";
 import "./CRUDPlatillos.css";
 
 function CRUDPlatillos() {
-  const navigate = useNavigate();
   const [platillo, setPlatillo] = useState({ nombre: "", precio: "", categoria: "" });
   const [platillos, setPlatillos] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
@@ -85,16 +83,7 @@ function CRUDPlatillos() {
 
   return (
     <div className="crud-platillos-container">
-      {/* Navegación rápida sin duplicar Navbar */}
-      <header className="crud-header">
         <h3 className="logo">🍽️ Gestión de Platillos</h3>
-        <nav className="nav-menu">
-          <span onClick={() => navigate("/reportes")} className="nav-link">Reportes</span>
-          <span onClick={() => navigate("/gestion-usuarios")} className="nav-link">Usuarios</span>
-          <span onClick={() => navigate("/registro-admin")} className="nav-link">Cuentas</span>
-          <span onClick={() => navigate("/logout")} className="nav-link logout">Cerrar sesión</span>
-        </nav>
-      </header>
 
       <div className="form-container">
         <input

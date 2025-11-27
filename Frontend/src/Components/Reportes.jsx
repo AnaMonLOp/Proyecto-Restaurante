@@ -138,13 +138,6 @@ const Reportes = () => {
           >
             Fecha única
           </button>
-          <button
-            className={`mode-btn ${rangeMode ? "active" : ""}`}
-            onClick={() => setRangeMode(true)}
-            type="button"
-          >
-            Rango
-          </button>
         </div>
       </div>
 
