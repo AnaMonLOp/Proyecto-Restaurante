@@ -83,112 +83,115 @@ function GestionUsuarios() {
 
     if (cargando) {
         return (
-            <div className="gestion-container">
-                <div className="cargando">Cargando usuarios...</div>
+            <div className="usuarios-page">
+                <div className="usuarios-loading">Cargando usuarios...</div>
             </div>
         );
     }
 
     return (
-        <div className="gestion-container">
-            <header className="crud-header">
-                <h1> 👤 Gestión de usuarios</h1>
-                <nav className="nav-menu">
-                    <span onClick={() => navigate("/registro-admin")} className="nav-link">Registro Administrador</span>
-                    <span onClick={() => navigate("/registro")} className="nav-link">Registro Cocinero-Mesero</span>
+        <div className="usuarios-page">
+            <header className="usuarios-header">
+                <h1 className="usuarios-logo">👤 Gestión de Usuarios</h1>
+                <nav className="usuarios-nav">
+                    <button onClick={() => navigate("/registro-admin")} className="usuarios-nav-btn">
+                        + Admin
+                    </button>
+                    <button onClick={() => navigate("/registro")} className="usuarios-nav-btn">
+                        + Personal
+                    </button>
+                    <button onClick={() => navigate("/")} className="usuarios-nav-btn" style={{borderColor: '#E74C3C', color: '#E74C3C'}}>
+                        Salir
+                    </button>
                 </nav>
             </header>
-            <div className="gestion-header">
-                <p className="subtitulo">Administra los roles del personal</p>
-            </div>
 
-            {error && (
-                <div className="mensaje-error">{error}</div>
-            )}
+            <div className="usuarios-main">
+                <div className="usuarios-title-section">
+                    <p className="usuarios-subtitle">Administra los roles y accesos del personal del restaurante.</p>
+                </div>
 
-            <div className="tabla-wrapper">
-                <table className="tabla-usuarios">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Identificador</th>
-                            <th>Rol</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {usuarios.length === 0 ? (
+                {error && (
+                    <div className="usuarios-error">{error}</div>
+                )}
+
+                <div className="usuarios-table-card">
+                    <table className="usuarios-table">
+                        <thead>
                             <tr>
-                                <td colSpan="5" className="sin-datos">
-                                    No hay usuarios registrados
-                                </td>
+                                <th>Nombre</th>
+                                <th>Identificador</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
-                        ) : (
-                            usuarios.map(usuario => (
-                                <tr key={usuario.id} className={!usuario.activo ? "usuario-inactivo" : ""}>
-                                    <td>{usuario.nombre}</td>
-                                    <td>{usuario.identificador}</td>
-                                    <td>
-                                        <span className={`badge-rol ${usuario.rol}`}>
-                                            {usuario.rol === "administrador" ? "Administrador" :
-                                             usuario.rol === "mesero" ? "Mesero" : "Cocinero"}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span className={`badge-estado ${usuario.activo ? "activo" : "inactivo"}`}>
-                                            {usuario.activo ? "Activo" : "Inactivo"}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {usuario.rol === "administrador" ? (
-                                            <span className="texto-bloqueado">
-                                                No editable
-                                            </span>
-                                        ) : (
-                                            <div className="acciones-botones">
-                                                <button
-                                                    className="btn-cambiar"
-                                                    onClick={() => cambiarRol(usuario.id, usuario.rol)}
-                                                    disabled={editandoId === usuario.id || !usuario.activo}
-                                                >
-                                                    {editandoId === usuario.id ? (
-                                                        "Cambiando..."
-                                                    ) : (
-                                                        <>
-                                                            Cambiar a {usuario.rol === "mesero" ? "Cocinero" : "Mesero"}
-                                                        </>
-                                                    )}
-                                                </button>
-                                                <button
-                                                    className={usuario.activo ? "btn-desactivar" : "btn-activar"}
-                                                    onClick={() => toggleActivo(usuario.id, usuario.activo, usuario.rol)}
-                                                    disabled={editandoId === usuario.id}
-                                                >
-                                                    {editandoId === usuario.id ? "Procesando..." : (usuario.activo ? "Desactivar" : "Activar")}
-                                                </button>
-                                                <button
-                                                    className="btn-eliminar"
-                                                    onClick={() => eliminarUsuario(usuario.id, usuario.rol)}
-                                                    disabled={eliminandoId === usuario.id}
-                                                >
-                                                    {eliminandoId === usuario.id ? "Eliminando..." : "Eliminar"}
-                                                </button>
-                                            </div>
-                                        )}
+                        </thead>
+                        <tbody>
+                            {usuarios.length === 0 ? (
+                                <tr>
+                                    <td colSpan="5" className="usuarios-no-data">
+                                        No hay usuarios registrados
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            ) : (
+                                usuarios.map(usuario => (
+                                    <tr key={usuario.id} className={!usuario.activo ? "usuarios-row-inactive" : ""}>
+                                        <td><strong>{usuario.nombre}</strong></td>
+                                        <td>{usuario.identificador}</td>
+                                        <td>
+                                            <span className={`usuarios-badge badge-role-${usuario.rol}`}>
+                                                {usuario.rol === "administrador" ? "Administrador" :
+                                                 usuario.rol === "mesero" ? "Mesero" : "Cocinero"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className={`usuarios-badge badge-status-${usuario.activo ? "active" : "inactive"}`}>
+                                                {usuario.activo ? "Activo" : "Inactivo"}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {usuario.rol === "administrador" ? (
+                                                <span style={{color: '#95A5A6', fontSize: '0.9rem'}}>No editable</span>
+                                            ) : (
+                                                <div className="usuarios-actions">
+                                                    <button
+                                                        className="usuarios-btn-action btn-role"
+                                                        onClick={() => cambiarRol(usuario.id, usuario.rol)}
+                                                        disabled={editandoId === usuario.id || !usuario.activo}
+                                                        title="Cambiar Rol"
+                                                    >
+                                                        {editandoId === usuario.id ? "..." : (usuario.rol === "mesero" ? "A Cocina" : "A Mesero")}
+                                                    </button>
+                                                    <button
+                                                        className="usuarios-btn-action btn-toggle"
+                                                        onClick={() => toggleActivo(usuario.id, usuario.activo, usuario.rol)}
+                                                        disabled={editandoId === usuario.id}
+                                                        title={usuario.activo ? "Desactivar cuenta" : "Activar cuenta"}
+                                                    >
+                                                        {editandoId === usuario.id ? "..." : (usuario.activo ? "Desactivar" : "Activar")}
+                                                    </button>
+                                                    <button
+                                                        className="usuarios-btn-action btn-delete"
+                                                        onClick={() => eliminarUsuario(usuario.id, usuario.rol)}
+                                                        disabled={eliminandoId === usuario.id}
+                                                        title="Eliminar usuario permanentemente"
+                                                    >
+                                                        {eliminandoId === usuario.id ? "..." : "Eliminar"}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-            <div className="info-footer">
-                <p>Total de usuarios: <strong>{usuarios.length}</strong> ({usuarios.filter(u => u.activo).length} activos)</p>
-                <p className="nota">
-                    * Los usuarios inactivos no pueden iniciar sesión
-                </p>
+                <div className="usuarios-footer">
+                    <span>Total de usuarios: <strong>{usuarios.length}</strong> ({usuarios.filter(u => u.activo).length} activos)</span>
+                    <span style={{fontStyle: 'italic'}}>* Usuarios inactivos no pueden acceder al sistema</span>
+                </div>
             </div>
         </div>
     );

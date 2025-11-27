@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import api from "../../api/axios";
-import "./styles/RegistroUsuario.css";
+import "./styles/RegistroAdmin.css";
 
 function RegistroAdmin() {
     const [form, setForm] = useState({
@@ -67,16 +67,18 @@ function RegistroAdmin() {
     return (
         <div className="registro-page">
             <div className="registro-card">
-                <h2 className="registro-title">Registrar Administrador</h2>
-                <p className="registro-subtitle">Crea una cuenta de administrador para el sistema</p>
+                <div className="registro-header">
+                    <h2 className="registro-title">Registrar Administrador</h2>
+                    <p className="registro-subtitle">Crea una cuenta de administrador para el sistema</p>
+                </div>
 
                 <form onSubmit={onSubmit} noValidate>
-                    <div className="form-grid">
-                        <div className="field">
-                            <label className="label" htmlFor="nombre">Nombre</label>
+                    <div className="registro-form-grid">
+                        <div className="registro-field">
+                            <label className="registro-label" htmlFor="nombre">Nombre</label>
                             <input
                                 id="nombre"
-                                className="input"
+                                className="registro-input"
                                 type="text"
                                 placeholder="Nombre y apellidos"
                                 value={form.nombre}
@@ -85,32 +87,32 @@ function RegistroAdmin() {
                                 autoComplete="name"
                             />
                             {touched.nombre && errores.nombre && (
-                                <span className="error-text">{errores.nombre}</span>
+                                <span className="registro-error-text">{errores.nombre}</span>
                             )}
                         </div>
 
-                        <div className="field">
-                            <label className="label" htmlFor="identificador">Identificador</label>
+                        <div className="registro-field">
+                            <label className="registro-label" htmlFor="identificador">Identificador</label>
                             <input
                                 id="identificador"
-                                className="input"
+                                className="registro-input"
                                 type="text"
-                                placeholder="admin01, admin02"
+                                placeholder="ej. admin01"
                                 value={form.identificador}
                                 onChange={(e) => actualizar("identificador", e.target.value)}
                                 onBlur={() => setTouched((t) => ({ ...t, identificador: true }))}
                                 autoComplete="username"
                             />
                             {touched.identificador && errores.identificador && (
-                                <span className="error-text">{errores.identificador}</span>
+                                <span className="registro-error-text">{errores.identificador}</span>
                             )}
                         </div>
 
-                        <div className="field">
-                            <label className="label" htmlFor="password">Contraseña</label>
+                        <div className="registro-field">
+                            <label className="registro-label" htmlFor="password">Contraseña</label>
                             <input
                                 id="password"
-                                className="input"
+                                className="registro-input"
                                 type="password"
                                 placeholder="••••••••"
                                 value={form.password}
@@ -119,24 +121,28 @@ function RegistroAdmin() {
                                 autoComplete="new-password"
                             />
                             {touched.password && errores.password && (
-                                <span className="error-text">{errores.password}</span>
+                                <span className="registro-error-text">{errores.password}</span>
                             )}
                         </div>
 
                         {errorServidor ? (
-                            <div className="server-error">{errorServidor}</div>
+                            <div className="registro-server-error">{errorServidor}</div>
                         ) : null}
 
                         {exito ? (
-                            <div className="success-box">Administrador registrado correctamente</div>
+                            <div className="registro-success-box"> Administrador registrado correctamente</div>
                         ) : null}
 
-                        <div className="actions">
-                            <button className="btn-primary" type="submit" disabled={!esValido || enviando}>
+                        <div className="registro-actions">
+                            <button 
+                                className="registro-btn registro-btn-primary" 
+                                type="submit" 
+                                disabled={!esValido || enviando}
+                            >
                                 {enviando ? "Registrando…" : "Registrar"}
                             </button>
                             <button
-                                className="btn-secondary"
+                                className="registro-btn registro-btn-secondary"
                                 type="button"
                                 onClick={() => {
                                     setForm({ nombre: "", identificador: "", password: "" });

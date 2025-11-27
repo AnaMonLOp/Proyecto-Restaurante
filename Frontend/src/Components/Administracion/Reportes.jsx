@@ -16,7 +16,8 @@ import {
 } from "recharts";
 import "./styles/Reportes.css";
 
-const COLORS = ["#3b82f6", "#06b6d4", "#f59e0b", "#ef4444"];
+// Colores actualizados a la nueva paleta: Azul, Turquesa, Naranja, Rojo
+const COLORS = ["#3498DB", "#1ABC9C", "#F39C12", "#E74C3C"];
 
 function formatCurrency(n) {
   return typeof n === "number" ? n.toFixed(2) : n;
@@ -84,93 +85,98 @@ const Reportes = () => {
   const getChartData = () => {
     if (!reporte) return [];
     return [
-      { name: "Pedidos", value: totalPedidos, color: COLORS[0] },
-      { name: "Cancelados", value: totalCancelados, color: COLORS[3] },
-      { name: "Ventas", value: totalVendido, color: COLORS[2] },
+      { name: "Pedidos", value: totalPedidos, color: COLORS[0] }, // Azul
+      { name: "Cancelados", value: totalCancelados, color: COLORS[3] }, // Rojo
+      { name: "Ventas", value: totalVendido, color: COLORS[1] }, // Turquesa
     ];
   };
 
   return (
-    <div className="reportes-container p-6 bg-gray-900 text-white min-h-screen">
+    <div className="reportes-page">
       {/* Navbar solo para administrador */}
       {usuario?.rol === "administrador" && <Navbar />}
 
-      <h2 className="titulo">📊 Reportes de Pedidos</h2>
+      <h2 className="reportes-header-title">📊 Reportes de Pedidos</h2>
 
       {/* Filtros */}
-      <div className="filtros-box">
-        <div className="filtro-line">
+      <div className="reportes-filters-card">
+        <div className="reportes-filter-group">
           {!rangeMode ? (
             <>
-              <label className="lbl">Fecha:</label>
+              <label className="reportes-label">Fecha:</label>
               <input
                 type="date"
+                className="reportes-input-date"
                 value={fecha}
                 onChange={(e) => setFecha(e.target.value)}
               />
             </>
           ) : (
             <>
-              <label className="lbl">Inicio:</label>
+              <label className="reportes-label">Inicio:</label>
               <input
                 type="date"
+                className="reportes-input-date"
                 value={startFecha}
                 onChange={(e) => setStartFecha(e.target.value)}
               />
-              <label className="lbl">Fin:</label>
+              <label className="reportes-label">Fin:</label>
               <input
                 type="date"
+                className="reportes-input-date"
                 value={endFecha}
                 onChange={(e) => setEndFecha(e.target.value)}
               />
             </>
           )}
-          <button onClick={generarReporte} className="btn-primary" disabled={loading}>
+          <button 
+            onClick={generarReporte} 
+            className="reportes-btn-primary" 
+            disabled={loading}
+          >
             {loading ? "Cargando..." : "Generar Reporte"}
           </button>
         </div>
 
-        <div className="filtro-line">
-          <button
-            className={`mode-btn ${!rangeMode ? "active" : ""}`}
-            onClick={() => setRangeMode(false)}
-            type="button"
-          >
-            Fecha única
-          </button>
-        </div>
+        <button
+          className={`reportes-btn-toggle ${!rangeMode ? "active" : ""}`}
+          onClick={() => setRangeMode(!rangeMode)}
+          type="button"
+        >
+          {rangeMode ? "Cambiar a Fecha Única" : "Cambiar a Rango de Fechas"}
+        </button>
       </div>
 
-      {mensaje && <p className="mensaje-error">{mensaje}</p>}
+      {mensaje && <p className="reportes-error-msg">{mensaje}</p>}
 
       {/* Métricas */}
       {reporte && (
         <>
-          <div className="metric-cards">
-            <div className="metric-card">
-              <p className="metric-label">📦 Pedidos</p>
-              <p className="metric-value">{totalPedidos}</p>
+          <div className="reportes-metrics-grid">
+            <div className="reportes-metric-card">
+              <p className="reportes-metric-label">📦 Pedidos Totales</p>
+              <p className="reportes-metric-value">{totalPedidos}</p>
             </div>
 
-            <div className="metric-card">
-              <p className="metric-label">❌ Cancelados</p>
-              <p className="metric-value">{totalCancelados}</p>
+            <div className="reportes-metric-card">
+              <p className="reportes-metric-label">❌ Cancelados</p>
+              <p className="reportes-metric-value" style={{ color: "#E74C3C" }}>{totalCancelados}</p>
             </div>
 
-            <div className="metric-card">
-              <p className="metric-label">💰 Ventas totales</p>
-              <p className="metric-value">${formatCurrency(totalVendido)}</p>
+            <div className="reportes-metric-card">
+              <p className="reportes-metric-label">💰 Ventas totales</p>
+              <p className="reportes-metric-value" style={{ color: "#3498DB" }}>${formatCurrency(totalVendido)}</p>
             </div>
 
-            <div className="metric-card">
-              <p className="metric-label">📊 Promedio por pedido</p>
-              <p className="metric-value">${formatCurrency(promedio)}</p>
+            <div className="reportes-metric-card">
+              <p className="reportes-metric-label">📊 Promedio / pedido</p>
+              <p className="reportes-metric-value" style={{ color: "#1ABC9C" }}>${formatCurrency(promedio)}</p>
             </div>
           </div>
 
           {/* Tabla resumen */}
-          <div className="tabla-resumen">
-            <table>
+          <div className="reportes-table-container">
+            <table className="reportes-table">
               <thead>
                 <tr>
                   <th>Fecha</th>
@@ -182,9 +188,13 @@ const Reportes = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{reporte?.fecha || "-"}</td>
+                  <td>{reporte?.fecha || (rangeMode ? `${startFecha} - ${endFecha}` : fecha)}</td>
                   <td>{totalPedidos}</td>
-                  <td className="cancelados-cell">{totalCancelados}</td>
+                  <td>
+                    {totalCancelados > 0 ? (
+                        <span className="reportes-cell-danger">{totalCancelados}</span>
+                    ) : 0}
+                  </td>
                   <td>${formatCurrency(totalVendido)}</td>
                   <td>${formatCurrency(promedio)}</td>
                 </tr>
@@ -193,33 +203,46 @@ const Reportes = () => {
           </div>
 
           {/* Gráficas */}
-          <div className="graficas-row">
-            <div className="grafica-card">
-              <h4>Pedidos vs Cancelados</h4>
-              <ResponsiveContainer width="100%" height={240}>
+          <div className="reportes-charts-grid">
+            <div className="reportes-chart-card">
+              <h4 className="reportes-chart-title">Resumen General</h4>
+              <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={getChartData()}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAEAEA" />
+                  <XAxis dataKey="name" tick={{ fill: '#7F8C8D' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: '#7F8C8D' }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: 'none' }}
+                  />
                   <Legend />
                   {getChartData().map((data, index) => (
-                    <Bar key={index} dataKey="value" name={data.name} fill={data.color} />
+                    <Bar key={index} dataKey="value" name={data.name} fill={data.color} radius={[4, 4, 0, 0]} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            <div className="grafica-card">
-              <h4>Ingresos por categoría</h4>
-              <ResponsiveContainer width="100%" height={240}>
+            <div className="reportes-chart-card">
+              <h4 className="reportes-chart-title">Ingresos por Categoría</h4>
+              <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
-                  <Pie data={categorias} dataKey="value" nameKey="name" outerRadius={80}>
+                  <Pie 
+                    data={categorias} 
+                    dataKey="value" 
+                    nameKey="name" 
+                    cx="50%" 
+                    cy="50%" 
+                    outerRadius={100}
+                    innerRadius={60} // Para hacerla tipo Donut (se ve más moderno)
+                    paddingAngle={5}
+                  >
                     {categorias.map((e, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="none" />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                     contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', border: 'none' }}
+                  />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>

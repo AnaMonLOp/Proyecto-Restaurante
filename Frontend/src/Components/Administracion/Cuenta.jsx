@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
-import "./styles/Cuenta.css";
+import "./styles/Cuenta.css"; // Asegúrate que el nombre del CSS coincida
 
 function Cuentas() {
   const [mesas, setMesas] = useState([]);
@@ -151,17 +151,17 @@ function Cuentas() {
     }
   };
 
-  if (cargando) return <div className="cuentas-container"><div className="cargando">Cargando...</div></div>;
+  if (cargando) return <div className="cuentas-page"><div className="cuentas-loading">Cargando...</div></div>;
 
   return (
-    <div className="cuentas-container">
+    <div className="cuentas-page">
       
-      <aside className="panel-izquierdo">
-        <div className="panel-header">
-          <h2>Mesas</h2>
-          <span className="badge-count">{mesas.length}</span>
+      <aside className="cuentas-sidebar">
+        <div className="cuentas-sidebar-header">
+          <h2 className="cuentas-sidebar-title">Mesas</h2>
+          <span className="cuentas-badge-count">{mesas.length}</span>
         </div>
-        <div className="lista-mesas">
+        <div className="cuentas-list">
           {mesas.length > 0 ? (
             mesas.map((m) => {
               const numero = mesaIndexMap[m.id] || m.id;
@@ -169,89 +169,125 @@ function Cuentas() {
               const cobrables = pendingCounts[m.id] || 0;
               const isSelected = mesaSeleccionada?.id === m.id;
               
-              let clase = "libre";
-              if (activos > 0) clase = "ocupada";
-              if (cobrables > 0) clase = "por-cobrar";
+              let statusClass = "";
+              if (activos > 0) statusClass = "cuentas-status-occupied";
+              if (cobrables > 0) statusClass += " cuentas-status-pending";
+              if (isSelected) statusClass += " cuentas-selected";
 
               return (
-                <div key={m.id} className={`tarjeta-mesa ${clase} ${isSelected ? 'seleccionada' : ''}`} onClick={() => cargarPedidosMesa(m)}>
-                  <div className="mesa-icono">{activos > 0 ? "👤" : "🍽️"}</div>
-                  <div className="mesa-info">
-                    <span className="mesa-titulo">Mesa {numero}</span>
-                    <span className="mesa-subtitulo">
+                <div key={m.id} className={`cuentas-table-card ${statusClass}`} onClick={() => cargarPedidosMesa(m)}>
+                  <div className="cuentas-icon-wrapper">{activos > 0 ? "👤" : "🍽️"}</div>
+                  <div className="cuentas-info">
+                    <span className="cuentas-table-name">Mesa {numero}</span>
+                    <span className="cuentas-table-waiter">
                       {activos > 0 
                         ? `Atiende: ${meserosMap[m.id] || 'Staff'}` 
                         : "Disponible"}
                     </span>
                   </div>
-                  {cobrables > 0 && <div className="mesa-alerta"><span>$</span></div>}
+                  {cobrables > 0 && <div className="cuentas-alert-icon">$</div>}
                 </div>
               );
             })
-          ) : <p className="sin-datos">Sin mesas</p>}
+          ) : <p className="cuentas-empty-msg">No hay mesas registradas</p>}
         </div>
       </aside>
 
-      <main className="panel-derecho">
+      <main className="cuentas-main-panel">
         {mesaSeleccionada ? (
-          <div className="recibo-contenedor">
-            <div className="recibo-header">
+          <div className="cuentas-receipt">
+            <div className="cuentas-receipt-header">
               <div>
-                <h1>Mesa {mesaIndexMap[mesaSeleccionada.id]}</h1>
-                <p>Mesero: {meserosMap[mesaSeleccionada.id] || "..."}</p>
+                <h1 className="cuentas-receipt-title">Mesa {mesaIndexMap[mesaSeleccionada.id]}</h1>
+                <p className="cuentas-receipt-meta">Mesero: {meserosMap[mesaSeleccionada.id] || "..."}</p>
               </div>
-              <button className="btn-cerrar-detalle" onClick={() => setMesaSeleccionada(null)}>✕</button>
+              <button className="cuentas-btn-close" onClick={() => setMesaSeleccionada(null)}>✕</button>
             </div>
 
-            {loadingDetail ? <div className="recibo-body cargando-detalle">Cargando...</div> : (
+            {loadingDetail ? <div className="cuentas-loading">Cargando detalle...</div> : (
               <>
-                <div className="recibo-body">
+                <div className="cuentas-receipt-body">
                   {pedidosMesa.length > 0 ? (
-                    <table className="tabla-recibo">
+                    <table className="cuentas-receipt-table">
                       <thead>
-                        <tr><th>#</th><th className="text-left">Item</th><th className="text-right">$$</th><th className="text-right">Tot</th></tr>
+                        <tr>
+                            <th className="cuentas-col-qty">#</th>
+                            <th>Descripción</th>
+                            <th className="cuentas-col-price">Precio</th>
+                            <th className="cuentas-col-total">Total</th>
+                        </tr>
                       </thead>
                       <tbody>
                         {pedidosMesa.flatMap(p => (p.detalle_pedido || []).map((item, i) => (
                           <tr key={i}>
-                            <td className="text-center font-mono">{item.cantidad}</td>
-                            <td>{item.items_menu?.nombre || "..."} {item.notas_item && `(${item.notas_item})`}</td>
-                            <td className="text-right">{item.precio_unitario}</td>
-                            <td className="text-right font-bold">{item.subtotal}</td>
+                            <td className="cuentas-col-qty">{item.cantidad}</td>
+                            <td>
+                                {item.items_menu?.nombre || "..."} 
+                                {item.notas_item && <span className="cuentas-item-note">({item.notas_item})</span>}
+                            </td>
+                            <td className="cuentas-col-price">${item.precio_unitario}</td>
+                            <td className="cuentas-col-total">${item.subtotal}</td>
                           </tr>
                         )))}
                       </tbody>
                     </table>
                   ) : (
-                    <div className="estado-vacio">
-                      <span className="icono-vacio">👨‍🍳</span>
-                      <p>En preparación o sin pedidos entregados.</p>
+                    <div className="cuentas-state-empty">
+                      <span className="cuentas-icon-large">🧾</span>
+                      <p>La mesa está ocupada pero aún no hay pedidos listos para cobrar.</p>
                     </div>
                   )}
                 </div>
                 
                 {pedidosMesa.length > 0 && (
-                  <div className="recibo-footer">
-                    <div className="fila-resumen"><span>Subtotal</span><span>${total.toFixed(2)}</span></div>
-                    <div className="fila-resumen input-row">
+                  <div className="cuentas-receipt-footer">
+                    <div className="cuentas-summary-row">
+                        <span>Subtotal</span>
+                        <span>${total.toFixed(2)}</span>
+                    </div>
+                    
+                    <div className="cuentas-summary-row">
                         <label>Propina</label>
-                        <div className="input-grupo">
-                            <button className={propinaType === 'amount'?'activo':''} onClick={()=>setPropinaType('amount')}>$</button>
-                            <button className={propinaType === 'percent'?'activo':''} onClick={()=>setPropinaType('percent')}>%</button>
-                            <input type="number" min="0" value={propinaValue} onChange={handlePropinaChange}/>
+                        <div className="cuentas-tip-control">
+                            <button 
+                                className={`cuentas-tip-btn ${propinaType === 'amount'?'cuentas-active':''}`} 
+                                onClick={()=>setPropinaType('amount')}
+                            >
+                                $
+                            </button>
+                            <button 
+                                className={`cuentas-tip-btn ${propinaType === 'percent'?'cuentas-active':''}`} 
+                                onClick={()=>setPropinaType('percent')}
+                            >
+                                %
+                            </button>
+                            <input 
+                                className="cuentas-tip-input"
+                                type="number" 
+                                min="0" 
+                                value={propinaValue} 
+                                onChange={handlePropinaChange}
+                            />
                         </div>
                     </div>
-                    <div className="fila-resumen total-final"><span>Total</span><span>${totalFinal.toFixed(2)}</span></div>
-                    <button className="btn-cobrar" onClick={marcarPagada}>Cobrar</button>
+
+                    <div className="cuentas-summary-row cuentas-total-final">
+                        <span>Total a Pagar</span>
+                        <span className="cuentas-total-amount">${totalFinal.toFixed(2)}</span>
+                    </div>
+                    
+                    <button className="cuentas-btn-pay" onClick={marcarPagada}>
+                        Confirmar Cobro
+                    </button>
                   </div>
                 )}
               </>
             )}
           </div>
         ) : (
-          <div className="mensaje-inicial">
-            <div className="icono-grande">👈</div>
-            <h2>Selecciona una mesa</h2>
+          <div className="cuentas-placeholder">
+            <span className="cuentas-placeholder-icon">👈</span>
+            <h2>Selecciona una mesa para ver la cuenta</h2>
           </div>
         )}
       </main>

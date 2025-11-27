@@ -1,224 +1,432 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"); /* Para números alineados */
+
 :root {
-  --bg-main: #0a0f0a;
-  --bg-panel: #141a16;
-  --color-text: #e0e0e0;
-  --color-accent: #00d46a;
-  --color-accent-hover: #00b359;
-  --color-blue: #3b82f6;
-  --color-orange: #f59e0b;
-  --border-color: #2a332c;
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-hover: #2980b9;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-shadow-strong: rgba(44, 62, 80, 0.15);
+  --b-warning: #F39C12;
+  --b-success: #27AE60;
+  --b-danger: #E74C3C;
 }
 
-.cuentas-container {
+body {
+  margin: 0;
+}
+
+.cuentas-page {
   display: flex;
-  height: calc(100vh - 70px); 
-  background-color: var(--bg-main);
-  color: var(--color-text);
+  height: 100vh;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-family: "Inter", sans-serif;
   overflow: hidden;
 }
 
-.panel-izquierdo {
-  width: 350px;
-  background-color: var(--bg-panel);
-  border-right: 1px solid var(--border-color);
+/* --- PANEL IZQUIERDO (LISTA DE MESAS) --- */
+.cuentas-sidebar {
+  width: 380px;
+  background-color: var(--b-surface);
+  border-right: 1px solid var(--b-border);
   display: flex;
   flex-direction: column;
+  z-index: 10;
+  box-shadow: 2px 0 10px var(--b-shadow);
 }
 
-.panel-header {
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
+.cuentas-sidebar-header {
+  padding: 20px 25px;
+  border-bottom: 1px solid var(--b-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: var(--b-surface);
 }
 
-.panel-header h2 { margin: 0; font-size: 1.2rem; color: var(--color-accent); }
-.badge-count { background: #2a332c; padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; }
+.cuentas-sidebar-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--b-header);
+}
 
-.lista-mesas {
+.cuentas-badge-count {
+  background: var(--b-background);
+  color: var(--b-header);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--b-border);
+}
+
+.cuentas-list {
   flex: 1;
   overflow-y: auto;
-  padding: 15px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
+  background-color: #F8F9FA;
 }
 
-.tarjeta-mesa {
-  background-color: #1e2620;
-  padding: 20px 15px;
+/* Tarjeta de Mesa */
+.cuentas-table-card {
+  background-color: var(--b-surface);
+  padding: 15px 20px;
   border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 15px;
-  border: 1px solid transparent;
+  border: 1px solid var(--b-border);
   transition: all 0.2s ease;
   position: relative;
-  overflow: hidden; 
-  padding-right: 10px;
-  min-height: 90px; 
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px var(--b-shadow);
 }
 
-.tarjeta-mesa:hover { 
-  background-color: #252e28; 
-  transform: translateY(-2px); 
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.cuentas-table-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px var(--b-shadow-strong);
+  border-color: var(--b-accent);
 }
-.tarjeta-mesa.seleccionada { border-color: var(--color-accent); background-color: rgba(0, 212, 106, 0.08); }
 
-.tarjeta-mesa.libre .mesa-icono { background: #2a332c; color: #888; }
-.tarjeta-mesa.ocupada .mesa-icono { background: rgba(59, 130, 246, 0.2); color: var(--color-blue); }
-.tarjeta-mesa.por-cobrar { border-left: 4px solid var(--color-orange); }
+.cuentas-table-card.cuentas-selected {
+  border: 2px solid var(--b-accent);
+  background-color: #EBF5FB; /* Azul muy suave */
+}
 
-.mesa-icono {
-  width: 40px; height: 40px;
+/* Estados de la mesa */
+.cuentas-icon-wrapper {
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.2rem;
-  flex-shrink: 0; 
-  width: 40px; height: 40px;
-}
-
-.mesa-info { display: flex; flex-direction: column; min-width: 0; flex: 1;}
-.mesa-titulo { font-weight: 700; font-size: 1rem; white-space: nowrap;}
-.mesa-subtitulo { 
-  font-size: 0.8rem; 
-  color: #888; 
-  white-space: nowrap;       
-  overflow: hidden;          
-  text-overflow: ellipsis;
-  display: block;}
-
-.mesa-alerta {
-  position: relative; right: 15px;
-  background: var(--color-orange); color: black;
-  width: 24px; height: 24px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: bold; font-size: 0.85rem;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
   flex-shrink: 0;
-  right: auto;
+  background-color: var(--b-background);
+  color: var(--b-text-secondary);
+  border: 1px solid var(--b-border);
 }
 
-.panel-derecho {
+.cuentas-status-occupied .cuentas-icon-wrapper {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: var(--b-accent);
+  border-color: transparent;
+}
+
+/* Borde izquierdo naranja si debe pagar */
+.cuentas-status-pending {
+  border-left: 5px solid var(--b-warning);
+}
+
+.cuentas-info {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  padding: 20px;
+}
+
+.cuentas-table-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--b-header);
+}
+
+.cuentas-table-waiter {
+  font-size: 0.85rem;
+  color: var(--b-text-secondary);
+  margin-top: 3px;
+}
+
+.cuentas-alert-icon {
+  background-color: var(--b-warning);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4);
+}
+
+.cuentas-empty-msg {
+  text-align: center;
+  color: var(--b-text-secondary);
+  margin-top: 40px;
+  font-style: italic;
+}
+
+/* --- PANEL DERECHO (RECIBO) --- */
+.cuentas-main-panel {
+  flex: 1;
+  padding: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: radial-gradient(circle at center, #16201a 0%, #0a0f0a 100%);
+  background-color: var(--b-background);
+  position: relative;
 }
 
-.mensaje-inicial { text-align: center; color: #666; opacity: 0.7; }
-.icono-grande { font-size: 3rem; margin-bottom: 10px; display: block;}
+/* Estado inicial (sin selección) */
+.cuentas-placeholder {
+  text-align: center;
+  color: var(--b-text-secondary);
+  opacity: 0.6;
+}
+.cuentas-placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  display: block;
+  color: var(--b-accent);
+}
 
-.recibo-contenedor {
+/* Contenedor del Recibo (Ticket) */
+.cuentas-receipt {
   width: 100%;
-  max-width: 500px;
-  background-color: #fff;
-  background-color: #1a201c;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  max-width: 480px;
+  background-color: var(--b-surface);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(44, 62, 80, 0.15);
   display: flex;
   flex-direction: column;
+  height: 100%;
+  max-height: 800px;
+  border: 1px solid var(--b-border);
   overflow: hidden;
-  height: 90%;
-  border: 1px solid var(--border-color);
 }
 
-.recibo-header {
-  padding: 20px;
-  background-color: #131815;
-  border-bottom: 2px dashed #333;
+/* Cabecera del Ticket */
+.cuentas-receipt-header {
+  padding: 25px;
+  background-color: #FDFDFD;
+  border-bottom: 2px dashed var(--b-border);
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 }
 
-.recibo-header h1 { margin: 0; font-size: 1.5rem; color: var(--color-accent); }
-.recibo-header p { margin: 5px 0 0; color: #888; font-size: 0.9rem; }
-.btn-cerrar-detalle { background: none; border: none; color: #666; font-size: 1.2rem; cursor: pointer; }
+.cuentas-receipt-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--b-header);
+}
 
-.recibo-body {
+.cuentas-receipt-meta {
+  margin: 5px 0 0;
+  color: var(--b-text-secondary);
+  font-size: 0.9rem;
+}
+
+.cuentas-btn-close {
+  background: transparent;
+  border: none;
+  color: var(--b-text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+.cuentas-btn-close:hover {
+  background-color: var(--b-background);
+  color: var(--b-danger);
+}
+
+/* Cuerpo del Ticket (Lista de items) */
+.cuentas-receipt-body {
   flex: 1;
   overflow-y: auto;
   padding: 0;
+  background-color: var(--b-surface);
 }
 
-.tabla-recibo { width: 100%; border-collapse: collapse; }
-.tabla-recibo th {
-  text-align: left;
-  padding: 12px 20px;
-  background: #222a25;
-  color: #aaa;
-  font-size: 0.85rem;
-  text-transform: uppercase;
+.cuentas-receipt-table {
+  width: 100%;
+  border-collapse: collapse;
 }
-.tabla-recibo td {
-  padding: 12px 20px;
-  border-bottom: 1px solid #222a25;
-  color: #ddd;
+
+.cuentas-receipt-table th {
+  text-align: left;
+  padding: 12px 25px;
+  background-color: #F8F9FA;
+  color: var(--b-text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.cuentas-receipt-table td {
+  padding: 15px 25px;
+  border-bottom: 1px solid var(--b-border);
+  color: var(--b-header);
   font-size: 0.95rem;
 }
-.tabla-recibo tr:last-child td { border-bottom: none; }
 
-.text-right { text-align: right; }
-.text-center { text-align: center; }
-.font-mono { font-family: monospace; color: #aaa; }
-.font-bold { font-weight: 700; color: #fff; }
-.error-text { color: #ef4444; font-style: italic; font-size: 0.8rem; }
-
-.estado-vacio {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100%; color: #555;
-}
-.icono-vacio { font-size: 2.5rem; margin-bottom: 10px; opacity: 0.5; }
-
-.recibo-footer {
-  background-color: #131815;
-  border-top: 2px dashed #333;
-  padding: 20px;
+.cuentas-receipt-table tr:last-child td {
+  border-bottom: none;
 }
 
-.fila-resumen {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 12px; color: #bbb; font-size: 1rem;
+.cuentas-col-qty {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--b-accent);
+  font-weight: 600;
+  text-align: center;
+  width: 40px;
 }
 
-.input-row { margin-bottom: 20px; }
-.input-grupo { display: flex; gap: 5px; }
-.input-grupo button {
-  background: #333; border: 1px solid #444; color: #aaa;
-  padding: 5px 10px; border-radius: 4px; cursor: pointer;
-}
-.input-grupo button.activo { background: var(--color-accent); color: #000; font-weight: bold; border-color: var(--color-accent); }
-.input-grupo input {
-  background: #222; border: 1px solid #444; color: white;
-  width: 80px; padding: 5px; text-align: right; border-radius: 4px;
+.cuentas-col-price, .cuentas-col-total {
+  text-align: right;
+  font-family: "JetBrains Mono", monospace;
 }
 
-.total-final {
-  font-size: 1.4rem; font-weight: 800; color: var(--color-accent);
-  margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;
+.cuentas-col-total {
+  font-weight: 700;
 }
 
-.btn-cobrar {
-  width: 100%;
-  background-color: var(--color-accent);
-  color: #000;
+.cuentas-item-note {
+  font-size: 0.8rem;
+  color: var(--b-warning);
+  display: block;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+/* Footer del Ticket (Totales y Acciones) */
+.cuentas-receipt-footer {
+  background-color: #FDFDFD;
+  border-top: 2px dashed var(--b-border);
+  padding: 25px;
+}
+
+.cuentas-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  color: var(--b-text-secondary);
+  font-size: 1rem;
+}
+
+/* Control de Propina */
+.cuentas-tip-control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cuentas-tip-btn {
+  background: var(--b-background);
+  border: 1px solid var(--b-border);
+  color: var(--b-text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.cuentas-tip-btn.cuentas-active {
+  background: var(--b-accent);
+  color: white;
+  border-color: var(--b-accent);
+}
+
+.cuentas-tip-input {
+  background: var(--b-surface);
+  border: 1px solid var(--b-border);
+  color: var(--b-header);
+  width: 80px;
+  padding: 6px 10px;
+  text-align: right;
+  border-radius: 6px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1rem;
+  outline: none;
+}
+
+.cuentas-tip-input:focus {
+  border-color: var(--b-accent);
+}
+
+/* Total Final */
+.cuentas-total-final {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--b-border);
+  font-size: 1.5rem;
   font-weight: 800;
-  padding: 15px;
+  color: var(--b-header);
+}
+
+.cuentas-total-amount {
+  color: var(--b-accent-2); /* Verde turquesa para el dinero */
+}
+
+/* Botón Cobrar */
+.cuentas-btn-pay {
+  width: 100%;
+  background-color: var(--b-success);
+  color: white;
+  font-weight: 700;
+  padding: 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1.1rem;
   cursor: pointer;
-  margin-top: 10px;
-  transition: transform 0.1s;
+  margin-top: 15px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
 }
-.btn-cobrar:hover { background-color: var(--color-accent-hover); }
-.btn-cobrar:active { transform: scale(0.98); }
-.btn-cobrar:disabled { background-color: #333; color: #666; cursor: not-allowed; }
+
+.cuentas-btn-pay:hover {
+  background-color: #219150;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(39, 174, 96, 0.4);
+}
+
+.cuentas-btn-pay:active {
+  transform: scale(0.98);
+}
+
+/* Estados vacíos y carga */
+.cuentas-state-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--b-text-secondary);
+  padding: 40px;
+  text-align: center;
+}
+
+.cuentas-icon-large {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}
+
+.cuentas-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--b-text-secondary);
+  font-size: 1.2rem;
+}

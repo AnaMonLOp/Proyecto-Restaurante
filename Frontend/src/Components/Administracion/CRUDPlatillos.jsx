@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Agregado para navegación
 import api from "../../api/axios.js";
 import "./styles/CRUDPlatillos.css";
 
 function CRUDPlatillos() {
+  const navigate = useNavigate();
   const [platillo, setPlatillo] = useState({ nombre: "", precio: "", categoria: "" });
   const [platillos, setPlatillos] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [catMap, setCatMap] = useState({});
   const [categorias, setCategorias] = useState([]);
 
-  // Cargar los platillos desde el backend
   useEffect(() => {
     const cargar = async () => {
       try {
@@ -27,16 +28,13 @@ function CRUDPlatillos() {
     cargar();
   }, []);
 
-  // Actualizar valores del formulario
   const handleChange = (e) => {
     setPlatillo({ ...platillo, [e.target.name]: e.target.value });
   };
 
-  // Guardar o actualizar platillo
   const handleSubmit = async () => {
     if (!platillo.nombre || !platillo.precio || !platillo.categoria) return;
 
-    // Mapear el nombre seleccionado a categoria_id para que se guarde correctamente
     const categoriaSeleccionada = categorias.find((c) => c.nombre === platillo.categoria);
     const payload = {
       nombre: platillo.nombre,
@@ -60,7 +58,6 @@ function CRUDPlatillos() {
     }
   };
 
-  // Cargar platillo en el formulario para editar
   const handleEdit = (index) => {
     const p = platillos[index];
     setPlatillo({
@@ -71,7 +68,6 @@ function CRUDPlatillos() {
     setEditIndex(index);
   };
 
-  // Eliminar platillo
   const handleDelete = (index) => {
     const id = platillos[index]?.id;
     if (!id) return;
@@ -83,73 +79,114 @@ function CRUDPlatillos() {
   };
 
   return (
-    <div className="crud-platillos-container">
-          <h3 className="logo">🍽️ Gestión de Platillos</h3>
+    <div className="crud-page">
+      {/* HEADER */}
+      <header className="crud-header">
+        <h3 className="crud-logo">🍽️ Gestión de Platillos</h3>
+        <nav className="crud-nav">
+            <button className="crud-nav-btn" onClick={() => navigate("/")}>
+                Ir a Mesas
+            </button>
+            <button className="crud-nav-btn crud-logout" onClick={() => navigate("/logout")}>
+                Cerrar Sesión
+            </button>
+        </nav>
+      </header>
 
-      <div className="form-container">
-        <input
-          type="text"
-          name="nombre"
-          placeholder="Nombre del platillo"
-          value={platillo.nombre}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="precio"
-          placeholder="Precio"
-          value={platillo.precio}
-          onChange={handleChange}
-        />
-        <select
-          name="categoria"
-          value={platillo.categoria}
-          onChange={handleChange}
-        >
-          <option value="">Selecciona categoría</option>
-          {categorias.map((c) => (
-            <option key={c.id} value={c.nombre}>{c.nombre}</option>
-          ))}
-        </select>
-        <button onClick={handleSubmit}>
-          {editIndex === null ? "Agregar Platillo" : "Guardar Cambios"}
-        </button>
+      <div className="crud-main">
+        {/* FORMULARIO */}
+        <div className="crud-form-card">
+          <h4 className="crud-section-title">
+            {editIndex === null ? "Agregar Nuevo Platillo" : "Editar Platillo"}
+          </h4>
+          
+          <div className="crud-form-grid">
+            <div className="crud-input-group">
+                <label className="crud-label">Nombre</label>
+                <input
+                  className="crud-input"
+                  type="text"
+                  name="nombre"
+                  placeholder="Ej. Hamburguesa Doble"
+                  value={platillo.nombre}
+                  onChange={handleChange}
+                />
+            </div>
+
+            <div className="crud-input-group">
+                <label className="crud-label">Precio</label>
+                <input
+                  className="crud-input"
+                  type="number"
+                  name="precio"
+                  placeholder="0.00"
+                  value={platillo.precio}
+                  onChange={handleChange}
+                />
+            </div>
+
+            <div className="crud-input-group">
+                <label className="crud-label">Categoría</label>
+                <select
+                  className="crud-select"
+                  name="categoria"
+                  value={platillo.categoria}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecciona...</option>
+                  {categorias.map((c) => (
+                    <option key={c.id} value={c.nombre}>{c.nombre}</option>
+                  ))}
+                </select>
+            </div>
+
+            <button className="crud-btn-submit" onClick={handleSubmit}>
+              {editIndex === null ? "Agregar Platillo" : "Guardar Cambios"}
+            </button>
+          </div>
+        </div>
+
+        {/* TABLA */}
+        <div className="crud-table-card">
+          <table className="crud-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {platillos.length > 0 ? (
+                platillos.map((p, index) => (
+                  <tr key={p.id}>
+                    <td><strong>{p.nombre}</strong></td>
+                    <td>${Number(p.precio).toFixed(2)}</td>
+                    <td>{p.categoria || catMap[p.categoria_id] || "Sin categoría"}</td>
+                    <td>
+                      <div className="crud-actions">
+                        <button className="crud-btn-action crud-btn-edit" onClick={() => handleEdit(index)}>
+                          Editar
+                        </button>
+                        <button className="crud-btn-action crud-btn-delete" onClick={() => handleDelete(index)}>
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="crud-no-data">
+                    No hay platillos registrados en el sistema.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Precio ($)</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {platillos.map((p, index) => (
-            <tr key={p.id}>
-              <td>{p.nombre}</td>
-              <td>{p.precio}</td>
-              <td>{p.categoria || catMap[p.categoria_id] || ""}</td>
-              <td>
-                <button className="edit" onClick={() => handleEdit(index)}>
-                  Editar
-                </button>
-                <button className="delete" onClick={() => handleDelete(index)}>
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-          {platillos.length === 0 && (
-            <tr>
-              <td colSpan={4} className="no-data">
-                No hay platillos registrados.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
     </div>
   );
 }

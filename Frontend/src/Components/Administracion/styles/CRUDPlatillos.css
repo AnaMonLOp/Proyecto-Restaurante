@@ -1,128 +1,254 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-hover: #2980b9;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-shadow-hover: rgba(44, 62, 80, 0.15);
+  --b-danger: #E74C3C;
+  --b-warning: #F39C12;
+  --b-success: #27AE60;
+}
+
+body {
+  margin: 0;
+}
+
+.crud-page {
+  min-height: 100vh;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- HEADER --- */
 .crud-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1e1e1e;
-  padding: 20px 30px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+  padding: 15px 40px;
+  background-color: var(--b-surface);
+  border-bottom: 1px solid var(--b-border);
+  box-shadow: 0 2px 10px var(--b-shadow);
 }
 
-.logo {
-  color: #00d4ff;
-  font-size: 1.8rem;
+.crud-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--b-header);
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
-.nav-menu {
+.crud-nav {
   display: flex;
-  gap: 20px;
+  gap: 15px;
 }
 
-.nav-link {
-  color: #00d4ff;
-  font-weight: bold;
+.crud-nav-btn {
+  background: transparent;
+  border: 1px solid var(--b-border);
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background 0.3s;
+  font-weight: 600;
+  color: var(--b-text-secondary);
+  transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
-.nav-link:hover {
-  background-color: #00d4ff;
-  color: #121212;
+.crud-nav-btn:hover {
+  background-color: var(--b-background);
+  color: var(--b-header);
+  border-color: var(--b-header);
 }
 
-.nav-link.logout {
-  background-color: #e74c3c;
+.crud-logout {
+  border-color: rgba(231, 76, 60, 0.3);
+  color: var(--b-danger);
+}
+
+.crud-logout:hover {
+  background-color: var(--b-danger);
   color: white;
+  border-color: var(--b-danger);
 }
 
-.nav-link.logout:hover {
-  background-color: #ff5a4d;
+/* --- CONTENIDO PRINCIPAL --- */
+.crud-main {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-h3 {
-  text-align: center;
-  color: #00d4ff;
+/* --- TARJETA DE FORMULARIO --- */
+.crud-form-card {
+  background-color: var(--b-surface);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--b-shadow);
+  border: 1px solid var(--b-border);
+  margin-bottom: 30px;
+}
+
+.crud-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--b-header);
   margin-bottom: 20px;
+  border-bottom: 1px solid var(--b-border);
+  padding-bottom: 10px;
 }
 
-.form-container {
+.crud-form-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr auto;
+  gap: 15px;
+  align-items: end;
+}
+
+.crud-input-group {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.no-data {
-  color: #888;
-  font-style: italic;
-  padding: 20px;
+.crud-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--b-text-secondary);
+  margin-left: 2px;
 }
 
-input {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  background: #2b2b2b;
+.crud-input, .crud-select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--b-border);
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  width: 100%;
+  font-family: inherit;
+}
+
+.crud-input:focus, .crud-select:focus {
+  outline: none;
+  border-color: var(--b-accent);
+  background-color: var(--b-surface);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.crud-btn-submit {
+  padding: 12px 24px;
+  background-color: var(--b-accent);
   color: white;
-  width: 25%;
-}
-
-select {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  background: #2b2b2b;
-  color: white;
-  width: 25%;
-}
-
-button {
-  background-color: #00d4ff;
-  color: #121212;
-  font-weight: bold;
   border: none;
   border-radius: 8px;
-  padding: 10px 15px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.2s;
+  height: 45px; /* Para alinear con inputs */
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
-button:hover {
-  background-color: #009ac7;
+.crud-btn-submit:hover {
+  background-color: var(--b-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
 
-table {
+/* --- TARJETA DE TABLA --- */
+.crud-table-card {
+  background-color: var(--b-surface);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--b-shadow);
+  border: 1px solid var(--b-border);
+  overflow: hidden; /* Para las esquinas redondeadas de la tabla */
+}
+
+.crud-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
+  text-align: left;
 }
 
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #333;
+.crud-table th {
+  background-color: #F8F9FA;
+  color: var(--b-header);
+  font-weight: 700;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--b-border);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-th {
-  color: #00d4ff;
+.crud-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--b-border);
+  color: var(--b-text);
+  font-size: 0.95rem;
 }
 
-.edit {
-  background-color: #ffc107;
+.crud-table tr:last-child td {
+  border-bottom: none;
 }
 
-.delete {
-  background-color: #e74c3c;
+.crud-table tr:hover {
+  background-color: #F4F6F7;
+}
+
+.crud-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.crud-btn-action {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.crud-btn-edit {
+  background-color: rgba(243, 156, 18, 0.15);
+  color: var(--b-warning);
+}
+
+.crud-btn-edit:hover {
+  background-color: var(--b-warning);
   color: white;
 }
 
-.edit:hover {
-  background-color: #ffcd38;
+.crud-btn-delete {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: var(--b-danger);
 }
 
-.delete:hover {
-  background-color: #ff5a4d;
+.crud-btn-delete:hover {
+  background-color: var(--b-danger);
+  color: white;
 }
+
+.crud-no-data {
+  text-align: center;
+  color: var(--b-text-secondary);
+  font-style: italic;
+  padding: 40px;
+  background-color: var(--b-surface);
+}
+

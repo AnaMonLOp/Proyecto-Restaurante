@@ -1,273 +1,253 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-    --color-fondo: #0d1b12;
-    --color-fondo-card: #14291b;
-    --color-texto: #ffffff;
-    --color-texto-claro: #b9ffc1;
-    --color-texto-secundario: #9fb3a2;
-    --color-borde: rgba(255, 255, 255, 0.1);
-    --color-sombra: rgba(0, 255, 80, 0.12);
-    
-    --color-verde: #00d46a;
-    --color-verde-hover: #00ff80;
-    --color-azul: #4da6ff;
-    --color-rojo: #ff4d4d;
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-hover: #2980b9;
+  --b-accent-2: #1ABC9C;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-danger: #E74C3C;
+  --b-warning: #F39C12;
+  --b-success: #27AE60;
 }
 
-.gestion-container {
-    min-height: 100vh;
-    background-color: var(--color-fondo);
-    color: var(--color-texto);
-    font-family: "Inter", sans-serif;
-    padding: 2.5rem;
+body {
+  margin: 0;
 }
 
-.gestion-header {
-    margin-bottom: 2rem;
+.usuarios-page {
+  min-height: 100vh;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-.gestion-header h1 {
-    margin: 0 0 0.5rem 0;
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--color-texto-claro);
+.usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: var(--b-surface);
+  border-bottom: 1px solid var(--b-border);
+  box-shadow: 0 2px 10px var(--b-shadow);
 }
 
-.subtitulo {
-    margin: 0;
-    color: var(--color-texto-secundario);
-    font-size: 1rem;
+.usuarios-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--b-header);
+  margin: 0;
+  letter-spacing: -0.5px;
 }
 
-.cargando {
-    text-align: center;
-    padding: 3rem;
-    font-size: 1.1rem;
-    color: var(--color-texto-secundario);
+.usuarios-nav {
+  display: flex;
+  gap: 15px;
 }
 
-.mensaje-error {
-    background: rgba(255, 77, 77, 0.15);
-    border: 1px solid var(--color-rojo);
-    color: var(--color-rojo);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
+.usuarios-nav-btn {
+  background: transparent;
+  border: 1px solid var(--b-border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--b-text-secondary);
+  transition: all 0.2s;
+  font-size: 0.9rem;
 }
 
-.tabla-wrapper {
-    background-color: var(--color-fondo-card);
-    border-radius: 12px;
-    border: 1px solid var(--color-borde);
-    overflow: hidden;
-    box-shadow: 0 0 15px var(--color-sombra);
+.usuarios-nav-btn:hover {
+  background-color: var(--b-background);
+  color: var(--b-accent);
+  border-color: var(--b-accent);
 }
 
-.tabla-usuarios {
-    width: 100%;
-    border-collapse: collapse;
+.usuarios-main {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.tabla-usuarios thead {
-    background: rgba(0, 212, 106, 0.08);
+.usuarios-title-section {
+  margin-bottom: 30px;
 }
 
-.tabla-usuarios th {
-    padding: 1rem 1.5rem;
-    text-align: left;
-    font-weight: 600;
-    color: var(--color-texto-claro);
-    border-bottom: 1px solid var(--color-borde);
+.usuarios-subtitle {
+  color: var(--b-text-secondary);
+  font-size: 1rem;
+  margin-top: 5px;
 }
 
-.tabla-usuarios td {
-    padding: 1.2rem 1.5rem;
-    border-bottom: 1px solid var(--color-borde);
-    color: var(--color-texto);
+.usuarios-loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: var(--b-text-secondary);
 }
 
-.tabla-usuarios tbody tr:hover {
-    background: rgba(0, 212, 106, 0.04);
+.usuarios-error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--b-danger);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(231, 76, 60, 0.2);
+  margin-bottom: 20px;
 }
 
-.tabla-usuarios tbody tr:last-child td {
-    border-bottom: none;
+.usuarios-table-card {
+  background-color: var(--b-surface);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--b-shadow);
+  border: 1px solid var(--b-border);
+  overflow: hidden;
 }
 
-.sin-datos {
-    text-align: center;
-    color: var(--color-texto-secundario);
-    padding: 3rem !important;
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.badge-rol {
-    display: inline-block;
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
+.usuarios-table th {
+  background-color: #F8F9FA;
+  color: var(--b-header);
+  font-weight: 700;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--b-border);
+  text-align: left;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
-.badge-rol.administrador {
-    background: rgba(255, 159, 64, 0.15);
-    color: #ffa940;
-    border: 1px solid rgba(255, 159, 64, 0.3);
+.usuarios-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--b-border);
+  color: var(--b-text);
+  font-size: 0.95rem;
+  vertical-align: middle;
 }
 
-.badge-rol.mesero {
-    background: rgba(77, 166, 255, 0.15);
-    color: #4da6ff;
-    border: 1px solid rgba(77, 166, 255, 0.3);
+.usuarios-table tr:hover {
+  background-color: #F4F6F7;
 }
 
-.badge-rol.cocina {
-    background: rgba(0, 212, 106, 0.15);
-    color: #00d46a;
-    border: 1px solid rgba(0, 212, 106, 0.3);
+.usuarios-row-inactive {
+  opacity: 0.6;
+  background-color: #f9f9f9;
 }
 
-.badge-estado {
-    display: inline-block;
-    padding: 0.4rem 0.9rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
+.usuarios-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
 }
 
-.badge-estado.activo {
-    background: rgba(0, 212, 106, 0.15);
-    color: #00d46a;
-    border: 1px solid rgba(0, 212, 106, 0.3);
+.badge-role-admin {
+  background-color: #E8F6F3;
+  color: #1ABC9C;
+  border: 1px solid #1ABC9C;
 }
 
-.badge-estado.inactivo {
-    background: rgba(255, 77, 77, 0.15);
-    color: #ff4d4d;
-    border: 1px solid rgba(255, 77, 77, 0.3);
+.badge-role-mesero {
+  background-color: #EBF5FB;
+  color: #3498DB;
+  border: 1px solid #3498DB;
 }
 
-.usuario-inactivo {
-    opacity: 0.6;
+.badge-role-cocina {
+  background-color: #FEF5E7;
+  color: #F39C12;
+  border: 1px solid #F39C12;
 }
 
-.texto-bloqueado {
-    color: var(--color-texto-secundario);
-    font-size: 0.9rem;
+.badge-status-active {
+  background-color: rgba(39, 174, 96, 0.1);
+  color: var(--b-success);
 }
 
-.acciones-botones {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+.badge-status-inactive {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--b-danger);
 }
 
-.btn-cambiar {
-    background: var(--color-verde);
-    color: #06120a;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
+.usuarios-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.btn-cambiar:hover:not(:disabled) {
-    background: var(--color-verde-hover);
-    transform: translateY(-1px);
+.usuarios-btn-action {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-.btn-cambiar:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.btn-role {
+  background-color: white;
+  border-color: var(--b-accent);
+  color: var(--b-accent);
+}
+.btn-role:hover:not(:disabled) {
+  background-color: var(--b-accent);
+  color: white;
 }
 
-.btn-activar {
-    background: var(--color-verde);
-    color: #06120a;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
+.btn-toggle {
+  background-color: white;
+  border-color: var(--b-warning);
+  color: var(--b-warning);
+}
+.btn-toggle:hover:not(:disabled) {
+  background-color: var(--b-warning);
+  color: white;
 }
 
-.btn-activar:hover:not(:disabled) {
-    background: var(--color-verde-hover);
-    transform: translateY(-1px);
+.btn-delete {
+  background-color: white;
+  border-color: var(--b-danger);
+  color: var(--b-danger);
+}
+.btn-delete:hover:not(:disabled) {
+  background-color: var(--b-danger);
+  color: white;
 }
 
-.btn-activar:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+.usuarios-btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
-.btn-desactivar {
-    background: #ffa940;
-    color: #06120a;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
+.usuarios-footer {
+  margin-top: 20px;
+  color: var(--b-text-secondary);
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
 }
 
-.btn-desactivar:hover:not(:disabled) {
-    background: #ffb75c;
-    transform: translateY(-1px);
+.usuarios-footer strong {
+  color: var(--b-header);
 }
 
-.btn-desactivar:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn-eliminar {
-    background: var(--color-rojo);
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.9rem;
-}
-
-.btn-eliminar:hover:not(:disabled) {
-    background: #ff1a1a;
-    transform: translateY(-1px);
-}
-
-.btn-eliminar:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.info-footer {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: var(--color-fondo-card);
-    border-radius: 8px;
-    border: 1px solid var(--color-borde);
-}
-
-.info-footer p {
-    margin: 0.3rem 0;
-    color: var(--color-texto-secundario);
-}
-
-.info-footer strong {
-    color: var(--color-verde);
-}
-
-.nota {
-    font-size: 0.85rem;
-    font-style: italic;
+.usuarios-no-data {
+  text-align: center;
+  padding: 40px;
+  color: var(--b-text-secondary);
+  font-style: italic;
 }

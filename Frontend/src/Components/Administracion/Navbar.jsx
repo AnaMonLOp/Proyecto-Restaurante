@@ -18,20 +18,22 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar-admin">
-      <div className="nav-left">
-        <span className="nav-title">Panel Administrador</span>
+    <nav className="admin-navbar">
+      <div className="admin-nav-left">
+        <span className="admin-nav-title">Panel Admin</span>
       </div>
 
-      <div className="nav-links">
-        <Link to="/CRUDPlatillos" className="nav-btn">Platillos</Link>
-        <Link to="/reportes" className="nav-btn">Reportes</Link>
-        <Link to="/gestion-usuarios" className="nav-btn">Usuarios</Link>
-        <Link to="/cuenta" className="nav-btn">Cuentas</Link>
+      <div className="admin-nav-links">
+        <Link to="/CRUDPlatillos" className="admin-nav-btn">Platillos</Link>
+        <Link to="/reportes" className="admin-nav-btn">Reportes</Link>
+        <Link to="/gestion-usuarios" className="admin-nav-btn">Usuarios</Link>
+        <Link to="/cuenta" className="admin-nav-btn">Cuentas</Link>
       </div>
 
-      <div className="nav-right">
-        <button className="btn-logout" onClick={cerrarSesion}>Salir</button>
+      <div className="admin-nav-right">
+        <button className="admin-btn-logout" onClick={cerrarSesion}>
+            <span>Salir</span>
+        </button>
       </div>
     </nav>
   );
