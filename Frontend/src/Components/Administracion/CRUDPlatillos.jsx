@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Agregado para navegación
 import api from "../../api/axios.js";
 import "./styles/CRUDPlatillos.css";
 
 function CRUDPlatillos() {
-  const navigate = useNavigate();
   const [platillo, setPlatillo] = useState({ nombre: "", precio: "", categoria: "" });
   const [platillos, setPlatillos] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
