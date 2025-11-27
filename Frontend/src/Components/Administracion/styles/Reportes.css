@@ -1,0 +1,180 @@
+/* Contenedor principal */
+
+.reportes-container {
+    background-color: #1f2937;
+    color: #f9fafb;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+
+/* Título */
+
+.titulo {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+
+/* Filtros */
+
+.filtros-box {
+    background-color: #111827;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.filtro-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.lbl {
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+input[type="date"] {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #374151;
+    background-color: #1f2937;
+    color: #f9fafb;
+}
+
+button.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.btn-primary:disabled {
+    background-color: #60a5fa;
+    cursor: not-allowed;
+}
+
+.mode-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #374151;
+    background-color: #1f2937;
+    color: #f9fafb;
+    cursor: pointer;
+}
+
+.mode-btn.active {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+
+/* Mensajes de error */
+
+.mensaje-error {
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+
+/* Métricas */
+
+.metric-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background-color: #111827;
+    padding: 15px;
+    border-radius: 8px;
+    flex: 1 1 150px;
+    text-align: center;
+}
+
+.metric-card.small {
+    flex: 1 1 100px;
+}
+
+.metric-label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.metric-value {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+
+/* Tabla resumen */
+
+.tabla-resumen table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.tabla-resumen th,
+.tabla-resumen td {
+    border: 1px solid #374151;
+    padding: 8px;
+    text-align: center;
+}
+
+.tabla-resumen th {
+    background-color: #111827;
+}
+
+
+/* Resaltar pedidos cancelados */
+
+.cancelados-cell {
+    color: #ef4444;
+    font-weight: bold;
+    background-color: #7f1d1d33;
+}
+
+
+/* Gráficas */
+
+.graficas-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.grafica-card {
+    background-color: #111827;
+    padding: 15px;
+    border-radius: 8px;
+    flex: 1 1 300px;
+}
+
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .filtro-line {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .metric-cards {
+        flex-direction: column;
+    }
+    .graficas-row {
+        flex-direction: column;
+    }
+}

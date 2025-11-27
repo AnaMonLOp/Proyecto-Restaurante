@@ -4,9 +4,8 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Login from "./Components/Login/Login";
 import CRUDPlatillos from "./Components/Administracion/CRUDPlatillos";
 import Cuentas from "./Components/Administracion/Cuenta";
-import FiltroReporte from "./Components/Administracion/FiltroReporte";
+import Reportes from "./Components/Administracion/Reportes";
 import GestionUsuarios from "./Components/Administracion/GestionUsuarios";
-import ReporteDiario from "./Components/Administracion/ReporteDiario";
 import RegistroUsuario from "./Components/Administracion/RegistroUsuario";
 import RegistroAdmin from "./Components/Administracion/RegistroAdmin";
 import SelectorMesa from "./Components/Mesero/SelectorMesa";
@@ -95,28 +94,19 @@ function App() {
       />
 
       <Route
+        path="/reportes"
+        element={
+          <RutaProtegida roles={["administrador"]}>
+            <Reportes />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
         path="/gestion-usuarios"
         element={
           <RutaProtegida roles={["administrador"]}>
             <GestionUsuarios />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-        path="/filtroReportes"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <FiltroReporte />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-        path="/reporte-diario"
-        element={
-          <RutaProtegida roles={["administrador"]}>
-            <ReporteDiario />
           </RutaProtegida>
         }
       />
