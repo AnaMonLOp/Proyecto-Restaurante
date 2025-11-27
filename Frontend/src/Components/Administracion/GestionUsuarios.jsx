@@ -100,9 +100,6 @@ function GestionUsuarios() {
                     <button onClick={() => navigate("/registro")} className="usuarios-nav-btn">
                         + Personal
                     </button>
-                    <button onClick={() => navigate("/")} className="usuarios-nav-btn" style={{borderColor: '#E74C3C', color: '#E74C3C'}}>
-                        Salir
-                    </button>
                 </nav>
             </header>
 

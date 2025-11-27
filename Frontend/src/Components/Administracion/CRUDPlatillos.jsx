@@ -83,14 +83,6 @@ function CRUDPlatillos() {
       {/* HEADER */}
       <header className="crud-header">
         <h3 className="crud-logo">🍽️ Gestión de Platillos</h3>
-        <nav className="crud-nav">
-            <button className="crud-nav-btn" onClick={() => navigate("/")}>
-                Ir a Mesas
-            </button>
-            <button className="crud-nav-btn crud-logout" onClick={() => navigate("/logout")}>
-                Cerrar Sesión
-            </button>
-        </nav>
       </header>
 
       <div className="crud-main">
