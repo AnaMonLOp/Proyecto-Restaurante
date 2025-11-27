@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios.js";
-import "./CRUDPlatillos.css";
+import api from "../../api/axios.js";
+import "./styles/CRUDPlatillos.css";
 
 function CRUDPlatillos() {
   const navigate = useNavigate();

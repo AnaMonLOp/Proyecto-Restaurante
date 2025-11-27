@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "./PaginaAlimentos.css"; // <- Importamos el CSS
-import api from "../api/axios.js"
+import "./styles/PaginaAlimentos.css"; // <- Importamos el CSS
+import api from "../../api/axios.js"
 
 const PaginaAlimentos = () => {
   const { id } = useParams(); // ID de la mesa
@@ -144,7 +144,7 @@ const PaginaAlimentos = () => {
       <header className="alimentos-header">
         <h1>Menú de la Mesa {mesaIndexMap[id] || id}</h1>
         <button onClick={() => navigate("/")} className="btn-volver">
-          ← Volver al selector
+          ← Volver a mesas
         </button>
       </header>
 

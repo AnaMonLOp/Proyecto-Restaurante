@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import api from "../api/axios";
-import "./RegistroUsuario.css";
+import api from "../../api/axios";
+import "./styles/RegistroUsuario.css";
 
 function RegistroAdmin() {
     const [form, setForm] = useState({

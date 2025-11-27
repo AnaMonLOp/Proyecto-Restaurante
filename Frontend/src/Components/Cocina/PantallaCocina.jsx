@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios.js";
+import api from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
-import "./PantallaCocina.css";
+import "./styles/PantallaCocina.css";
 
 const PantallaCocina = () => {
   const [pedidos, setPedidos] = useState([]);

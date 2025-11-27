@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
 import {
   BarChart,
   Bar,
@@ -14,6 +14,7 @@ import {
   Cell,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import "./styles/ReporteDiario.css";
 
 const COLORS = ["#3b82f6", "#06b6d4", "#f59e0b", "#ef4444"];
 

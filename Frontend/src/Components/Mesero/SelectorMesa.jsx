@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "./SelectorMesa.css";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios.js";
+import api from "../../api/axios.js";
+import "./styles/SelectorMesa.css";
 
 const SelectorMesa = () => {
   const navigate = useNavigate();

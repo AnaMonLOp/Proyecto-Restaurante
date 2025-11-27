@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import "./GestionUsuarios.css";
+import api from "../../api/axios";
+import "./styles/GestionUsuarios.css";
 
 function GestionUsuarios() {
     const navigate = useNavigate();

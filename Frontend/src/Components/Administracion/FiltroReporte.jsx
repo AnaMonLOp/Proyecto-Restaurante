@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import api from "../api/axios";
-import "./FiltroReporte.css";
+import api from "../../api/axios";
+import "./styles/FiltroReporte.css";
 
 const FiltroReporte = () => {
   const [fecha, setFecha] = useState("");

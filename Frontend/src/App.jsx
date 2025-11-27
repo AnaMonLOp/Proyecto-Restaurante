@@ -1,23 +1,22 @@
 import React, { useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
-import Login from "./Components/Login";
-import CRUDPlatillos from "./Components/CRUDPlatillos";
-import Cuentas from "./Components/Cuenta";
-import FiltroReporte from "./Components/FiltroReporte";
-import GestionUsuarios from "./Components/GestionUsuarios";
-import ReporteDiario from "./Components/ReporteDiario";
-import RegistroUsuario from "./Components/RegistroUsuario";
-import RegistroAdmin from "./Components/RegistroAdmin";
-import SelectorMesa from "./Components/SelectorMesa";
-import PaginaAlimentos from "./Components/PaginaAlimentos";
-import PedidosActivos from "./Components/Pedidos";
-import PantallaCocina from "./Components/PantallaCocina";
-import Navbar from "./Components/Navbar";
+import Login from "./Components/Login/Login";
+import CRUDPlatillos from "./Components/Administracion/CRUDPlatillos";
+import Cuentas from "./Components/Administracion/Cuenta";
+import FiltroReporte from "./Components/Administracion/FiltroReporte";
+import GestionUsuarios from "./Components/Administracion/GestionUsuarios";
+import ReporteDiario from "./Components/Administracion/ReporteDiario";
+import RegistroUsuario from "./Components/Administracion/RegistroUsuario";
+import RegistroAdmin from "./Components/Administracion/RegistroAdmin";
+import SelectorMesa from "./Components/Mesero/SelectorMesa";
+import PaginaAlimentos from "./Components/Mesero/PaginaAlimentos";
+import PedidosActivos from "./Components/Mesero/Pedidos";
+import PantallaCocina from "./Components/Cocina/PantallaCocina";
+import Navbar from "./Components/Administracion/Navbar"
 
 import "./App.css";
 
-// 🔐 RUTA PROTEGIDA
 const RutaProtegida = ({ children, roles }) => {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const token = localStorage.getItem("token");

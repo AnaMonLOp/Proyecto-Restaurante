@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
 import { useNavigate } from "react-router-dom";
-import "./RegistroUsuario.css";
+import "./styles/RegistroUsuario.css";
 
 function RegistroUsuario() {
     const [form, setForm] = useState({

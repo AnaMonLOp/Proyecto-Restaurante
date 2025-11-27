@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./PedidosActivos.css";
-import api from "../api/axios";
+import "./styles/PedidosActivos.css";
+import api from "../../api/axios";
 
 const PedidosActivos = () => {
   const navigate = useNavigate();
@@ -12,9 +12,12 @@ const PedidosActivos = () => {
   const [filtroEstado, setFiltroEstado] = useState("todos");
   const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
 
-  // ===============================
-  // 🚀 PRIMERA CARGA INICIAL
-  // ===============================
+  // Estados válidos mostrables (normalizados)
+  const ESTADOS_VALIDOS = ["pendiente", "en_preparacion", "listo"];
+
+  const normalizarEstado = (estado) =>
+    (estado || "").toString().toLowerCase().trim();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,21 +28,21 @@ const PedidosActivos = () => {
 
         setMenuItems(menuRes.data);
 
-        const pedidosData = pedidosRes.data;
-        const meserosData = meserosRes.data;
-        const mesasData = mesasRes.data;
+        const pedidosData = Array.isArray(pedidosRes.data) ? pedidosRes.data : [];
+        const meserosData = Array.isArray(meserosRes.data) ? meserosRes.data : [];
+        const mesasData = Array.isArray(mesasRes.data) ? mesasRes.data : [];
 
-        const pedidosActivos = pedidosData.filter(
-          (p) => 
-            p.estado.toLowerCase() !== "entregado" && 
-            p.estado.toLowerCase() !== "cancelado"
-        );
+        // Filtrado: solo estados válidos (normalizados)
+        const pedidosActivos = pedidosData.filter((p) => {
+          const estadoNorm = normalizarEstado(p.estado);
+          return ESTADOS_VALIDOS.includes(estadoNorm);
+        });
 
         const pedidosConDatos = pedidosActivos.map((p) => {
           const mesero = meserosData.find((m) => m.id === p.mesero_id);
           const mesa = mesasData.find((m) => m.id === p.mesa_id);
 
-          const fecha = new Date(p.fecha_pedido);
+          const fecha = p.fecha_pedido ? new Date(p.fecha_pedido) : new Date();
           const hora = fecha.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -50,10 +53,16 @@ const PedidosActivos = () => {
             meseroNombre: mesero ? mesero.nombre : "Desconocido",
             mesaNumero: mesa ? mesa.numero : p.mesa_id,
             horaPedido: hora,
+            estadoNorm: normalizarEstado(p.estado),
           };
         });
 
-        pedidosConDatos.sort((a, b) => a.mesaNumero - b.mesaNumero);
+        pedidosConDatos.sort((a, b) => {
+          const na = Number(a.mesaNumero) || 0;
+          const nb = Number(b.mesaNumero) || 0;
+          return na - nb;
+        });
+
         setPedidos(pedidosConDatos);
       } catch (error) {
         console.error("Error cargando datos:", error);
@@ -65,9 +74,7 @@ const PedidosActivos = () => {
     fetchData();
   }, []);
 
-  // ===============================
-  // 🔄 POLLING — refrescar cada 5 segundos
-  // ===============================
+  // Polling cada 5 segundos (misma normalización)
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -75,19 +82,20 @@ const PedidosActivos = () => {
         const meserosRes = await api.get("/usuarios/meseros");
         const mesasRes = await api.get("/mesas");
 
-        const pedidosData = pedidosRes.data;
-        const meserosData = meserosRes.data;
-        const mesasData = mesasRes.data;
+        const pedidosData = Array.isArray(pedidosRes.data) ? pedidosRes.data : [];
+        const meserosData = Array.isArray(meserosRes.data) ? meserosRes.data : [];
+        const mesasData = Array.isArray(mesasRes.data) ? mesasRes.data : [];
 
-        const pedidosActivos = pedidosData.filter(
-          (p) => p.estado.toLowerCase() !== "entregado"
-        );
+        const pedidosActivos = pedidosData.filter((p) => {
+          const estadoNorm = normalizarEstado(p.estado);
+          return ESTADOS_VALIDOS.includes(estadoNorm);
+        });
 
         const pedidosConDatos = pedidosActivos.map((p) => {
           const mesero = meserosData.find((m) => m.id === p.mesero_id);
           const mesa = mesasData.find((m) => m.id === p.mesa_id);
 
-          const fecha = new Date(p.fecha_pedido);
+          const fecha = p.fecha_pedido ? new Date(p.fecha_pedido) : new Date();
           const hora = fecha.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -98,22 +106,24 @@ const PedidosActivos = () => {
             meseroNombre: mesero ? mesero.nombre : "Desconocido",
             mesaNumero: mesa ? mesa.numero : p.mesa_id,
             horaPedido: hora,
+            estadoNorm: normalizarEstado(p.estado),
           };
         });
 
-        pedidosConDatos.sort((a, b) => a.mesaNumero - b.mesaNumero);
+        pedidosConDatos.sort((a, b) => {
+          const na = Number(a.mesaNumero) || 0;
+          const nb = Number(b.mesaNumero) || 0;
+          return na - nb;
+        });
+
         setPedidos(pedidosConDatos);
       } catch (error) {
         console.error("Error en polling:", error);
       }
-    }, 5000); // cada 5 segundos
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
-
-  // ===============================
-  // FUNCIONES EXTRA
-  // ===============================
 
   const mostrarNotificacion = (mensaje) => {
     setNotificacion(mensaje);
@@ -167,14 +177,14 @@ const PedidosActivos = () => {
   };
 
   const getEstadoVisuals = (estado) => {
-    const est = estado.toLowerCase();
+    const est = normalizarEstado(estado);
     switch (est) {
       case "listo":
         return { clase: "verde", icono: "✅", animacion: "latido" };
       case "pendiente":
         return { clase: "azul", icono: "⏳", animacion: "" };
       case "en_preparacion":
-        return { clase: "azul", icono: "🔥", animacion: "latido" };
+        return { clase: "azul", icono: "🔥", animacion: "" };
       default:
         return { clase: "azul", icono: "📝", animacion: "" };
     }
@@ -184,14 +194,10 @@ const PedidosActivos = () => {
     filtroEstado === "todos"
       ? pedidos
       : pedidos.filter(
-          (p) => p.estado.toLowerCase() === filtroEstado.toLowerCase()
+          (p) => normalizarEstado(p.estado) === filtroEstado.toLowerCase().trim()
         );
 
   if (loading) return <p className="cargando">Cargando pedidos...</p>;
-
-  // ===============================
-  // RENDER
-  // ===============================
 
   return (
     <div className="pedidos-page">
@@ -232,9 +238,9 @@ const PedidosActivos = () => {
                     <p>Mesero: {p.meseroNombre}</p>
                     <p>Hora: {p.horaPedido}</p>
                     <p className="estado-texto">
-                      Estado: <b>{icono} {p.estado.replace("_", " ")}</b>
+                      Estado: <b>{icono} {String(p.estado).replace("_", " ")}</b>
                     </p>
-                    <p>Total: ${p.total.toFixed(2)}</p>
+                    <p>Total: ${Number(p.total || 0).toFixed(2)}</p>
                   </div>
 
                   <div className="pedido-card-actions">
@@ -245,9 +251,9 @@ const PedidosActivos = () => {
                       Ver Detalle
                     </button>
 
-                    {p.estado.toLowerCase() === "listo" && (
+                    {normalizarEstado(p.estado) === "listo" && (
                       <button
-                        className="btn-entregar" 
+                        className="btn-entregar"
                         style={{ backgroundColor: "#28a745", color: "white", marginLeft: "5px" }}
                         onClick={() => entregarPedido(p.id)}
                       >
@@ -261,7 +267,6 @@ const PedidosActivos = () => {
                     >
                       Cancelar
                     </button>
-                    
                   </div>
                 </div>
               );
@@ -276,7 +281,7 @@ const PedidosActivos = () => {
             <h2>Pedido Mesa {pedidoSeleccionado.mesaNumero}</h2>
             <p><b>Mesero:</b> {pedidoSeleccionado.meseroNombre}</p>
             <p><b>Hora:</b> {pedidoSeleccionado.horaPedido}</p>
-            <p><b>Estado:</b> {pedidoSeleccionado.estado.replace("_", " ")}</p>
+            <p><b>Estado:</b> {String(pedidoSeleccionado.estado).replace("_", " ")}</p>
 
             <h3>Platillos</h3>
 
@@ -288,12 +293,12 @@ const PedidosActivos = () => {
             ) : (
               <ul>
                 {pedidoSeleccionado.items.map((item) => {
-                  const productoInfo = menuItems.find(m => m.id === item.platillo_id);
+                  const productoInfo = menuItems.find((m) => m.id === item.platillo_id);
                   const nombreMostrar = productoInfo ? productoInfo.nombre : "Platillo desconocido";
 
                   return (
                     <li key={item.id}>
-                      {nombreMostrar} – x{item.cantidad} – ${item.precio_unitario.toFixed(2)}
+                      {nombreMostrar} – x{item.cantidad} – ${Number(item.precio_unitario || 0).toFixed(2)}
                       {item.notas_item && (
                         <p className="comentario-item">📝 {item.notas_item}</p>
                       )}
@@ -303,7 +308,7 @@ const PedidosActivos = () => {
               </ul>
             )}
 
-            <h3>Total: ${pedidoSeleccionado.total.toFixed(2)}</h3>
+            <h3>Total: ${Number(pedidoSeleccionado.total || 0).toFixed(2)}</h3>
 
             <div className="modal-actions">
               <button
