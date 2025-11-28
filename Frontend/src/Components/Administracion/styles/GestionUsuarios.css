@@ -135,6 +135,13 @@ body {
   vertical-align: middle;
 }
 
+.usuarios-table th:last-child,
+.usuarios-table td:last-child {
+  width: 420px;
+  min-width: 280px;
+  white-space: nowrap;
+}
+
 .usuarios-table tr:hover {
   background-color: #F4F6F7;
 }
@@ -153,84 +160,96 @@ body {
   text-transform: capitalize;
 }
 
-.badge-role-admin {
-  background-color: #E8F6F3;
-  color: #1ABC9C;
-  border: 1px solid #1ABC9C;
-}
-
-.badge-role-mesero {
-  background-color: #EBF5FB;
-  color: #3498DB;
-  border: 1px solid #3498DB;
-}
-
-.badge-role-cocina {
-  background-color: #FEF5E7;
-  color: #F39C12;
-  border: 1px solid #F39C12;
-}
-
-.badge-status-active {
-  background-color: rgba(39, 174, 96, 0.1);
-  color: var(--b-success);
-}
-
-.badge-status-inactive {
-  background-color: rgba(231, 76, 60, 0.1);
-  color: var(--b-danger);
-}
-
 .usuarios-actions {
   display: flex;
+  justify-content: flex-start;
   gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  min-height: 36px;
 }
 
 .usuarios-btn-action {
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 6px;
-  border: 1px solid transparent;
+  border: none;
   cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.2s;
+  font-weight: 700;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-role {
-  background-color: white;
-  border-color: var(--b-accent);
-  color: var(--b-accent);
-}
-.btn-role:hover:not(:disabled) {
-  background-color: var(--b-accent);
-  color: white;
-}
-
-.btn-toggle {
-  background-color: white;
-  border-color: var(--b-warning);
-  color: var(--b-warning);
-}
-.btn-toggle:hover:not(:disabled) {
-  background-color: var(--b-warning);
-  color: white;
-}
-
-.btn-delete {
-  background-color: white;
-  border-color: var(--b-danger);
-  color: var(--b-danger);
-}
-.btn-delete:hover:not(:disabled) {
-  background-color: var(--b-danger);
-  color: white;
+.usuarios-btn-action:active {
+  transform: scale(0.96);
 }
 
 .usuarios-btn-action:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   filter: grayscale(1);
+}
+
+.btn-edit {
+  background-color: rgba(52, 152, 219, 0.15);
+  color: var(--b-accent);
+}
+.btn-edit:hover {
+  background-color: var(--b-accent);
+  color: white;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.btn-delete {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: var(--b-danger);
+}
+.btn-delete:hover:not(:disabled) {
+  background-color: var(--b-danger);
+  color: white;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+}
+
+.btn-role {
+  background-color: rgba(26, 188, 156, 0.15);
+  color: var(--b-accent-2);
+}
+.btn-role:hover:not(:disabled) {
+  background-color: var(--b-accent-2);
+  color: white;
+  box-shadow: 0 4px 10px rgba(26, 188, 156, 0.3);
+}
+
+.btn-warn {
+  background-color: rgba(243, 156, 18, 0.15);
+  color: var(--b-warning);
+}
+.btn-warn:hover:not(:disabled) {
+  background-color: var(--b-warning);
+  color: white;
+  box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
+}
+
+.btn-success {
+  background-color: rgba(39, 174, 96, 0.15);
+  color: var(--b-success);
+}
+.btn-success:hover:not(:disabled) {
+  background-color: var(--b-success);
+  color: white;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+}
+
+.btn-cancel {
+  background-color: rgba(149, 165, 166, 0.2);
+  color: var(--b-text-secondary);
+  font-size: 1rem;
+  padding: 6px 10px;
+}
+.btn-cancel:hover {
+  background-color: #95A5A6;
+  color: white;
 }
 
 .usuarios-footer {
@@ -250,4 +269,20 @@ body {
   padding: 40px;
   color: var(--b-text-secondary);
   font-style: italic;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.active {
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.status-dot.inactive {
+  background-color: #9ca3af;
 }

@@ -292,7 +292,7 @@ const PedidosActivos = () => {
             ) : (
               <ul>
                 {pedidoSeleccionado.items.map((item) => {
-                  const productoInfo = menuItems.find((m) => m.id === item.platillo_id);
+                  const productoInfo = menuItems.find((m) => m.id === item.item_menu_id);
                   const nombreMostrar = productoInfo ? productoInfo.nombre : "Platillo desconocido";
 
                   return (

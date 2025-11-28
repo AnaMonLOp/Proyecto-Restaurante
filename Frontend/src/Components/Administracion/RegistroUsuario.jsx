@@ -71,6 +71,9 @@ function RegistroUsuario() {
     return (
         <div className="registro-page">
             <div className="registro-card">
+                <button type="button" className="registro-btn-back" onClick={() => navigate("/gestion-usuarios")}>
+                    ← Volver
+                </button>
                 <div className="registro-header">
                     <h2 className="registro-title">Registrar Usuario</h2>
                     <p className="registro-subtitle">Crea una cuenta para el personal (Mesero/Cocina)</p>

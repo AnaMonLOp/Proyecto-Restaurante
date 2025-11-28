@@ -10,6 +10,7 @@ function GestionUsuarios() {
     const [error, setError] = useState("");
     const [editandoId, setEditandoId] = useState(null);
     const [eliminandoId, setEliminandoId] = useState(null);
+    const [idMenuAbierto, setIdMenuAbierto] = useState(null);
 
     useEffect(() => {
         cargarUsuarios();
@@ -20,13 +21,25 @@ function GestionUsuarios() {
         setError("");
         try {
             const { data } = await api.get("/usuarios");
-            setUsuarios(data || []);
+            const usuariosOrdenados = (data || []).sort((a, b) => {
+                if (a.rol !== b.rol) {
+                    return a.rol.localeCompare(b.rol);
+                }
+                return a.nombre.localeCompare(b.nombre);
+            });
+
+            setUsuarios(usuariosOrdenados);
         } catch (err) {
             setError("No se pudieron cargar los usuarios");
         } finally {
             setCargando(false);
         }
     }
+
+    const toggleMenu = (id) => {
+        if (idMenuAbierto === id) setIdMenuAbierto(null);
+        else setIdMenuAbierto(id);
+    };
 
     async function cambiarRol(id, rolActual) {
         if (rolActual === "administrador") return;
@@ -92,7 +105,7 @@ function GestionUsuarios() {
     return (
         <div className="usuarios-page">
             <header className="usuarios-header">
-                <h1 className="usuarios-logo">👤 Gestión de Usuarios</h1>
+                <h1 className="usuarios-logo">👤 Gestión de Personal</h1>
                 <nav className="usuarios-nav">
                     <button onClick={() => navigate("/registro-admin")} className="usuarios-nav-btn">
                         + Admin
@@ -136,46 +149,69 @@ function GestionUsuarios() {
                                         <td><strong>{usuario.nombre}</strong></td>
                                         <td>{usuario.identificador}</td>
                                         <td>
-                                            <span className={`usuarios-badge badge-role-${usuario.rol}`}>
-                                                {usuario.rol === "administrador" ? "Administrador" :
-                                                 usuario.rol === "mesero" ? "Mesero" : "Cocinero"}
+                                            <span style={{ fontWeight: '600', color: '#374151' }}>
+                                                {usuario.rol.charAt(0).toUpperCase() + usuario.rol.slice(1)}
                                             </span>
                                         </td>
                                         <td>
-                                            <span className={`usuarios-badge badge-status-${usuario.activo ? "active" : "inactive"}`}>
-                                                {usuario.activo ? "Activo" : "Inactivo"}
-                                            </span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span className={`status-dot ${usuario.activo ? 'active' : 'inactive'}`}></span>
+                                                <span style={{ fontSize: '0.9rem', color: usuario.activo ? '#10b981' : '#9ca3af' }}>
+                                                {usuario.activo ? "Habilitado" : "Deshabilitado"}
+                                                </span>
+                                            </div>
                                         </td>
-                                        <td>
+                                        <td style={{ textAlign: 'left' }}>
                                             {usuario.rol === "administrador" ? (
                                                 <span style={{color: '#95A5A6', fontSize: '0.9rem'}}>No editable</span>
                                             ) : (
                                                 <div className="usuarios-actions">
-                                                    <button
-                                                        className="usuarios-btn-action btn-role"
-                                                        onClick={() => cambiarRol(usuario.id, usuario.rol)}
-                                                        disabled={editandoId === usuario.id || !usuario.activo}
-                                                        title="Cambiar Rol"
-                                                    >
-                                                        {editandoId === usuario.id ? "..." : (usuario.rol === "mesero" ? "A Cocina" : "A Mesero")}
-                                                    </button>
-                                                    <button
-                                                        className="usuarios-btn-action btn-toggle"
-                                                        onClick={() => toggleActivo(usuario.id, usuario.activo, usuario.rol)}
-                                                        disabled={editandoId === usuario.id}
-                                                        title={usuario.activo ? "Desactivar cuenta" : "Activar cuenta"}
-                                                    >
-                                                        {editandoId === usuario.id ? "..." : (usuario.activo ? "Desactivar" : "Activar")}
-                                                    </button>
-                                                    <button
-                                                        className="usuarios-btn-action btn-delete"
-                                                        onClick={() => eliminarUsuario(usuario.id, usuario.rol)}
-                                                        disabled={eliminandoId === usuario.id}
-                                                        title="Eliminar usuario permanentemente"
-                                                    >
-                                                        {eliminandoId === usuario.id ? "..." : "Eliminar"}
-                                                    </button>
-                                                </div>
+                                                    {idMenuAbierto === usuario.id ? (
+                                                        <>
+                                                            <button
+                                                                className="usuarios-btn-action btn-role"
+                                                                onClick={() => cambiarRol(usuario.id, usuario.rol)}
+                                                                disabled={editandoId === usuario.id || !usuario.activo}
+                                                                title="Cambiar Rol"
+                                                            >
+                                                                {usuario.rol === "mesero" ? "Cambiar a Cocina" : "Cambiar a Mesero"}
+                                                            </button>
+                                                            
+                                                            <button
+                                                                className={`usuarios-btn-action ${usuario.activo ? 'btn-warn' : 'btn-success'}`}
+                                                                onClick={() => toggleActivo(usuario.id, usuario.activo, usuario.rol)}
+                                                                disabled={editandoId === usuario.id}
+                                                            >
+                                                                {usuario.activo ? "Bloquear" : "Activar"}
+                                                            </button>
+
+                                                            <button
+                                                                className="usuarios-btn-action btn-delete"
+                                                                onClick={() => eliminarUsuario(usuario.id, usuario.rol)}
+                                                                disabled={eliminandoId === usuario.id}
+                                                            >
+                                                                Eliminar
+                                                            </button>
+
+                                                            <button 
+                                                                className="usuarios-btn-action btn-cancel"
+                                                                onClick={() => toggleMenu(null)}
+                                                                title="Cancelar"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <button
+                                                                className="usuarios-btn-action btn-edit"
+                                                                onClick={() => toggleMenu(usuario.id)}
+                                                            >
+                                                                Editar
+                                                            </button>
+                                                        </> 
+                                                        )}
+                                                </div> 
                                             )}
                                         </td>
                                     </tr>

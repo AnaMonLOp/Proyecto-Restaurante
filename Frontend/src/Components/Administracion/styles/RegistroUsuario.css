@@ -177,3 +177,35 @@ body {
   color: var(--b-header);
   border-color: var(--b-header);
 }
+
+.registro-btn-back {
+  position: absolute;
+  top: 100px; 
+  left: 40px;
+  
+  background-color: rgba(52, 152, 219, 0.15);
+  color: var(--b-accent);                    
+  border: none;                              
+  
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;                           
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.registro-btn-back:hover {
+  background-color: var(--b-accent);
+  color: white;                            
+  transform: translateX(-3px);               
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.registro-btn-back:active {
+  transform: scale(0.98);
+}

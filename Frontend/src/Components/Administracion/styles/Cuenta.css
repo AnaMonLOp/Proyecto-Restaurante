@@ -375,10 +375,9 @@ body {
 }
 
 .cuentas-total-amount {
-  color: var(--b-accent-2); /* Verde turquesa para el dinero */
+  color: var(--b-accent-2);
 }
 
-/* Botón Cobrar */
 .cuentas-btn-pay {
   width: 100%;
   background-color: var(--b-success);
@@ -429,4 +428,52 @@ body {
   height: 100%;
   color: var(--b-text-secondary);
   font-size: 1.2rem;
+}
+
+.cuentas-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.cuentas-modal-success {
+  background-color: var(--b-surface);
+  padding: 40px 60px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid var(--b-border);
+  min-width: 300px;
+}
+
+.cuentas-modal-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.cuentas-modal-success h2 {
+  margin: 0 0 10px 0;
+  color: var(--b-header);
+  font-size: 1.8rem;
+}
+
+.cuentas-modal-success p {
+  margin: 0;
+  color: var(--b-text-secondary);
+  font-size: 1.1rem;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
 }

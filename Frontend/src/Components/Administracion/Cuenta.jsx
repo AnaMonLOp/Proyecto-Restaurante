@@ -17,6 +17,7 @@ function Cuentas() {
   const [propinaType, setPropinaType] = useState("amount");
   const [propinaValue, setPropinaValue] = useState(0);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     api.get("/mesas")
@@ -131,23 +132,55 @@ function Cuentas() {
 
   const marcarPagada = async () => {
     if (!pedidosMesa.length) return;
-    const pedidoRef = pedidosMesa[0]; 
+    
+    const btn = document.querySelector('.cuentas-btn-pay');
+    if(btn) btn.disabled = true;
 
     try {
-      await api.post("/cuentas", {
-        pedido_id: pedidoRef.id,
-        mesa_id: mesaSeleccionada.id,
-        mesero_id: pedidoRef.mesero_id,
-        subtotal: total,
-        propina: propinaType === "amount" ? Number(propinaValue || 0) : Number(((total * (propinaValue || 0)) / 100).toFixed(2)),
+      const propinaTotal = propinaType === "amount" 
+          ? Number(propinaValue || 0) 
+          : Number(((total * (propinaValue || 0)) / 100).toFixed(2));
+
+      const cobros = pedidosMesa.map((pedido, index) => {
+          const propinaAsignada = index === 0 ? propinaTotal : 0;
+          
+          const subtotalPedido = pedido.detalle_pedido 
+            ? pedido.detalle_pedido.reduce((acc, item) => acc + Number(item.subtotal), 0)
+            : 0;
+          
+          const totalPedido = subtotalPedido + propinaAsignada;
+
+          return api.post("/cuentas", {
+            pedido_id: pedido.id,
+            mesa_id: mesaSeleccionada.id,
+            mesero_id: pedido.mesero_id,
+            subtotal: subtotalPedido,
+            propina: propinaAsignada,
+            total: totalPedido,
+            metodo_pago: "efectivo",
+            estado: "pagada",
+            fecha_pago: new Date().toISOString()
+          });
       });
 
-      alert("✅ Cobrado exitosamente");
-      setMesaSeleccionada(null);
-      setPedidosMesa([]);
-      window.location.reload();
+      await Promise.all(cobros);
+
+      setShowModal(true);
+    
+      setTimeout(() => {
+        setShowModal(false);
+        setMesaSeleccionada(null);
+        setPedidosMesa([]);
+        setPropinaValue(0);
+        setTotal(0);
+        setTotalFinal(0);
+        window.location.reload();
+      }, 2000);
+      
     } catch (error) {
-      alert("Error al cobrar: " + error.message);
+      console.error(error);
+      alert("Error al cobrar: " + (error.response?.data?.mensaje || error.message));
+      if(btn) btn.disabled = false;
     }
   };
 
@@ -155,7 +188,15 @@ function Cuentas() {
 
   return (
     <div className="cuentas-page">
-      
+      {showModal && (
+        <div className="cuentas-modal-overlay">
+          <div className="cuentas-modal-success">
+            <div className="cuentas-modal-icon">✅</div>
+            <h2>¡Cobro Exitoso!</h2>
+            <p>La mesa ha sido liberada.</p>
+          </div>
+        </div>
+      )}
       <aside className="cuentas-sidebar">
         <div className="cuentas-sidebar-header">
           <h2 className="cuentas-sidebar-title">Mesas</h2>

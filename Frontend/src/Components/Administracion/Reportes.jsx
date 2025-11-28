@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import api from "../../api/axios";
-import Navbar from "./Navbar";
 import {
   BarChart,
   Bar,
@@ -24,7 +23,6 @@ function formatCurrency(n) {
 }
 
 const Reportes = () => {
-  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   // filtros
   const [fecha, setFecha] = useState("");
@@ -93,10 +91,9 @@ const Reportes = () => {
 
   return (
     <div className="reportes-page">
-      {/* Navbar solo para administrador */}
-      {usuario?.rol === "administrador" && <Navbar />}
-
-      <h2 className="reportes-header-title">📊 Reportes de Pedidos</h2>
+      <header className="reportes-header">
+        <h1 className="reportes-header-title">📊 Reportes de Pedidos</h1>
+      </header>
 
       {/* Filtros */}
       <div className="reportes-filters-card">
