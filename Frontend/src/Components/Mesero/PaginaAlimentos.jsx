@@ -136,7 +136,7 @@ const PaginaAlimentos = () => {
     <div className="alimentos-page">
       {confirmacion && (
         <div className="alimentos-modal">
-          <h2>✅ ¡Pedido enviado correctamente!</h2>
+          <h2>¡Pedido enviado correctamente!</h2>
         </div>
       )}
 

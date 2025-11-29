@@ -45,7 +45,6 @@
   padding: 0;
 }
 
-/* --- FILTROS --- */
 .reportes-filters-card {
   background-color: var(--b-surface);
   padding: 20px;
@@ -147,7 +146,6 @@
   border: 1px solid rgba(231, 76, 60, 0.2);
 }
 
-/* --- MÉTRICAS --- */
 .reportes-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -186,7 +184,6 @@
   margin: 0;
 }
 
-/* --- TABLA --- */
 .reportes-table-container {
   background-color: var(--b-surface);
   border-radius: 12px;
@@ -231,7 +228,6 @@
   padding: 4px 8px;
 }
 
-/* --- GRÁFICAS --- */
 .reportes-charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -254,7 +250,6 @@
   text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .reportes-filters-card {
     flex-direction: column;

@@ -30,7 +30,6 @@ body {
   overflow: hidden;
 }
 
-/* --- PANEL IZQUIERDO (LISTA DE MESAS) --- */
 .cuentas-sidebar {
   width: 380px;
   background-color: var(--b-surface);
@@ -77,7 +76,6 @@ body {
   background-color: #F8F9FA;
 }
 
-/* Tarjeta de Mesa */
 .cuentas-table-card {
   background-color: var(--b-surface);
   padding: 15px 20px;
@@ -100,10 +98,9 @@ body {
 
 .cuentas-table-card.cuentas-selected {
   border: 2px solid var(--b-accent);
-  background-color: #EBF5FB; /* Azul muy suave */
+  background-color: #EBF5FB; 
 }
 
-/* Estados de la mesa */
 .cuentas-icon-wrapper {
   width: 45px;
   height: 45px;
@@ -124,7 +121,6 @@ body {
   border-color: transparent;
 }
 
-/* Borde izquierdo naranja si debe pagar */
 .cuentas-status-pending {
   border-left: 5px solid var(--b-warning);
 }
@@ -168,7 +164,6 @@ body {
   font-style: italic;
 }
 
-/* --- PANEL DERECHO (RECIBO) --- */
 .cuentas-main-panel {
   flex: 1;
   padding: 40px;
@@ -179,7 +174,6 @@ body {
   position: relative;
 }
 
-/* Estado inicial (sin selección) */
 .cuentas-placeholder {
   text-align: center;
   color: var(--b-text-secondary);
@@ -192,7 +186,6 @@ body {
   color: var(--b-accent);
 }
 
-/* Contenedor del Recibo (Ticket) */
 .cuentas-receipt {
   width: 100%;
   max-width: 480px;
@@ -207,7 +200,6 @@ body {
   overflow: hidden;
 }
 
-/* Cabecera del Ticket */
 .cuentas-receipt-header {
   padding: 25px;
   background-color: #FDFDFD;
@@ -245,7 +237,6 @@ body {
   color: var(--b-danger);
 }
 
-/* Cuerpo del Ticket (Lista de items) */
 .cuentas-receipt-body {
   flex: 1;
   overflow-y: auto;
@@ -306,7 +297,6 @@ body {
   font-style: italic;
 }
 
-/* Footer del Ticket (Totales y Acciones) */
 .cuentas-receipt-footer {
   background-color: #FDFDFD;
   border-top: 2px dashed var(--b-border);
@@ -322,7 +312,6 @@ body {
   font-size: 1rem;
 }
 
-/* Control de Propina */
 .cuentas-tip-control {
   display: flex;
   align-items: center;
@@ -364,7 +353,6 @@ body {
   border-color: var(--b-accent);
 }
 
-/* Total Final */
 .cuentas-total-final {
   margin-top: 20px;
   padding-top: 15px;
@@ -403,7 +391,6 @@ body {
   transform: scale(0.98);
 }
 
-/* Estados vacíos y carga */
 .cuentas-state-empty {
   display: flex;
   flex-direction: column;

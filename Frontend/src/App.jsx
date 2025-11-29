@@ -41,7 +41,7 @@ const RutaProtegida = ({ children, roles }) => {
   );
 };
 
-// 🔓 CERRAR SESIÓN
+// CERRAR SESIÓN
 const CerrarSesion = () => {
   const navigate = useNavigate();
 

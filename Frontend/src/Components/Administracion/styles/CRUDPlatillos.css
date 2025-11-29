@@ -29,7 +29,6 @@ body {
   flex-direction: column;
 }
 
-/* --- HEADER --- */
 .crud-header {
   display: flex;
   justify-content: space-between;
@@ -82,7 +81,6 @@ body {
   border-color: var(--b-danger);
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
 .crud-main {
   padding: 40px;
   max-width: 1200px;
@@ -90,7 +88,6 @@ body {
   width: 100%;
 }
 
-/* --- TARJETA DE FORMULARIO --- */
 .crud-form-card {
   background-color: var(--b-surface);
   padding: 30px;
@@ -157,7 +154,7 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  height: 45px; /* Para alinear con inputs */
+  height: 45px; 
   font-size: 0.95rem;
   white-space: nowrap;
 }
@@ -168,13 +165,12 @@ body {
   box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
 
-/* --- TARJETA DE TABLA --- */
 .crud-table-card {
   background-color: var(--b-surface);
   border-radius: 12px;
   box-shadow: 0 4px 12px var(--b-shadow);
   border: 1px solid var(--b-border);
-  overflow: hidden; /* Para las esquinas redondeadas de la tabla */
+  overflow: hidden; 
 }
 
 .crud-table {

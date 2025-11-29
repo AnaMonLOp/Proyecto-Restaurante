@@ -2,10 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Importar middlewares
 import { verificarToken, verificarRol } from "./middlewares/auth.js";
 
-// Importar controladores
+// CONTROLADORES
 import { login, registro } from "./controllers/authController.js";
 import {
   obtenerPlatillos,
@@ -58,30 +57,22 @@ const puerto = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-//-----------------------------------
-//-------- AUTENTICACIÓN
-//-----------------------------------
+// AUTENTICACIÓN
 app.post("/api/auth/login", login);
 app.post("/api/auth/registro", registro);
 
-//-----------------------------------
-//-------- PLATILLOS
-//-----------------------------------
+// PLATILLOS
 app.get("/api/platillos", verificarToken, obtenerPlatillos);
 app.post("/api/platillos", verificarToken, crearPlatillo);
 app.put("/api/platillos/:id", verificarToken, actualizarPlatillo);
 app.delete("/api/platillos/:id", verificarToken, eliminarPlatillo);
 
-//-----------------------------------
-//-------- CATEGORÍAS
-//-----------------------------------
+// CATEGORIAS
 app.get("/api/categorias", verificarToken, obtenerCategorias);
 app.post("/api/categorias", verificarToken, crearCategoria);
 app.put("/api/categorias/:id", verificarToken, actualizarCategoria);
 
-//-----------------------------------
-//-------- PEDIDOS
-//-----------------------------------
+// PEDIDOS
 app.get("/api/pedidos", verificarToken, obtenerPedidos);
 app.post("/api/pedidos", verificarToken, crearPedido);
 app.put("/api/pedidos/:id", verificarToken, actualizarPedido);
@@ -103,16 +94,12 @@ app.put(
   actualizarEstadoPedidosPorMesa
 );
 
-//-----------------------------------
-//-------- MESAS
-//-----------------------------------
+// MESAS
 app.get("/api/mesas", verificarToken, obtenerMesas);
 app.post("/api/mesas", verificarToken, crearMesa);
 app.put("/api/mesas/:id", verificarToken, actualizarMesa);
 
-//-----------------------------------
-//-------- USUARIOS
-//-----------------------------------
+// USUARIOS
 app.get("/api/usuarios", verificarToken, obtenerUsuarios);
 app.get("/api/usuarios/meseros", verificarToken, obtenerMeseros);
 app.get("/api/usuarios/cocina", verificarToken, obtenerCocina);
@@ -140,9 +127,7 @@ app.delete(
   eliminarUsuario
 );
 
-//-----------------------------------
-//-------- CUENTAS
-//-----------------------------------
+// CUENTAS
 app.get("/api/cuentas", verificarToken, obtenerCuentas);
 app.get(
   "/api/cuentas/pedido/:pedido_id",
@@ -152,14 +137,10 @@ app.get(
 app.post("/api/cuentas", verificarToken, crearCuenta);
 app.put("/api/cuentas/:id", verificarToken, actualizarCuenta);
 
-//-----------------------------------
-//-------- REPORTES
-//-----------------------------------
+// REPORTESS
 app.get("/api/reportes", verificarToken, generarReporte);
 
-//-----------------------------------
-//-------- INICIAR SERVIDOR
-//-----------------------------------
+// INICIAR EL SERVIDOR 
 app.listen(puerto, () => {
   console.log(`Servidor corriendo en puerto ${puerto}`);
 });

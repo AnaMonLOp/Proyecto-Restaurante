@@ -15,7 +15,6 @@ import {
 } from "recharts";
 import "./styles/Reportes.css";
 
-// Colores actualizados a la nueva paleta: Azul, Turquesa, Naranja, Rojo
 const COLORS = ["#3498DB", "#1ABC9C", "#F39C12", "#E74C3C"];
 
 function formatCurrency(n) {
@@ -83,9 +82,9 @@ const Reportes = () => {
   const getChartData = () => {
     if (!reporte) return [];
     return [
-      { name: "Pedidos", value: totalPedidos, color: COLORS[0] }, // Azul
-      { name: "Cancelados", value: totalCancelados, color: COLORS[3] }, // Rojo
-      { name: "Ventas", value: totalVendido, color: COLORS[1] }, // Turquesa
+      { name: "Pedidos", value: totalPedidos, color: COLORS[0] }, 
+      { name: "Cancelados", value: totalCancelados, color: COLORS[3] }, 
+      { name: "Ventas", value: totalVendido, color: COLORS[1] }, 
     ];
   };
 
@@ -151,27 +150,26 @@ const Reportes = () => {
         <>
           <div className="reportes-metrics-grid">
             <div className="reportes-metric-card">
-              <p className="reportes-metric-label">📦 Pedidos Totales</p>
+              <p className="reportes-metric-label">Pedidos Totales</p>
               <p className="reportes-metric-value">{totalPedidos}</p>
             </div>
 
             <div className="reportes-metric-card">
-              <p className="reportes-metric-label">❌ Cancelados</p>
+              <p className="reportes-metric-label">Cancelados</p>
               <p className="reportes-metric-value" style={{ color: "#E74C3C" }}>{totalCancelados}</p>
             </div>
 
             <div className="reportes-metric-card">
-              <p className="reportes-metric-label">💰 Ventas totales</p>
+              <p className="reportes-metric-label">Ventas totales</p>
               <p className="reportes-metric-value" style={{ color: "#3498DB" }}>${formatCurrency(totalVendido)}</p>
             </div>
 
             <div className="reportes-metric-card">
-              <p className="reportes-metric-label">📊 Promedio / pedido</p>
+              <p className="reportes-metric-label">Promedio / pedido</p>
               <p className="reportes-metric-value" style={{ color: "#1ABC9C" }}>${formatCurrency(promedio)}</p>
             </div>
           </div>
 
-          {/* Tabla resumen */}
           <div className="reportes-table-container">
             <table className="reportes-table">
               <thead>
@@ -230,7 +228,7 @@ const Reportes = () => {
                     cx="50%" 
                     cy="50%" 
                     outerRadius={100}
-                    innerRadius={60} // Para hacerla tipo Donut (se ve más moderno)
+                    innerRadius={60} 
                     paddingAngle={5}
                   >
                     {categorias.map((e, i) => (

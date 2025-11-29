@@ -66,7 +66,6 @@ const PantallaCocina = () => {
 
   return (
     <div className="cocina-page">
-      {/* HEADER */}
       <header className="cocina-header">
         <h1 className="cocina-logo">👨‍🍳 Cocina</h1>
         <span className="cocina-logout" onClick={() => navigate("/logout")}>
@@ -75,7 +74,6 @@ const PantallaCocina = () => {
       </header>
 
       <main className="cocina-main">
-        {/* COLUMNAS KANBAN */}
         <div className="cocina-columns-container">
           {estados.map((estado) => (
             <div key={estado.id} className="cocina-lane">
@@ -130,7 +128,7 @@ const PantallaCocina = () => {
                             className="cocina-btn-finish"
                             onClick={() => cambiarEstado(pedido.id, "listo")}
                         >
-                          Marcar Listo ✅
+                          Marcar Listo 
                         </button>
                       )}
                     </div>
@@ -140,9 +138,8 @@ const PantallaCocina = () => {
           ))}
         </div>
 
-        {/* PANEL DERECHA (Atajo Mesas) */}
         <aside className="cocina-side-panel">
-          <h3 className="cocina-side-title">Mesa Lista (Atajo)</h3>
+          <h3 className="cocina-side-title">Mesa Lista</h3>
           <div className="cocina-mesas-grid">
             {mesas.map((mesa) => (
               <button

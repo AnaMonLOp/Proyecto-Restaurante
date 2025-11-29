@@ -6,7 +6,6 @@ function Navbar() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const navigate = useNavigate();
 
-  // Si no es administrador, no muestra navbar
   if (!usuario || usuario.rol !== "administrador") {
     return null;
   }

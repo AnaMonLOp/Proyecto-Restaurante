@@ -80,7 +80,7 @@ function CRUDPlatillos() {
     <div className="crud-page">
       {/* HEADER */}
       <header className="crud-header">
-        <h3 className="crud-logo">🍽️ Gestión de Platillos</h3>
+        <h3 className="crud-logo">Gestión de Platillos</h3>
       </header>
 
       <div className="crud-main">

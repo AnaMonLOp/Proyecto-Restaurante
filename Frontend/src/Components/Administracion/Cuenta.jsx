@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
-import "./styles/Cuenta.css"; // Asegúrate que el nombre del CSS coincida
+import "./styles/Cuenta.css"; 
 
 function Cuentas() {
   const [mesas, setMesas] = useState([]);

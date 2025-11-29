@@ -132,7 +132,7 @@ const PedidosActivos = () => {
       const res = await api.put(`/pedidos/${id}`, { estado: "entregado" });
       if (res.status === 200) {
         setPedidos((prev) => prev.filter((p) => p.id !== id));
-        mostrarNotificacion("Pedido entregado correctamente ✅");
+        mostrarNotificacion("Pedido entregado correctamente");
       }
     } catch (error) {
       console.error("Error al entregar pedido:", error);
@@ -192,8 +192,7 @@ const PedidosActivos = () => {
       {notificacion && <div className="pedidos-toast">{notificacion}</div>}
 
       <header className="pedidos-active-header">
-        <h1 className="pedidos-active-logo">🍽️ Pedidos Activos</h1>
-        {/* CORREGIDO: Clase única para este botón para que no se estire */}
+        <h1 className="pedidos-active-logo">Pedidos Activos</h1>
         <button className="pedidos-header-btn-volver" onClick={() => navigate("/")}>
           ← Volver a Mesas
         </button>
@@ -225,7 +224,6 @@ const PedidosActivos = () => {
                   <div className="pedidos-active-content">
                     <h2>Mesa {p.mesaNumero}</h2>
                     
-                    {/* CORREGIDO: Divs separados para evitar que el texto se junte */}
                     <div className="pedidos-info-row">
                       <span className="pedidos-label">Mesero:</span>
                       <span className="pedidos-value">{p.meseroNombre}</span>
@@ -260,7 +258,6 @@ const PedidosActivos = () => {
                       </button>
                     )}
 
-                    {/* El botón cancelar ocupa todo el ancho si está abajo */}
                     <button
                       className="pedidos-card-btn pedidos-btn-cancel"
                       onClick={() => cancelarPedido(p.id)}
