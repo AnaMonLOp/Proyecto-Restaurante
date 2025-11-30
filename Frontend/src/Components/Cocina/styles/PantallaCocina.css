@@ -1,0 +1,271 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-2: #1ABC9C;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-text-inverted: #FFFFFF;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-shadow-hover: rgba(44, 62, 80, 0.15);
+  --b-warning: #F39C12;  
+  --b-success: #27AE60;  
+  --b-neutral: #95A5A6;  
+}
+
+body {
+  margin: 0;
+}
+
+.cocina-page {
+  min-height: 100vh;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.cocina-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: var(--b-surface);
+  border-bottom: 1px solid var(--b-border);
+  box-shadow: 0 2px 10px var(--b-shadow);
+  z-index: 10;
+}
+
+.cocina-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--b-header);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.cocina-logout {
+  color: var(--b-text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.cocina-logout:hover {
+  color: var(--b-accent);
+}
+
+.cocina-main {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+  overflow: hidden; 
+}
+
+.cocina-columns-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  flex: 1;
+}
+
+.cocina-lane {
+  background-color: #F4F6F7; 
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border: 1px solid var(--b-border);
+  height: calc(100vh - 100px); 
+  overflow-y: auto;
+}
+
+.cocina-lane::-webkit-scrollbar { width: 6px; }
+.cocina-lane::-webkit-scrollbar-track { background: transparent; }
+.cocina-lane::-webkit-scrollbar-thumb { background-color: #BDC3C7; border-radius: 3px; }
+
+.cocina-lane-title {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  background-color: #F4F6F7;
+  z-index: 5;
+}
+
+.cocina-status-gray { color: var(--b-neutral); border-color: var(--b-neutral); }
+.cocina-status-yellow { color: var(--b-warning); border-color: var(--b-warning); }
+.cocina-status-green { color: var(--b-success); border-color: var(--b-success); }
+
+.cocina-card {
+  background-color: var(--b-surface);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  border: 1px solid var(--b-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  border-left: 5px solid transparent; 
+}
+
+.cocina-lane:nth-child(1) .cocina-card { border-left-color: var(--b-neutral); }
+.cocina-lane:nth-child(2) .cocina-card { border-left-color: var(--b-warning); }
+.cocina-lane:nth-child(3) .cocina-card { border-left-color: var(--b-success); }
+
+.cocina-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.cocina-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--b-border);
+  padding-bottom: 8px;
+}
+
+.cocina-card-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--b-header);
+}
+
+.cocina-time {
+  font-size: 0.85rem;
+  color: var(--b-text-secondary);
+  font-weight: 500;
+}
+
+.cocina-table-badge {
+  display: inline-block;
+  background-color: var(--b-header);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.cocina-items-list {
+  margin-bottom: 15px;
+}
+
+.cocina-item {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: var(--b-text);
+  line-height: 1.4;
+}
+
+.cocina-item strong {
+  font-weight: 600;
+  color: var(--b-header);
+}
+
+.cocina-note {
+  font-size: 0.85rem;
+  color: var(--b-warning);
+  font-style: italic;
+  margin-left: 5px;
+  background: rgba(243, 156, 18, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cocina-card-footer button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.cocina-btn-advance {
+  background-color: var(--b-header);
+  color: white;
+}
+.cocina-btn-advance:hover {
+  background-color: #34495E;
+}
+
+.cocina-btn-finish {
+  background-color: var(--b-success);
+  color: white;
+}
+.cocina-btn-finish:hover {
+  background-color: #219150;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.cocina-side-panel {
+  width: 260px;
+  background-color: var(--b-surface);
+  border-left: 1px solid var(--b-border);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 10px var(--b-shadow);
+}
+
+.cocina-side-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--b-header);
+  margin-bottom: 20px;
+}
+
+.cocina-mesas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.cocina-btn-mesa {
+  aspect-ratio: 1;
+  background-color: var(--b-surface);
+  color: var(--b-header);
+  border: 1px solid var(--b-border);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px var(--b-shadow);
+}
+
+.cocina-btn-mesa:hover {
+  background-color: var(--b-accent-2);
+  color: white;
+  border-color: transparent;
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(26, 188, 156, 0.3);
+}
+
+.cocina-btn-mesa:active {
+  transform: scale(0.95);
+}

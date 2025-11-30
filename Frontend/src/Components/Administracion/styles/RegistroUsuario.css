@@ -1,0 +1,205 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --b-background: #FAFAFA;
+  --b-surface: #FFFFFF;
+  --b-header: #2C3E50;
+  --b-accent: #3498DB;
+  --b-accent-hover: #2980b9;
+  --b-text: #2B2B2B;
+  --b-text-secondary: #7F8C8D;
+  --b-border: #EAEAEA;
+  --b-shadow: rgba(44, 62, 80, 0.08);
+  --b-danger: #E74C3C;
+  --b-success: #27AE60;
+}
+
+body {
+  margin: 0;
+}
+
+.registro-page {
+  min-height: 100vh;
+  background-color: var(--b-background);
+  color: var(--b-text);
+  font-family: "Inter", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.registro-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--b-surface);
+  border: 1px solid var(--b-border);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 10px 30px var(--b-shadow);
+}
+
+.registro-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.registro-title {
+  margin: 0 0 10px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--b-header);
+}
+
+.registro-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--b-text-secondary);
+}
+
+.registro-form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.registro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.registro-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--b-header);
+  text-align: left;
+}
+
+.registro-input,
+.registro-select {
+  background-color: var(--b-background);
+  color: var(--b-text);
+  border: 1px solid var(--b-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+  width: 100%;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.registro-input:focus,
+.registro-select:focus {
+  border-color: var(--b-accent);
+  background-color: var(--b-surface);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.registro-error-text {
+  color: var(--b-danger);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.registro-server-error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--b-danger);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.registro-success-box {
+  background-color: rgba(39, 174, 96, 0.1);
+  color: var(--b-success);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.registro-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 15px;
+}
+
+.registro-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.registro-btn-primary {
+  background-color: var(--b-accent);
+  color: white;
+}
+
+.registro-btn-primary:hover {
+  background-color: var(--b-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.registro-btn-primary:disabled {
+  background-color: #BDC3C7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.registro-btn-secondary {
+  background-color: transparent;
+  color: var(--b-text-secondary);
+  border: 1px solid var(--b-border);
+}
+
+.registro-btn-secondary:hover {
+  background-color: var(--b-background);
+  color: var(--b-header);
+  border-color: var(--b-header);
+}
+
+.registro-btn-back {
+  position: absolute;
+  top: 100px; 
+  left: 40px;
+  
+  background-color: rgba(52, 152, 219, 0.15);
+  color: var(--b-accent);                    
+  border: none;                              
+  
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;                           
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.registro-btn-back:hover {
+  background-color: var(--b-accent);
+  color: white;                            
+  transform: translateX(-3px);               
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.registro-btn-back:active {
+  transform: scale(0.98);
+}
