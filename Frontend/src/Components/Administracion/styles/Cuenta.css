@@ -23,11 +23,12 @@ body {
 
 .cuentas-page {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 70px);
   background-color: var(--b-background);
   color: var(--b-text);
   font-family: "Inter", sans-serif;
   overflow: hidden;
+  position: relative;
 }
 
 .cuentas-sidebar {
@@ -74,6 +75,7 @@ body {
   flex-direction: column;
   gap: 15px;
   background-color: #F8F9FA;
+  padding-bottom: 80px;
 }
 
 .cuentas-table-card {
@@ -166,12 +168,14 @@ body {
 
 .cuentas-main-panel {
   flex: 1;
-  padding: 40px;
+  padding: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--b-background);
   position: relative;
+  height: 100%;
+  overflow: hidden;
 }
 
 .cuentas-placeholder {
@@ -198,6 +202,8 @@ body {
   max-height: 800px;
   border: 1px solid var(--b-border);
   overflow: hidden;
+  height: auto;
+  max-height: 100%;
 }
 
 .cuentas-receipt-header {
@@ -242,6 +248,7 @@ body {
   overflow-y: auto;
   padding: 0;
   background-color: var(--b-surface);
+  min-height: 0;
 }
 
 .cuentas-receipt-table {

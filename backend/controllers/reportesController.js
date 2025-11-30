@@ -10,8 +10,16 @@ export const generarReporte = async (req, res) => {
   }
 
   try {
-    const inicioDia = `${fecha} 00:00:00`;
-    const finDia = `${fecha} 23:59:59`;
+    const fechaObj = new Date(fecha);
+    
+    const inicio = new Date(fechaObj);
+    inicio.setUTCHours(6, 0, 0, 0);
+    const inicioDia = inicio.toISOString();
+
+    const fin = new Date(fechaObj);
+    fin.setDate(fin.getDate() + 1);
+    fin.setUTCHours(5, 59, 59, 999);
+    const finDia = fin.toISOString();
 
     const { data: cuentas, error: errorCuentas } = await supabase
       .from("cuentas")
