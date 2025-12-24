@@ -1,0 +1,92 @@
+/* 🌙 Modo oscuro elegante y centrado */
+
+body {
+  background-color: #121212;
+  color: #f1f1f1;
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-top: 40px;
+}
+
+.app-container {
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #00d4ff;
+  margin-bottom: 20px;
+}
+
+.form-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #2b2b2b;
+  color: white;
+  width: 25%;
+}
+
+button {
+  background-color: #00d4ff;
+  color: #121212;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #009ac7;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+
+th {
+  color: #00d4ff;
+}
+
+.edit {
+  background-color: #ffc107;
+}
+
+.delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.edit:hover {
+  background-color: #ffcd38;
+}
+
+.delete:hover {
+  background-color: #ff5a4d;
+}
